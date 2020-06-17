@@ -56,9 +56,9 @@ spec:
           - name: FRONTEND_BASE
             value: {{ .Values.frontEnd.baseUrl }}
           - name: SEARCHSERVICE_BASE
-            value: http://{{ include "amundsen.fullname" . }}-{{ .Values.search.serviceName }}.svc:5001
+            value: http://{{ include "amundsen.fullname" . }}-{{ .Values.search.serviceName }}.{{ .Release.Namespace }}.svc.cluster.local:5001
           - name: METADATASERVICE_BASE
-            value: http://{{ include "amundsen.fullname" . }}-{{ .Values.metadata.serviceName }}.svc:5002
+            value: http://{{ include "amundsen.fullname" . }}-{{ .Values.metadata.serviceName }}.{{ .Release.Namespace }}.svc.cluster.local:5002
           - name: LONG_RANDOM_STRING
             value: {{ quote .Values.LONG_RANDOM_STRING }}
         {{- if .Values.frontEnd.oidcEnabled }}

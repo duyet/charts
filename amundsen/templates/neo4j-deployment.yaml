@@ -89,11 +89,11 @@ spec:
       volumes:
         - name: conf
           configMap:
-            name: neo4j-configmap
+            name: {{ include "amundsen.fullname" . }}-neo4j-configmap
         {{- if .Values.neo4j.persistence }}
         - name: data
           persistentVolumeClaim:
-            claimName: neo4j-pvc
+            claimName: {{ include "amundsen.fullname" . }}-neo4j-pvc
         {{- end}}
         - name: plugins
           hostPath:
