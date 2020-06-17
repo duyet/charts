@@ -6,6 +6,8 @@
 
 ## NOTE - README table was generated with https://github.com/norwoodj/helm-docs
 
+nameOverride: ""
+fullNameOverride: ""
 
 ## LONG_RANDOM_STRING -- A long random string. You should probably provide your own. This is needed for OIDC.
 ##
