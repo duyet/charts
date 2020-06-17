@@ -44,7 +44,7 @@ spec:
       {{- if .Values.frontEnd.oidcEnabled }}
         - name: oidc-config
           secret:
-            secretName: {{ include "amundsen.name" . }}-oidc-config
+            secretName: {{ include "amundsen.fullname" . }}-oidc-config
       {{- end }}
       containers:
       - name: {{ .Chart.Name }}-{{ .Values.metadata.serviceName }}
@@ -55,14 +55,14 @@ spec:
           containerPort: 5002
         env:
         - name: PROXY_HOST
-          value: {{ if .Values.metadata.neo4jEndpoint }}{{ .Values.metadata.neo4jEndpoint }}{{ else }}bolt://neo4j.{{ .Release.Namespace }}.svc.cluster.local{{ end }}
+          value: {{ if .Values.metadata.neo4jEndpoint }}{{ .Values.metadata.neo4jEndpoint }}{{ else }}bolt://{{ include "amundsen.fullname" . }}-neo4j.{{ .Release.Namespace }}.svc.cluster.local{{ end }}
         {{- if .Values.frontEnd.oidcEnabled }}
         - name: FLASK_OIDC_CLIENT_SECRETS
           value: /etc/client_secrets.json
         - name: FLASK_OIDC_SECRET_KEY
           valueFrom:
             secretKeyRef:
-              name: {{ include "amundsen.name" . }}-oidc-config
+              name: {{ include "amundsen.fullname" . }}-oidc-config
               key: OIDC_CLIENT_SECRET
         {{- end }}
         livenessProbe:

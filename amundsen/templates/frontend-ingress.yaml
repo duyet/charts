@@ -1,10 +1,10 @@
 {{- if .Values.frontEnd.ingress.enabled -}}
-{{- $name := include "amundsen.name" . }}
+{{- $name := include "amundsen.fullname" . }}
 
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: {{ include "amundsen.name" . }}-{{ .Values.frontEnd.serviceName }}
+  name: {{ include "amundsen.fullname" . }}-{{ .Values.frontEnd.serviceName }}
   labels:
     app.kubernetes.io/component: {{ .Values.frontEnd.serviceName }}
     app.kubernetes.io/name: {{ include "amundsen.name" . }}

@@ -43,7 +43,7 @@ spec:
       {{- if .Values.frontEnd.oidcEnabled }}
         - name: oidc-config
           secret:
-            secretName: {{ include "amundsen.name" . }}-oidc-config
+            secretName: {{ include "amundsen.fullname" . }}-oidc-config
       {{- end }}
       containers:
       - name: {{ .Chart.Name }}-{{ .Values.frontEnd.serviceName }}
@@ -56,9 +56,9 @@ spec:
           - name: FRONTEND_BASE
             value: {{ .Values.frontEnd.baseUrl }}
           - name: SEARCHSERVICE_BASE
-            value: http://{{ .Chart.Name }}-{{ .Values.search.serviceName }}:5001
+            value: http://{{ include "amundsen.fullname" . }}-{{ .Values.search.serviceName }}:5001
           - name: METADATASERVICE_BASE
-            value: http://{{ .Chart.Name }}-{{ .Values.metadata.serviceName }}:5002
+            value: http://{{ include "amundsen.fullname" . }}-{{ .Values.metadata.serviceName }}:5002
           - name: LONG_RANDOM_STRING
             value: {{ quote .Values.LONG_RANDOM_STRING }}
         {{- if .Values.frontEnd.oidcEnabled }}
@@ -77,7 +77,7 @@ spec:
           - name: FLASK_OIDC_SECRET_KEY
             valueFrom:
               secretKeyRef:
-                name: {{ include "amundsen.name" . }}-oidc-config
+                name: {{ include "amundsen.fullname" . }}-oidc-config
                 key: OIDC_CLIENT_SECRET
         {{- end }}
         livenessProbe:
