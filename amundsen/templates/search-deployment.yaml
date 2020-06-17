@@ -13,7 +13,6 @@ spec:
     matchLabels:
       app.kubernetes.io/component: {{ .Values.search.serviceName }}
       app.kubernetes.io/name: {{ include "amundsen.name" . }}
-      helm.sh/chart: {{ include "amundsen.chart" . }}
       app.kubernetes.io/instance: {{ .Release.Name }}
   replicas: {{ default 1 .Values.search.replicas }}
   template:
