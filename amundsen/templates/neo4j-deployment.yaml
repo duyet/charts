@@ -59,6 +59,10 @@ spec:
           volumeMounts:
             - name: plugins
               mountPath: /var/lib/neo4j/plugins
+          {{- with .Values.neo4j.resources }}
+          resources:
+{{ toYaml . | indent 12 }}
+          {{- end}}
       containers:
       - name: neo4j
         image: neo4j:{{ .Values.neo4j.version }}
