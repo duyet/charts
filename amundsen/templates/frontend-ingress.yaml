@@ -11,23 +11,23 @@ metadata:
     app.kubernetes.io/managed-by: {{ .Release.Service }}
 
   annotations:
-{{- range $key, $value := .Values.ingress.annotations }}
+{{- range $key, $value := .Values.frontEnd.ingress.annotations }}
       {{ $key }}: {{ $value | quote }}
 {{- end }}
 spec:
   rules:
-    {{- range $host := .Values.ingress.hosts }}
+    {{- range $host := .Values.frontEnd.ingress.hosts }}
     - host: {{ $host }}
       http:
         paths:
-        - path: {{ $.Values.ingress.path }}
+        - path: {{ $.Values.frontEnd.ingress.path }}
           backend:
             serviceName: {{ template "amundsen.name" . }}-{{ .Values.frontEnd.serviceName }}
-            servicePort: historyport
+            servicePort: frontendport
     {{- end -}}
-  {{- if .Values.ingress.tls }}
+  {{- if .Values.frontEnd.ingress.tls }}
   tls:
-  {{- range .Values.ingress.tls }}
+  {{- range .Values.frontEnd.ingress.tls }}
     - hosts:
       {{- range .hosts }}
         - {{ . | quote }}
