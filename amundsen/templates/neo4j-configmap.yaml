@@ -2,11 +2,11 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ template "amundsen.fullname" . }}-neo4j-configmap
+  name: {{ include "amundsen.fullname" . }}-neo4j-configmap
   labels:
-    app.kubernetes.io/name: {{ template "amundsen.name" . }}
+    app.kubernetes.io/name: {{ include "amundsen.name" . }}
     app.kubernetes.io/component: neo4j
-    helm.sh/chart: {{ template "amundsen.chart" . }}
+    helm.sh/chart: {{ include "amundsen.chart" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
     app.kubernetes.io/managed-by: {{ .Release.Service }}

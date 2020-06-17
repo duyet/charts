@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ template "amundsen.fullname" . }}-{{ .Values.search.serviceName }}
+  name: {{ include "amundsen.fullname" . }}-{{ .Values.search.serviceName }}
   labels:
     app.kubernetes.io/component: {{ .Values.search.serviceName }}
     app.kubernetes.io/name: {{ include "amundsen.name" . }}

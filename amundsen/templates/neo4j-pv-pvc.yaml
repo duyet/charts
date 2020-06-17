@@ -3,7 +3,7 @@
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: {{ template "amundsen.fullname" . }}-neo4j-pv
+  name: {{ include "amundsen.fullname" . }}-neo4j-pv
   labels:
     app.kubernetes.io/component: neo4j
     app.kubernetes.io/name: {{ include "amundsen.fullname" . }}
@@ -25,7 +25,7 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ template "amundsen.fullname" . }}-neo4j-pvc
+  name: {{ include "amundsen.fullname" . }}-neo4j-pvc
   namespace: {{ .Release.Namespace }}
   labels:
     app.kubernetes.io/component: neo4j

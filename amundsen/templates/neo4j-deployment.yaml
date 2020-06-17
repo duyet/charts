@@ -2,7 +2,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ template "amundsen.fullname" . }}-neo4j
+  name: {{ include "amundsen.fullname" . }}-neo4j
   labels:
     app.kubernetes.io/component: neo4j
     app.kubernetes.io/name: {{ include "amundsen.name" . }}-neo4j

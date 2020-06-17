@@ -2,7 +2,7 @@
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: {{ template "amundsen.name" . }}-{{ .Values.frontEnd.serviceName }}
+  name: {{ include "amundsen.name" . }}-{{ .Values.frontEnd.serviceName }}
   labels:
     app.kubernetes.io/component: {{ .Values.frontEnd.serviceName }}
     app.kubernetes.io/name: {{ include "amundsen.name" . }}
@@ -22,7 +22,7 @@ spec:
         paths:
         - path: {{ $.Values.frontEnd.ingress.path }}
           backend:
-            serviceName: {{ template "amundsen.name" . }}-{{ .Values.frontEnd.serviceName }}
+            serviceName: {{ include "amundsen.name" . }}-{{ .Values.frontEnd.serviceName }}
             servicePort: frontendport
     {{- end -}}
   {{- if .Values.frontEnd.ingress.tls }}
