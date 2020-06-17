@@ -23,9 +23,9 @@ spec:
 {{ toYaml . | indent 8 }}
       {{- end }}
       labels:
-        app: {{ template "amundsen.name" . }}
-        component: {{ template "amundsen.fullname" . }}-neo4j
-        release: {{ .Release.Name }}
+        app.kubernetes.io/name: {{ include "amundsen.name" . }}-neo4j
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        app.kubernetes.io/component: neo4j
     spec:
       {{- with .Values.neo4j.nodeSelector }}
       nodeSelector:

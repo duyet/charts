@@ -23,9 +23,10 @@ spec:
 {{ toYaml . | indent 8 }}
       {{- end }}
       labels:
-        app: {{ template "amundsen.name" . }}
-        component: {{ .Values.metadata.serviceName }}
-        release: {{ .Release.Name }}
+        app.kubernetes.io/component: {{ .Values.metadata.serviceName }}
+        app.kubernetes.io/name: {{ include "amundsen.name" . }}
+        helm.sh/chart: {{ include "amundsen.chart" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
     spec:
       {{- with default .Values.nodeSelector .Values.metadata.nodeSelector }}
       nodeSelector:

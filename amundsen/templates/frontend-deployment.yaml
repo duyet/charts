@@ -12,9 +12,9 @@ metadata:
 spec:
   selector:
     matchLabels:
-      app: {{ template "amundsen.name" . }}
-      component: {{ .Values.frontEnd.serviceName }}
-      release: {{ .Release.Name }}
+      app.kubernetes.io/component: {{ .Values.frontEnd.serviceName }}
+      app.kubernetes.io/name: {{ include "amundsen.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
   replicas: {{ default 1 .Values.frontEnd.replicas }}
   template:
     metadata:
@@ -23,9 +23,9 @@ spec:
 {{ toYaml . | indent 8 }}
       {{- end }}
       labels:
-        app: {{ template "amundsen.name" . }}
-        component: {{ .Values.frontEnd.serviceName }}
-        release: {{ .Release.Name }}
+        app.kubernetes.io/component: {{ .Values.frontEnd.serviceName }}
+        app.kubernetes.io/name: {{ include "amundsen.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
     spec:
       {{- with default .Values.nodeSelector .Values.frontEnd.nodeSelector }}
       nodeSelector:

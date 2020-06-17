@@ -15,9 +15,9 @@ metadata:
 spec:
   type: {{ .Values.metadata.serviceType }}
   selector:
-    app: {{ template "amundsen.name" . }}
-    component: {{ .Values.metadata.serviceName }}
-    release: {{ .Release.Name }}
+    app.kubernetes.io/component: {{ .Values.metadata.serviceName }}
+    app.kubernetes.io/name: {{ include "amundsen.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
   ports:
     - name: {{ .Chart.Name }}-{{ .Values.metadata.serviceName }}-http
       port: 5002

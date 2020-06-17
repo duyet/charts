@@ -23,9 +23,9 @@ spec:
 {{ toYaml . | indent 8 }}
       {{- end }}
       labels:
-        app: {{ template "amundsen.name" . }}
-        component: {{ .Values.search.serviceName }}
-        release: {{ .Release.Name }}
+        app.kubernetes.io/component: {{ .Values.search.serviceName }}
+        app.kubernetes.io/name: {{ include "amundsen.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
     spec:
       {{- with default .Values.nodeSelector .Values.search.nodeSelector }}
       nodeSelector:

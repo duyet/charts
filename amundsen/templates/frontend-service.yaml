@@ -17,6 +17,7 @@ metadata:
 spec:
   type: {{ .Values.frontEnd.serviceType }}
   selector:
+    app.kubernetes.io/component: {{ .Values.frontEnd.serviceName }}
     app.kubernetes.io/name: {{ include "amundsen.name" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
   ports:
