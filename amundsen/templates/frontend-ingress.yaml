@@ -1,4 +1,6 @@
 {{- if .Values.frontEnd.ingress.enabled -}}
+{{- $name := include "amundsen.name" . }}
+
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
@@ -22,7 +24,7 @@ spec:
         paths:
         - path: {{ $.Values.frontEnd.ingress.path }}
           backend:
-            serviceName: {{ include "amundsen.name" . }}-{{ .Values.frontEnd.serviceName }}
+            serviceName: {{ $name }}-{{ $.Values.frontEnd.serviceName }}
             servicePort: frontendport
     {{- end -}}
   {{- if .Values.frontEnd.ingress.tls }}
