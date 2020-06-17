@@ -6,7 +6,7 @@ icon: https://github.com/lyft/amundsen/blob/master/docs/img/logos/amundsen_logo_
 home: https://github.com/lyft/amundsen
 maintainers:
   - name: Duyet Le
-    email: me@duyt.net
+    email: me@duyet.net
 sources:
   - https://github.com/lyft/amundsen
   - https://github.com/duyetdev/charts/amundsen
