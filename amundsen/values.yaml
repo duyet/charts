@@ -1,9 +1,3 @@
-##
-## common settings for all apps
-##
-
-## NOTE - README table was generated with https://github.com/norwoodj/helm-docs
-
 nameOverride: ""
 fullNameOverride: ""
 
@@ -165,6 +159,9 @@ frontEnd:
 neo4j:
   # neo4j.enabled
   enabled: true
+
+  # neo4j.neo4jEndpoint -- Use external neo4j endpoint
+  neo4jEndpoint: 
 
   # Use password authentication
   authEnabled: true
