@@ -164,7 +164,9 @@ neo4j:
   neo4jEndpoint: 
 
   # Use password authentication
-  authEnabled: true
+  authEnabled: false
+
+  acceptLicenseAgreement: "yes"
 
   ## Specify password for neo4j user
   ## Defaults to a random 10-character alphanumeric string if not set and authEnabled is true
