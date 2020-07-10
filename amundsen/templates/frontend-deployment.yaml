@@ -81,8 +81,10 @@ spec:
                 key: OIDC_CLIENT_SECRET
         {{- end }}
         {{- range $key, $value :=  .Values.frontEnd.env }}
+          {{- if $value }}
           - name: {{ $key }}
             value: {{ $value | quote }}
+          {{- end }}
         {{- end }}
         {{- if or .Values.frontEnd.extraEnvVarsCM .Values.frontEnd.extraEnvVarsSecret }}
         envFrom:
