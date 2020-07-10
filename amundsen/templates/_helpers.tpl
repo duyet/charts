@@ -47,9 +47,9 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{/*
 Renders a value that contains template.
 Usage:
-{{ include "parse.tplValue" ( dict "value" .Values.path.to.the.Value "context" $) }}
+{{ include "amundsen.tplValue" ( dict "value" .Values.path.to.the.Value "context" $) }}
 */}}
-{{- define "parse.tplValue" -}}
+{{- define "amundsen.tplValue" -}}
     {{- if typeIs "string" .value }}
         {{- tpl .value .context }}
     {{- else }}

@@ -88,11 +88,11 @@ spec:
         envFrom:
           {{- if .Values.frontEnd.extraEnvVarsCM }}
           - configMapRef:
-              name: {{ include "parse.tplValue" ( dict "value" .Values.frontEnd.extraEnvVarsCM "context" $ ) }}
+              name: {{ include "amundsen.tplValue" ( dict "value" .Values.frontEnd.extraEnvVarsCM "context" $ ) }}
           {{- end }}
           {{- if .Values.frontEnd.extraEnvVarsSecret }}
           - secretRef:
-              name: {{ include "parse.tplValue" ( dict "value" .Values.frontEnd.extraEnvVarsSecret "context" $ ) }}
+              name: {{ include "amundsen.tplValue" ( dict "value" .Values.frontEnd.extraEnvVarsSecret "context" $ ) }}
           {{- end }}
         {{- end }}
 
