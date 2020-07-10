@@ -80,6 +80,10 @@ spec:
                 name: {{ include "amundsen.fullname" . }}-oidc-config
                 key: OIDC_CLIENT_SECRET
         {{- end }}
+        {{- range $key, $value :=  .Values.frontEnd.env }}
+          - name: {{ $key }}
+            value: {{ $value | quote }}
+        {{- end }}
         livenessProbe:
           httpGet:
             path: "/healthcheck"

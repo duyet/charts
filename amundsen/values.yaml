@@ -115,14 +115,22 @@ frontEnd:
   ## frontEnd.createOidcSecret -- OIDC needs some configuration. If you want the chart to make your secrets, set this to true and set the next four values. If you don't want to configure your secrets via helm, you can still use the amundsen-oidc-config.yaml as a template
   createOidcSecret: false
 
-  ## frontEnd.OIDC_CLIENT_ID -- The client id for OIDC.
-  OIDC_CLIENT_ID:
-  ## frontEnd.OIDC_CLIENT_SECRET -- The client secret for OIDC.
-  OIDC_CLIENT_SECRET: ""
-  ## frontEnd.OIDC_ORG_URL -- The organization URL for OIDC.
-  OIDC_ORG_URL:
-  ## frontEnd.OIDC_AUTH_SERVER_ID -- The authorization server id for OIDC.
-  OIDC_AUTH_SERVER_ID:
+  ## frontEnd.env --  Environments
+  env:
+    ## frontEnd.env.OIDC_CLIENT_ID -- The client id for OIDC.
+    OIDC_CLIENT_ID:
+    ## frontEnd.env.OIDC_CLIENT_SECRET -- The client secret for OIDC.
+    OIDC_CLIENT_SECRET: ""
+    ## frontEnd.env.OIDC_ORG_URL -- The organization URL for OIDC.
+    OIDC_ORG_URL:
+    ## frontEnd.env.OIDC_AUTH_SERVER_ID -- The authorization server id for OIDC.
+    OIDC_AUTH_SERVER_ID:
+    ## frontEnd.env.PREVIEW_DATA_DB_CONN_STRING
+    PREVIEW_DATA_DB_CONN_STRING:
+    ## frontEnd.env.PREVIEW_DATA_STORAGE_SCHEMA
+    PREVIEW_DATA_STORAGE_SCHEMA:
+    ## frontEnd.env.PREVIEW_DATA_STORAGE_TABLE_NAME
+    PREVIEW_DATA_STORAGE_TABLE_NAME:
 
   ## frontEnd.resources -- See pod resourcing [ref](https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/)
   resources: {}
@@ -157,16 +165,17 @@ frontEnd:
 ## https://github.com/neo4j-contrib/neo4j-helm/blob/master/values.yaml
 ##
 neo4j:
-  # neo4j.enabled
+  ## neo4j.enabled
   enabled: true
 
-  # neo4j.neo4jEndpoint -- Use external neo4j endpoint
+  ## neo4j.neo4jEndpoint -- Use external neo4j endpoint
   neo4jEndpoint: 
 
-  # Use password authentication
-  authEnabled: false
+  ## neo4j.version -- The neo4j application version used by amundsen.
+  version: 3.3.0
 
-  acceptLicenseAgreement: "yes"
+  ## Use password authentication
+  authEnabled: false
 
   ## Specify password for neo4j user
   ## Defaults to a random 10-character alphanumeric string if not set and authEnabled is true
@@ -181,24 +190,40 @@ neo4j:
   #    cpu: 1
   #    memory: 1Gi
 
-  # Cores
-  core:
-    # configMap: "my-custom-configmap"
-    standalone: true
-    persistentVolume:
-      ## whether or not persistence is enabled
-      ##
-      enabled: true
+  ## neo4j.config -- Neo4j application specific configuration. This type of configuration is why the charts/stable version is not used. See [ref](https://github.com/helm/charts/issues/21439)
+  config:
+    ## neo4j.config.dbms -- dbms config for neo4j
+    dbms:
+      ## neo4j.config.dbms.heap_initial_size -- the initial java heap for neo4j
+      heap_initial_size: 1G
+      ## neo4j.config.dbms.heap_max_size -- the max java heap for neo4j
+      heap_max_size: 2G
+      ## neo4j.config.dbms.pagecache_size -- the page cache size for neo4j
+      pagecache_size: 2G
 
-  dbms:
-    memory:
-      use_memrec: false
-      heap:
-        initial_size: ""
-        max_size: ""
-      pagecache:
-        size: ""
+  ## neo4j.persistence -- Neo4j persistence. Turn this on to keep your data between pod crashes, etc. This is also needed for backups.
+  persistence: {}
+  #  storageClass: gp2
+  #  size: 10Gi
+  #  accessMode: ReadWriteMany
+  #  efs:
+  #    dns:
 
+  ## neo4j.backup -- If enabled is set to true, make sure and set the s3 path as well.
+  backup:
+    # neo4j.backup.enabled - Whether to include the backup neo4j cron pod. If set to true, s3Path is required.
+    enabled: false
+    ## neo4j.backup.s3Path -- The s3path to write to for backups.
+    s3Path: "s3://dev/null"
+    ## neo4j.backup.schedule -- The schedule to run backups on. Defaults to hourly.
+    schedule: "0 * * * *"
+    podAnnotations: {}
+
+  nodeSelector: {}
+  affinity: {}
+  tolerations: []
+  annotations: {}
+  podAnnotations: {}
 
 ##
 ## Configuration related to elasticsearch.
