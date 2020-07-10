@@ -9,7 +9,7 @@ maintainers:
     email: me@duyet.net
 sources:
   - https://github.com/lyft/amundsen
-  - https://github.com/duyetdev/charts/amundsen
+  - https://github.com/duyet/charts/amundsen
 keywords:
   - metadata
   - data
