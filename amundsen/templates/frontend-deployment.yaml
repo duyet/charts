@@ -84,6 +84,18 @@ spec:
           - name: {{ $key }}
             value: {{ $value | quote }}
         {{- end }}
+        {{- if or .Values.frontEnd.extraEnvVarsCM .Values.frontEnd.extraEnvVarsSecret }}
+        envFrom:
+          {{- if .Values.frontEnd.extraEnvVarsCM }}
+          - configMapRef:
+              name: {{ include "parse.tplValue" ( dict "value" .Values.frontEnd.extraEnvVarsCM "context" $ ) }}
+          {{- end }}
+          {{- if .Values.frontEnd.extraEnvVarsSecret }}
+          - secretRef:
+              name: {{ include "parse.tplValue" ( dict "value" .Values.frontEnd.extraEnvVarsSecret "context" $ ) }}
+          {{- end }}
+        {{- end }}
+
         livenessProbe:
           httpGet:
             path: "/healthcheck"
