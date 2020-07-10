@@ -1,0 +1,35 @@
+{{ if .Values.neo4j.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "amundsen.fullname" . }}-neo4j
+  labels:
+    app.kubernetes.io/component: neo4j
+    app.kubernetes.io/name: {{ include "amundsen.name" . }}-neo4j
+    helm.sh/chart: {{ include "amundsen.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- with .Values.neo4j.annotations }}
+  annotations:
+{{ toYaml . | indent 4 }}
+{{- end}}   
+spec:
+  type: {{ .Values.neo4j.serviceType }}
+  selector:
+    app.kubernetes.io/component: neo4j
+    app.kubernetes.io/name: {{ include "amundsen.name" . }}-neo4j
+    app.kubernetes.io/instance: {{ .Release.Name }}
+  ports:
+    - port: 7473
+      name: neo4j-https
+      targetPort: 7473
+    - port: 7474
+      name: neo4j-http
+      targetPort: 7474
+    - port: 7687
+      name: neo4j-bolt
+      targetPort: 7687
+    - port: 1337
+      name: neo4j-shell
+      targetPort: 1337
+{{ end }}
