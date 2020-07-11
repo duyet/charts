@@ -1,9 +1,6 @@
 dependencies:
-- name: neo4j
-  repository: https://neo4j-contrib.github.io/neo4j-helm/
-  version: 4.0.4-1
 - name: elasticsearch
   repository: https://kubernetes-charts.storage.googleapis.com/
   version: 1.32.0
-digest: sha256:d49a9557904feebcb83df3520c1ce5905d947276d92f286b66ac62853cf7e995
-generated: "2020-06-24T10:30:23.824429+07:00"
+digest: sha256:b7bd66e4010adc3faaaf71b491bd4e2e07ff7dd41561572b934cefc79829b56e
+generated: "2020-07-11T16:12:22.283417+07:00"
