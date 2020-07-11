@@ -113,7 +113,7 @@ spec:
             mountPath: /etc/client_secrets.json
             subPath: client_secrets.json
         {{- end }}
-        {{- with .Values.metadata.resources }}
+        {{- with .Values.frontEnd.resources }}
         resources:
 {{ toYaml . | indent 10 }}
         {{- end }}
