@@ -1,17 +1,16 @@
 name: Helm Template Validation
 
-on:
-  push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
+on: [push, pull_request]
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v2
-
-    - name: Helm Templates Validation
-      uses: igabaydulin/helm-check-action@0.1.4
+    - name: Validate Helm Release from Git Repo
+      uses: stefanprodan/hrval-action@v3.2.0
+      with:
+        helmRelease: test/podinfo.yaml
+        helmVersion: v3
+        kubernetesVersion: master
+        ignoreValues: true
