@@ -3,7 +3,7 @@ name: Helm Template Validation
 on: [push, pull_request]
 
 jobs:
-  build:
+  hrval:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
