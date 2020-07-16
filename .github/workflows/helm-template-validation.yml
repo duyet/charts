@@ -7,10 +7,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: Validate Helm Release from Git Repo
-      uses: stefanprodan/hrval-action@v3.2.0
+    - name: Run chart-testing (lint)
+      id: lint
+      uses: helm/chart-testing-action@v1.0.0-rc.1
       with:
-        helmRelease: test/podinfo.yaml
-        helmVersion: v3
-        kubernetesVersion: master
-        ignoreValues: true
+        command: lint
+
+    - name: Create kind cluster
+      uses: helm/kind-action@v1.0.0-alpha.3
+      # Only build a kind cluster if there are chart changes to test.
+      if: steps.lint.outputs.changed == 'true'
+
+    - name: Run chart-testing (install)
+      uses: helm/chart-testing-action@v1.0.0-rc.1
+      with:
+        command: install
