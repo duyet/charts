@@ -1,0 +1,3 @@
+remote: upstream
+chart-dirs:
+  - .
