@@ -1,4 +1,4 @@
-# duyet/charts
+# duyet/charts ![Helm Template Validation](https://github.com/duyet/charts/workflows/Helm%20Template%20Validation/badge.svg)
 Helm Charts for Kubernetes.
 
 # Before you begin
