@@ -1,0 +1,4 @@
+chart-dirs:
+  - .
+debug: true
+remote: origin
