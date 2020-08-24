@@ -5,6 +5,6 @@ name: spark-shuffle
 home: https://github.com/duyet/charts/tree/master/spark-shuffle-service
 version: 0.1.0
 maintainers:
-  - name: Duyet Le
+  - name: duyet
     email: me@duyet.net
     url: https://github.com/duyet/
