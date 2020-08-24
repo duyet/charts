@@ -8,6 +8,11 @@ metadata:
   name: {{ template "spark-shuffle.fullname" . }}
   namespace: {{ .Release.Namespace }}
 spec:
+  selector:
+    matchLabels:
+      {{- range $key, $val := .Values.shufflePodLabels }}
+      {{ $key }}: {{ $val }}
+      {{- end }}
   template:
     metadata:
       labels:
