@@ -1,0 +1,28 @@
+image:
+  repository: snappydatainc
+  tag: spark-shuffle:v2.2.0-kubernetes-0.5.1
+  pullPolicy: IfNotPresent
+
+shufflePodLabels:
+  app: spark-shuffle-service
+  spark-version: 2.4.5
+
+serviceAccount: default
+
+resources:
+  limits:
+    cpu: 300m
+    memory: 256Mi
+  requests:
+    cpu: 200m
+    memory: 128Mi
+
+# internal attribute, do not change
+global:
+  umbrellaChart: false
+
+# nodeSelector
+nodeSelector: {}
+
+# affinity
+affinity: {}

@@ -1,0 +1,10 @@
+apiVersion: v1
+appVersion: "1.0"
+description: A Helm chart to deploy Spark shuffle service deamon set for Kubernetes
+name: spark-shuffle
+home: https://github.com/duyet/charts/tree/master/spark-shuffle-service
+version: 0.1.0
+maintainers:
+  - name: duyet
+    email: me@duyet.net
+    url: https://github.com/duyet/
