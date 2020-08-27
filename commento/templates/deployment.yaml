@@ -1,0 +1,115 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "commento.fullname" . }}
+  labels:
+    app.kubernetes.io/name: {{ include "commento.name" . }}
+    helm.sh/chart: {{ include "commento.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "commento.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  replicas: 1
+  template:
+    metadata:
+      {{- if .Values.podAnnotations }}
+      annotations:
+        {{ toYaml .Values.podAnnotations | indent 8 | trim }}
+      {{- end }}
+      labels:
+        app.kubernetes.io/name: {{ include "commento.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{ toYaml . | indent 8 | trim }}
+      {{- end }}
+
+      {{- with .Values.affinity }}
+      affinity:
+        {{ toYaml . | indent 8 | trim }}
+      {{- end }}
+
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{ toYaml . | indent 8 | trim }}
+      {{- end }}
+
+      containers:
+      - name: commento
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        ports:
+          - containerPort: 8080
+
+        envFrom:
+          - secretRef:
+              name: {{ include "commento.fullname" . }}
+
+        env:
+          - name: COMMENTO_ORIGIN
+            value: {{ default .Release.Name .Values.originUrl | quote }}
+          - name: COMMENTO_POSTGRES
+            value: "postgres://postgres:$(POSTGRES_PASSWORD)@{{ .Release.Name }}-postgresql:5432/commento?sslmode=disable"
+          - name: COMMENTO_PORT
+            value: 8080
+          - name: COMMENTO_FORBID_NEW_OWNERS
+            value: {{ if .Values.dashboardRegistration }}false{{ else }}true{{ end }}
+
+          {{- if .Values.cdn.enabled }}
+          - name: COMMENTO_CDN_PREFIX
+            value: {{ .Values.cdn.cdnPrefix}}
+          {{- end }}
+
+          {{- with .Values.smtp }}
+          - name: COMMENTO_SMTP_HOST
+            value: {{ .host }}
+          - name: COMMENTO_SMTP_PORT
+            value: {{ .port }}
+          - name: COMMENTO_SMTP_USERNAME
+            value: {{ .username }}
+          - name: COMMENTO_SMTP_PASSWORD
+            value: {{ .password }}
+          - name: COMMENTO_SMTP_FROM_ADDRESS
+            value: {{ .fromAddress }}
+          {{- end }}
+
+          {{- with .Values.akismetKey }}
+          - name: COMMENTO_AKISMET_KEY
+            value: {{ . }}
+          {{- end }}
+
+          {{- if .Values.googleOAuth.enabled }}
+          - name: COMMENTO_GOOGLE_KEY
+            value: {{ .Values.googleOAuth.key }}
+          - name: COMMENTO_GOOGLE_SECRET
+            value: {{ .Values.googleOAuth.secret }}
+          {{- end }}
+
+          {{- if .Values.githubOAuth.enabled }}
+          - name: COMMENTO_GITHUB_KEY
+            value: {{ .Values.githubOAuth.key }}
+          - name: COMMENTO_GITHUB_SECRET
+            value: {{ .Values.githubOAuth.secret }}
+          {{- end }}
+
+          {{- if .Values.gitlabOAuth.enabled }}
+          - name: COMMENTO_GITLAB_KEY
+            value: {{ .Values.gitlabOAuth.key }}
+          - name: COMMENTO_GITLAB_SECRET
+            value: {{ .Values.gitlabOAuth.secret }}
+          {{- end }}
+
+          {{- if .Values.twitterOAuth.enabled }}
+          - name: COMMENTO_TWITTER_KEY
+            value: {{ .Values.twitterOAuth.key }}
+          - name: COMMENTO_TWITTER_SECRET
+            value: {{ .Values.twitterOAuth.secret }}
+          {{- end }}
+
+        {{- with .Values.resources }}
+        resources:
+          {{ toYaml . | indent 10 | trim }}
+        {{- end }}
