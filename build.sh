@@ -5,6 +5,7 @@ DIST_DIR=".dist"
 
 for chart in ./*; do
     if [ -f "$chart/Chart.yaml" ]; then
+        helm dependency build $chart
         helm package $chart -d $DIST_DIR
     fi
 done
