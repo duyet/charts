@@ -109,6 +109,14 @@ spec:
             value: {{ .Values.twitterOAuth.secret }}
           {{- end }}
 
+          {{- range $key, $value :=  .Values.extraEnvs }}
+          {{- if $value }}
+          - name: {{ $key }}
+            value: {{ $value | quote }}
+          {{- end }}
+          {{- end }}
+
+
         {{- with .Values.resources }}
         resources:
           {{ toYaml . | indent 10 | trim }}

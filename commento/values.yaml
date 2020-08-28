@@ -23,7 +23,7 @@ resources:
 podAnnotations:
 
 # Extra environments
-extraEnv: []
+extraEnvs: []
 
 # Used to disable new dashboard registrations
 dashboardRegistration: true
@@ -88,9 +88,16 @@ postgresql:
     enabled: false
   replication:
     enabled: false
+
+  # Postgres username
   postgresqlUsername: postgres
-  postgresqlPassword: '' # default: random 10 character alphanumeric string
+
+  # Postgres password
+  # default: random 20 character alphanumeric string
+  postgresqlPassword: ''
   postgresqlDatabase: commento
+
+  # Extra envs and extra env configmap for postgres
   extraEnv: []
   extraEnvVarsCM:
 
