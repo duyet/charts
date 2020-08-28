@@ -91,6 +91,8 @@ postgresql:
     enabled: false
   replication:
     enabled: false
+  persistence:
+    enabled: false
 
   # Postgres username
   postgresqlUsername: postgres
