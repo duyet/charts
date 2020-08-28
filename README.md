@@ -19,7 +19,7 @@ To install Helm, refer to the [Helm install guide](https://github.com/helm/helm#
 The following command allows you to download and install all the charts from this repository:
 
 ```
-$ helm repo add bitnami https://duyet.github.io/charts
+$ helm repo add duyet https://duyet.github.io/charts
 ```
 
 ## Using Helm
