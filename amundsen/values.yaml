@@ -161,7 +161,7 @@ frontEnd:
     # kubernetes.io/tls-acme: "true"
     path: /
     hosts:
-        - frontend.example.com
+      - frontend.example.com
     tls: []
     #  - secretName:frontend.example.com
     #    hosts:
@@ -176,7 +176,7 @@ neo4j:
   enabled: true
 
   ## neo4j.neo4jEndpoint -- Use external neo4j endpoint
-  neo4jEndpoint: 
+  neo4jEndpoint:
 
   ## neo4j.version -- The neo4j application version used by amundsen.
   version: 3.3.0
