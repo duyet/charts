@@ -54,9 +54,9 @@ spec:
           - name: COMMENTO_POSTGRES
             value: "postgres://postgres:$(POSTGRES_PASSWORD)@{{ .Release.Name }}-postgresql:5432/commento?sslmode=disable"
           - name: COMMENTO_PORT
-            value: 8080
+            value: "8080"
           - name: COMMENTO_FORBID_NEW_OWNERS
-            value: {{ if .Values.dashboardRegistration }}false{{ else }}true{{ end }}
+            value: "{{ if .Values.dashboardRegistration }}false{{ else }}true{{ end }}"
 
           {{- if .Values.cdn.enabled }}
           - name: COMMENTO_CDN_PREFIX
