@@ -51,8 +51,15 @@ spec:
         env:
           - name: COMMENTO_ORIGIN
             value: {{ default .Release.Name .Values.originUrl | quote }}
+
+          - name: POSTGRES_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ if .Values.existingSecret }}{{ .Values.existingSecret }}{{else}}{{ include "commento.fullname" . }}{{ end }}
+                key: postgresql-password
+
           - name: COMMENTO_POSTGRES
-            value: "postgres://postgres:$(POSTGRES_PASSWORD)@{{ .Release.Name }}-postgresql:5432/commento?sslmode=disable"
+            value: "postgres://postgres:$(POSTGRES_PASSWORD)@{{ .Release.Name }}-postgresql:5432/{{ .Values.postgresql.postgresqlDatabase }}?sslmode=disable"
           - name: COMMENTO_PORT
             value: "8080"
           - name: COMMENTO_FORBID_NEW_OWNERS

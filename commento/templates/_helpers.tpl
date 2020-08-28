@@ -30,3 +30,21 @@ Create chart name and version as used by the chart label.
 {{- define "commento.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
+
+{{/*
+Return true if we should use an existingSecret.
+*/}}
+{{- define "commento.useExistingSecret" -}}
+{{- if or .Values.postgresql.existingSecret .Values.existingSecret -}}
+    {{- true -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return true if a secret object should be created
+*/}}
+{{- define "commento.createSecret" -}}
+{{- if not (include "commento.useExistingSecret" .) -}}
+    {{- true -}}
+{{- end -}}
+{{- end -}}

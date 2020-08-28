@@ -25,6 +25,9 @@ podAnnotations:
 # Extra environments
 extraEnvs: []
 
+# Existing secret to use for PostgreSQL passwords
+existingSecret:
+
 # Used to disable new dashboard registrations
 dashboardRegistration: true
 
@@ -93,9 +96,14 @@ postgresql:
   postgresqlUsername: postgres
 
   # Postgres password
-  # default: random 20 character alphanumeric string
-  postgresqlPassword: ''
+  # WARNING: you should NOT use this, instead specify `postgresql.existingSecret`
+  postgresqlPassword: commento
+
+  # Postgres database name
   postgresqlDatabase: commento
+
+  # This existing secret to use for PostgreSQL passwords
+  existingSecret:
 
   # Extra envs and extra env configmap for postgres
   extraEnv: []
