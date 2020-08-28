@@ -3,7 +3,7 @@ entries:
   amundsen:
   - apiVersion: v1
     appVersion: "1.0"
-    created: "2020-08-28T14:21:25.093134028Z"
+    created: "2020-08-28T14:26:14.057300465Z"
     dependencies:
     - condition: elasticsearch.enabled
       name: elasticsearch
@@ -11,7 +11,7 @@ entries:
       version: 1.32.5
     description: Amundsen is a metadata driven application for improving the productivity
       of data analysts, data scientists and engineers when interacting with data.
-    digest: 3431c3cea8228c51c991750739a963954b9020be774068c4be43972e053b22f1
+    digest: 94c4e878b4fc1e06d3df74469c8b270863211d5ce5729aaaa2340bc208157bd4
     home: https://github.com/lyft/amundsen
     icon: https://github.com/lyft/amundsen/blob/master/docs/img/logos/amundsen_logo_on_light.svg
     keywords:
@@ -31,13 +31,13 @@ entries:
   commento:
   - apiVersion: v1
     appVersion: "1.0"
-    created: "2020-08-28T14:21:25.096731092Z"
+    created: "2020-08-28T14:26:14.061339248Z"
     dependencies:
     - name: postgresql
       repository: https://charts.bitnami.com/bitnami
       version: 9.3.3
     description: A Helm chart to deploy Commento.io
-    digest: 87665cd79e578c2c41022540e902b839341e45662d2cffa30f2bb7e5a6fa6c9d
+    digest: dcc3275ad6074d1debbb55ba733adc5db1c9c7e30c46ae144cee8dcccb33e6c7
     home: https://github.com/duyet/charts/tree/master/commento
     maintainers:
     - email: me@duyet.net
@@ -50,9 +50,9 @@ entries:
   spark-shuffle:
   - apiVersion: v1
     appVersion: "1.0"
-    created: "2020-08-28T14:21:25.097042424Z"
+    created: "2020-08-28T14:26:14.061684047Z"
     description: A Helm chart to deploy Spark shuffle service deamon set for Kubernetes
-    digest: 6f3beed38dfc29cc1d6b9efdccc0eda7a6c87cffbd91c0d584f5bb7a012f8215
+    digest: 8ac096d94af11b35eca182f84d024ff251b562af9b079474945e859b29193c82
     home: https://github.com/duyet/charts/tree/master/spark-shuffle-service
     maintainers:
     - email: me@duyet.net
@@ -62,4 +62,4 @@ entries:
     urls:
     - https://duyet.github.io/charts/.dist/spark-shuffle-0.1.0.tgz
     version: 0.1.0
-generated: "2020-08-28T14:21:25.08881679Z"
+generated: "2020-08-28T14:26:14.042211127Z"
