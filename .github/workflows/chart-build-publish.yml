@@ -23,7 +23,7 @@ jobs:
         command: lint
 
     - name: Helm build packages
-      run: ./build.sh
+      run: sudo ./build.sh
 
     - name: Commit files
       run: |
