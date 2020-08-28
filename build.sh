@@ -1,7 +1,7 @@
 #!/bin/bash
 set -x
 
-DIST_DIR=dist
+DIST_DIR=.dist
 
 helm repo add stable https://kubernetes-charts.storage.googleapis.com/
 helm repo add bitnami https://charts.bitnami.com/bitnami

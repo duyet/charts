@@ -30,7 +30,7 @@ jobs:
         git config --local user.email "action@github.com"
         git config --local user.name "Auto Release Bot"
         git status
-        git add dist index.yaml
+        git add .dist index.yaml
         git commit -m "[skip ci] Build and Publish Charts"
 
     - name: Push changes
