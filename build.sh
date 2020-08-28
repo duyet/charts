@@ -1,7 +1,7 @@
 #!/bin/bash
 set -x
 
-DIST_DIR=".dist"
+DIST_DIR=dist
 
 for chart in ./*; do
     if [ -f "$chart/Chart.yaml" ]; then
