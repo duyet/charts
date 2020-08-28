@@ -6,7 +6,7 @@ version: 1.0.0
 icon: https://github.com/lyft/amundsen/blob/master/docs/img/logos/amundsen_logo_on_light.svg
 home: https://github.com/lyft/amundsen
 maintainers:
-  - name: Duyet Le
+  - name: duyet
     email: me@duyet.net
 sources:
   - https://github.com/lyft/amundsen
