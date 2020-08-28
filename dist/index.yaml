@@ -3,13 +3,13 @@ entries:
   commento:
   - apiVersion: v1
     appVersion: "1.0"
-    created: "2020-08-28T11:18:38.234613151Z"
+    created: "2020-08-28T11:22:40.373420058Z"
     dependencies:
     - name: postgresql
       repository: https://charts.bitnami.com/bitnami
       version: 9.3.3
     description: A Helm chart to deploy Commento.io
-    digest: a8cae5886cfbe9efa237d0c9aa49871366fb9e0224e74de7b87aaa77a495d042
+    digest: fa9500b441872a5bc34fbf7cce65fbb2880d40b9c2e07adf794970c998a185bb
     home: https://github.com/duyet/charts/tree/master/commento
     maintainers:
     - email: me@duyet.net
@@ -22,9 +22,9 @@ entries:
   spark-shuffle:
   - apiVersion: v1
     appVersion: "1.0"
-    created: "2020-08-28T11:18:38.23501105Z"
+    created: "2020-08-28T11:22:40.373792464Z"
     description: A Helm chart to deploy Spark shuffle service deamon set for Kubernetes
-    digest: bf501a62cecb6011358cac261b948e908bad69f173c25d42e306045022d45a99
+    digest: 676926a28a3c60e82692628d4b7b96a07114e677b1592c70eb7d035e9dcf1fb2
     home: https://github.com/duyet/charts/tree/master/spark-shuffle-service
     maintainers:
     - email: me@duyet.net
@@ -34,4 +34,4 @@ entries:
     urls:
     - https://duyet.github.io/charts/dist/spark-shuffle-0.1.0.tgz
     version: 0.1.0
-generated: "2020-08-28T11:18:38.22915656Z"
+generated: "2020-08-28T11:22:40.36896378Z"
