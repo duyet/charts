@@ -29,7 +29,8 @@ jobs:
       run: |
         git config --local user.email "action@github.com"
         git config --local user.name "Auto Release Bot"
-        git commit -am "[skip ci] Build and Publish Charts"
+        git add .
+        git commit -m "[skip ci] Build and Publish Charts"
 
     - name: Push changes
       uses: ad-m/github-push-action@master
