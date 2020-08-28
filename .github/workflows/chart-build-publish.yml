@@ -4,7 +4,6 @@ on:
   push:
     branches:
     - master
-    - feature/auto-release
 
 jobs:
   chart-lint-build-publish:
@@ -36,4 +35,4 @@ jobs:
       uses: ad-m/github-push-action@master
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        branch: feature/auto-release
+        branch: master
