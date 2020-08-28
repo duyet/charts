@@ -1,4 +1,4 @@
-name: Helm Template Validation
+name: Chart Lint
 
 on: [push, pull_request]
 
@@ -7,10 +7,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-      
+
     - name: Fetch history
       run: git fetch --prune --unshallow
-      
+
     - name: Run chart-testing (lint)
       id: lint
       uses: helm/chart-testing-action@v1.0.0-rc.1
@@ -26,5 +26,5 @@ jobs:
     - name: Run chart-testing (install)
       uses: helm/chart-testing-action@v1.0.0-rc.1
       with:
-        config: .github/ct-install.yaml 
+        config: .github/ct-install.yaml
         command: install
