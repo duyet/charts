@@ -8,7 +8,6 @@ helm repo add bitnami https://charts.bitnami.com/bitnami
 
 for chart in ./*; do
     if [ -f "$chart/Chart.yaml" ]; then
-        mkdir $chart/charts
         helm dependency update $chart
         helm dependency build $chart
         helm package $chart -d $DIST_DIR
