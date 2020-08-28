@@ -28,7 +28,7 @@ jobs:
     - name: Commit files
       run: |
         git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action"
+        git config --local user.name "Auto Release Bot"
         git add dist index.yaml
         git commit -m "[skip ci] Auto Build Helm Package"
 
