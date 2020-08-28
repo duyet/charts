@@ -1,0 +1,4 @@
+Created a Commento at {{ .Values.originUrl }} with following Pod labels:
+ {{- range $key, $val := .Values.shufflePodLabels }}
+ {{ $key }}: {{ $val }}
+ {{- end }}

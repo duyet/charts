@@ -1,0 +1,117 @@
+image:
+  repository: registry.gitlab.com/commento/commento
+  tag: v1.8.0
+  pullPolicy: IfNotPresent
+
+# COMMENTO_ORIGIN
+# This should be set to the subdomain or the IP address hosting Commento
+# All API requests will go to this server. This may include subdirectories
+# if Commento is hosted behind a reverse proxy, for example.
+# Include the protocol in the value to use HTTP/HTTPS.
+# E.g. http://commento.example.com
+originUrl: ''
+
+# Pod resources
+resources:
+  limits:
+    cpu: 200m
+    memory: 256Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+podAnnotations:
+
+# Extra environments
+extraEnvs: []
+
+# Existing secret to use for PostgreSQL passwords
+existingSecret:
+
+# Used to disable new dashboard registrations
+dashboardRegistration: true
+
+# SMTP credentials and configuration the server should use to send emails.
+# By default, all settings are empty and email features such as email
+# notification and reset password are turned off.
+smtp:
+  host:
+  port:
+  username:
+  password:
+  fromAddress:
+
+# Akismet API key.
+# Create a key in your Akismet dashboard <https://akismet.com/account/>.
+# By default, Akismet integration is turned off when this value is left empty.
+akismetKey:
+
+# Google OAuth configuration
+# Create a new project in the Google developer console
+# to generate a set of credentials: https://console.developers.google.com/project
+googleOAuth:
+  enabled: false
+  key:
+  secret:
+
+# GitHub OAuth configuration.
+# Create a new OAuth app in GitHub developer settings
+# to generate a set of credentials: https://github.com/settings/developers
+githubOAuth:
+  enabled: false
+  key:
+  secret:
+
+# Gitlab OAuth configuration.
+# Create a new application in your GitLab settings
+# to generate a set of credentials: https://gitlab.com/profile/applications
+gitlabOAuth:
+  enabled: false
+  key:
+  secret:
+
+# Twitter OAuth configuration.
+# Create an app in the Twitter developer dashboard
+# to generate a set of credentials: https://developer.twitter.com/en/apps
+twitterOAuth:
+  enabled: false
+  key:
+  secret:
+
+# CDN
+# Useful if you'd like to use a CDN with Commento
+cdn:
+  enabled: false
+  # e.g. cdnPrefix: http://d111111abcdef8.cloudfront.net
+  cdnPrefix:
+
+# Parameters of the PostgreSQL chart: https://hub.helm.sh/charts/bitnami/postgresql
+postgresql:
+  volumePermissions:
+    enabled: false
+  replication:
+    enabled: false
+  persistence:
+    enabled: false
+
+  # Postgres username
+  postgresqlUsername: postgres
+
+  # Postgres password
+  # WARNING: you should NOT use this, instead specify `postgresql.existingSecret`
+  postgresqlPassword: commento
+
+  # Postgres database name
+  postgresqlDatabase: commento
+
+  # This existing secret to use for PostgreSQL passwords
+  existingSecret:
+
+  # Extra envs and extra env configmap for postgres
+  extraEnv: []
+  extraEnvVarsCM:
+
+# Define nodeSelector, affinity, tolerations
+nodeSelector: {}
+affinity: {}
+tolerations: {}
