@@ -1,5 +1,5 @@
-nameOverride: ''
-fullNameOverride: ''
+nameOverride: ""
+fullNameOverride: ""
 
 ## LONG_RANDOM_STRING -- A long random string. You should probably provide your own. This is needed for OIDC.
 ##
@@ -120,7 +120,7 @@ frontEnd:
     ## frontEnd.env.OIDC_CLIENT_ID -- The client id for OIDC.
     OIDC_CLIENT_ID:
     ## frontEnd.env.OIDC_CLIENT_SECRET -- The client secret for OIDC.
-    OIDC_CLIENT_SECRET: ''
+    OIDC_CLIENT_SECRET: ""
     ## frontEnd.env.OIDC_ORG_URL -- The organization URL for OIDC.
     OIDC_ORG_URL:
     ## frontEnd.env.OIDC_AUTH_SERVER_ID -- The authorization server id for OIDC.
@@ -221,9 +221,9 @@ neo4j:
     # neo4j.backup.enabled - Whether to include the backup neo4j cron pod. If set to true, s3Path is required.
     enabled: false
     ## neo4j.backup.s3Path -- The s3path to write to for backups.
-    s3Path: 's3://dev/null'
+    s3Path: "s3://dev/null"
     ## neo4j.backup.schedule -- The schedule to run backups on. Defaults to hourly.
-    schedule: '0 * * * *'
+    schedule: "0 * * * *"
     podAnnotations: {}
 
   nodeSelector: {}
