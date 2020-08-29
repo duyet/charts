@@ -4,7 +4,7 @@ on:
   push:
     branches:
     - master
-    - feature/auto-release
+    - fix/auto-release
 
 jobs:
   chart-lint-build-publish:
@@ -30,12 +30,9 @@ jobs:
         git config --local user.email "action@github.com"
         git config --local user.name "Auto Release Bot"
         git status
-        git add .dist index.yaml
+        git add .dist
         git commit -m "[skip ci] Build and Publish Charts"
 
-    - name: Push changes
-      uses: ad-m/github-push-action@master
-      if: github.ref == 'refs/heads/master'
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        branch: master
+        INPUT_BRANCH=gh-pages
+        REMOTE_REPO="https://${GITHUB_ACTOR}:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git"
+        git subtree push --prefix .dist "${REMOTE_REPO}" HEAD:${INPUT_BRANCH} --follow-tags --force

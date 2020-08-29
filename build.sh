@@ -14,5 +14,5 @@ for chart in ./*; do
     fi
 done
 
-helm repo index --url https://duyet.github.io/charts/$DIST_DIR $DIST_DIR
-cp $DIST_DIR/index.yaml ./index.yaml
+helm repo index --url https://duyet.github.io/charts $DIST_DIR
+cp README.md $DIST_DIR/
