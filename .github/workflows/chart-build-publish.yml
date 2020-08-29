@@ -4,7 +4,7 @@ on:
   push:
     branches:
     - master
-    - feature/auto-release
+    - fix/auto-release
 
 jobs:
   chart-lint-build-publish:
@@ -27,15 +27,16 @@ jobs:
 
     - name: Commit files
       run: |
+        DIST_DIR=.dist
+        CURRENT_BRANCH=${GITHUB_REF#refs/heads/}
+        TARGET_BRANCH=gh-pages
+        REMOTE_REPO="https://${GITHUB_ACTOR}:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git"
+
         git config --local user.email "action@github.com"
         git config --local user.name "Auto Release Bot"
         git status
-        git add .dist index.yaml
+        git add $DIST_DIR
         git commit -m "[skip ci] Build and Publish Charts"
-
-    - name: Push changes
-      uses: ad-m/github-push-action@master
-      if: github.ref == 'refs/heads/master'
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        branch: master
+        git push $REMOTE_REPO $CURRENT_BRANCH
+        git subtree split --prefix $DIST_DIR -b $TARGET_BRANCH
+        git push -f ${REMOTE_REPO} $TARGET_BRANCH:$TARGET_BRANCH
