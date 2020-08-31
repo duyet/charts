@@ -16,3 +16,12 @@ Forked from [cradlepoint/kubernetes-helm-chart-pgbouncer](https://github.com/cra
       # "md5" + md5(password + username)
       postgres: md579d918f6faa49bcd55bec25e79d87b56
     ```
+
+# TL;DR
+
+To install the chart with the release name `my-release`:
+
+```shell
+$ helm repo add duyet https://duyet.github.io/charts
+$ helm install my-release duyet/pgbouncer 
+```
