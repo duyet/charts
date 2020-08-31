@@ -1,0 +1,62 @@
+# Deployment values for pgbouncer
+replicaCount: 1
+internalPort: 5432
+antiAffinity: soft
+# optionally define nodeAffinity
+nodeAffinity: {}
+# optionally define tolerations
+tolerations: []
+
+budget:
+  # PodDisruptionBudget spec.minAvailable
+  minAvailable: 0
+
+image:
+  repository: cradlepoint/pgbouncer
+  tag: latest
+  pullPolicy: Always
+
+databases: {}
+#  name:
+#    host: host
+#    port: port
+#    user: user
+#    dbname: dbname
+
+users: {}
+#  username: password
+
+connectionLimits:
+  maxClientConn: 200
+  defaultPoolSize: 200
+  minPoolSize: 15
+  reservePoolSize: 25
+  reservePoolTimeout: 5
+
+spec:
+  # Add custom pod labels here
+  labels: {}
+  annotations:
+    {}
+    # Add custom pod annotations here
+    # Annotations are converted to a JSON string and run through
+    # the helm `tpl` function. Then converted back to a map and
+    # rendered as YAML. This allows usage of go template directives
+    # in your annotations.
+
+# Add custom deployment labels here
+labels: {}
+
+logConnections: 0
+logDisconnections: 0
+logStats: 0
+logPoolerErrors: 1
+verbose: 0
+statsPeriod: 60
+
+# add key: value map entries to customSettings to be added to pbgouncer.ini [pgbouncer] section
+customSettings: {}
+
+global:
+  # optionally use namespace as dbname
+  namespacedDatabases: false
