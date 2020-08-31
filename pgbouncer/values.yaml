@@ -26,6 +26,12 @@ databases: {}
 users: {}
 #  username: password
 
+# Custom pgbouncer.ini
+config:
+  databases: {}
+  pgbouncer:
+    auth_type: plain
+
 connectionLimits:
   maxClientConn: 200
   defaultPoolSize: 200
