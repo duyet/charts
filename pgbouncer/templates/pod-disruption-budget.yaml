@@ -2,16 +2,16 @@
 apiVersion: policy/v1beta1
 kind: PodDisruptionBudget
 metadata:
-  name: "{{ template "pgbouncer.fullname" . }}"
+  name: {{ include "pgbouncer.fullname" . }}
   labels:
-    app: {{ template "pgbouncer.fullname" . }}
-    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
-    heritage: {{ .Release.Service }}
-    release: {{ .Release.Name }}
+    app.kubernetes.io/name: {{ include "pgbouncer.fullname" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    helm.sh/chart: {{ include "pgbouncer.chart" . }}
 spec:
   selector:
     matchLabels:
-      app: {{ template "pgbouncer.fullname" . }}
-      release: {{ .Release.Name }}
+      app.kubernetes.io/name: {{ include "pgbouncer.fullname" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
   minAvailable: {{ .Values.budget.minAvailable }}
 {{- end -}}
