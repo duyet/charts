@@ -1,8 +1,7 @@
 nameOverride: ""
 fullNameOverride: ""
 
-## LONG_RANDOM_STRING -- A long random string. You should probably provide your own. This is needed for OIDC.
-##
+# LONG_RANDOM_STRING -- A long random string. You should probably provide your own. This is needed for OIDC.
 LONG_RANDOM_STRING: 1234
 
 nodeSelector: {}
@@ -10,29 +9,27 @@ affinity: {}
 tolerations: []
 podAnnotations: {}
 
-##
-## Configuration related to the search service.
-##
+# Configuration related to the search service.
 search:
-  ## search.serviceName -- The search service name.
+  # search.serviceName -- The search service name.
   serviceName: search
 
-  ## search.serviceType -- The search service type. See service types [ref](https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types)
+  # search.serviceType -- The search service type. See service types [ref](https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types)
   serviceType: ClusterIP
 
-  ## search.elasticsearchEndpoint -- The name of the service hosting elasticsearch on your cluster, if you bring your own. You should only need to change this, if you don't use the version in this chart.
+  # search.elasticsearchEndpoint -- The name of the service hosting elasticsearch on your cluster, if you bring your own. You should only need to change this, if you don't use the version in this chart.
   elasticsearchEndpoint:
 
-  ## search.image -- The image of the search container.
+  # search.image -- The image of the search container.
   image: amundsendev/amundsen-search
 
-  ## search.imageTag -- The image tag of the search container.
+  # search.imageTag -- The image tag of the search container.
   imageTag: 2.4.0
 
-  ## search.replicas -- How many replicas of the search service to run.
+  # search.replicas -- How many replicas of the search service to run.
   replicas: 1
 
-  ## search.resources -- See pod resourcing [ref](https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/)
+  # search.resources -- See pod resourcing [ref](https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/)
   resources: {}
   #  limits:
   #    cpu: 2
@@ -48,28 +45,28 @@ search:
   podAnnotations: {}
 
 ##
-## Configuration related to the metadata service.
+# Configuration related to the metadata service.
 ##
 metadata:
-  ## metadata.serviceName -- The metadata service name.
+  # metadata.serviceName -- The metadata service name.
   serviceName: metadata
 
-  ## metadata.serviceType -- The metadata service type. See service types [ref](https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types)
+  # metadata.serviceType -- The metadata service type. See service types [ref](https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types)
   serviceType: ClusterIP
 
-  ## metadata.neo4jEndpoint -- The name of the service hosting neo4j on your cluster, if you bring your own. You should only need to change this, if you don't use the version in this chart.
+  # metadata.neo4jEndpoint -- The name of the service hosting neo4j on your cluster, if you bring your own. You should only need to change this, if you don't use the version in this chart.
   neo4jEndpoint:
 
-  ## metadata.image -- The image of the metadata container.
+  # metadata.image -- The image of the metadata container.
   image: amundsendev/amundsen-metadata
 
-  ## metadata.imageTag -- The image tag of the metadata container.
+  # metadata.imageTag -- The image tag of the metadata container.
   imageTag: 2.5.4
 
-  ## metadata.replicas -- How many replicas of the metadata service to run.
+  # metadata.replicas -- How many replicas of the metadata service to run.
   replicas: 1
 
-  ## metadata.resources -- See pod resourcing [ref](https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/)
+  # metadata.resources -- See pod resourcing [ref](https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/)
   resources: {}
   #  limits:
   #    cpu: 2
@@ -85,61 +82,61 @@ metadata:
   podAnnotations: {}
 
 ##
-## Configuration related to the frontEnd service.
+# Configuration related to the frontEnd service.
 ##
 frontEnd:
-  ## frontEnd.serviceName -- The frontend service name.
+  # frontEnd.serviceName -- The frontend service name.
   serviceName: frontend
 
-  ## frontEnd.serviceType -- The frontend service type. See service types [ref](https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types)
+  # frontEnd.serviceType -- The frontend service type. See service types [ref](https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types)
   serviceType: ClusterIP
 
-  ## frontEnd.image -- The image of the frontend container.
+  # frontEnd.image -- The image of the frontend container.
   image: amundsendev/amundsen-frontend
 
-  ## frontEnd.imageTag -- The image tag of the frontend container.
+  # frontEnd.imageTag -- The image tag of the frontend container.
   imageTag: 2.1.1
 
-  ## frontEnd.servicePort -- The port the frontend service will be exposed on via the loadbalancer.
+  # frontEnd.servicePort -- The port the frontend service will be exposed on via the loadbalancer.
   servicePort: 80
 
-  ## frontEnd.replicas -- How many replicas of the frontend service to run.
+  # frontEnd.replicas -- How many replicas of the frontend service to run.
   replicas: 1
 
-  ## frontEnd.baseUrl -- used by notifications util to provide links to amundsen pages in emails.
+  # frontEnd.baseUrl -- used by notifications util to provide links to amundsen pages in emails.
   baseUrl: http://localhost
 
-  ## frontEnd.oidcEnabled -- To enable auth via OIDC, set this to true.
+  # frontEnd.oidcEnabled -- To enable auth via OIDC, set this to true.
   oidcEnabled: false
 
-  ## frontEnd.createOidcSecret -- OIDC needs some configuration. If you want the chart to make your secrets, set this to true and set the next four values. If you don't want to configure your secrets via helm, you can still use the amundsen-oidc-config.yaml as a template
+  # frontEnd.createOidcSecret -- OIDC needs some configuration. If you want the chart to make your secrets, set this to true and set the next four values. If you don't want to configure your secrets via helm, you can still use the amundsen-oidc-config.yaml as a template
   createOidcSecret: false
 
-  ## frontEnd.env --  Environments
+  # frontEnd.env --  Environments
   env:
-    ## frontEnd.env.OIDC_CLIENT_ID -- The client id for OIDC.
+    # frontEnd.env.OIDC_CLIENT_ID -- The client id for OIDC.
     OIDC_CLIENT_ID:
-    ## frontEnd.env.OIDC_CLIENT_SECRET -- The client secret for OIDC.
+    # frontEnd.env.OIDC_CLIENT_SECRET -- The client secret for OIDC.
     OIDC_CLIENT_SECRET: ""
-    ## frontEnd.env.OIDC_ORG_URL -- The organization URL for OIDC.
+    # frontEnd.env.OIDC_ORG_URL -- The organization URL for OIDC.
     OIDC_ORG_URL:
-    ## frontEnd.env.OIDC_AUTH_SERVER_ID -- The authorization server id for OIDC.
+    # frontEnd.env.OIDC_AUTH_SERVER_ID -- The authorization server id for OIDC.
     OIDC_AUTH_SERVER_ID:
-    ## frontEnd.env.PREVIEW_DATA_DB_CONN_STRING
+    # frontEnd.env.PREVIEW_DATA_DB_CONN_STRING
     PREVIEW_DATA_DB_CONN_STRING:
-    ## frontEnd.env.PREVIEW_DATA_STORAGE_SCHEMA
+    # frontEnd.env.PREVIEW_DATA_STORAGE_SCHEMA
     PREVIEW_DATA_STORAGE_SCHEMA:
-    ## frontEnd.env.PREVIEW_DATA_STORAGE_TABLE_NAME
+    # frontEnd.env.PREVIEW_DATA_STORAGE_TABLE_NAME
     PREVIEW_DATA_STORAGE_TABLE_NAME:
 
-  ## Name of a ConfigMap containing extra env vars
+  # Name of a ConfigMap containing extra env vars
   ##
   extraEnvVarsCM:
-  ## Name of a Secret containing extra env vars
+  # Name of a Secret containing extra env vars
   ##
   extraEnvVarsSecret:
 
-  ## frontEnd.resources -- See pod resourcing [ref](https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/)
+  # frontEnd.resources -- See pod resourcing [ref](https://kubernetes.io/docs/concepts/configuration/manage-compute-resources-container/)
   resources: {}
   #  limits:
   #    cpu: 2
@@ -168,24 +165,24 @@ frontEnd:
     #      - frontend.example.com
 
 ##
-## Configuration related to neo4j.
-## https://github.com/neo4j-contrib/neo4j-helm/blob/master/values.yaml
+# Configuration related to neo4j.
+# https://github.com/neo4j-contrib/neo4j-helm/blob/master/values.yaml
 ##
 neo4j:
-  ## neo4j.enabled
+  # neo4j.enabled
   enabled: true
 
-  ## neo4j.neo4jEndpoint -- Use external neo4j endpoint
+  # neo4j.neo4jEndpoint -- Use external neo4j endpoint
   neo4jEndpoint:
 
-  ## neo4j.version -- The neo4j application version used by amundsen.
+  # neo4j.version -- The neo4j application version used by amundsen.
   version: 3.3.0
 
-  ## Use password authentication
+  # Use password authentication
   authEnabled: false
 
-  ## Specify password for neo4j user
-  ## Defaults to a random 10-character alphanumeric string if not set and authEnabled is true
+  # Specify password for neo4j user
+  # Defaults to a random 10-character alphanumeric string if not set and authEnabled is true
   # neo4jPassword:
 
   # neo4j.resources
@@ -197,18 +194,18 @@ neo4j:
   #    cpu: 1
   #    memory: 1Gi
 
-  ## neo4j.config -- Neo4j application specific configuration. This type of configuration is why the charts/stable version is not used. See [ref](https://github.com/helm/charts/issues/21439)
+  # neo4j.config -- Neo4j application specific configuration. This type of configuration is why the charts/stable version is not used. See [ref](https://github.com/helm/charts/issues/21439)
   config:
-    ## neo4j.config.dbms -- dbms config for neo4j
+    # neo4j.config.dbms -- dbms config for neo4j
     dbms:
-      ## neo4j.config.dbms.heap_initial_size -- the initial java heap for neo4j
+      # neo4j.config.dbms.heap_initial_size -- the initial java heap for neo4j
       heap_initial_size: 1G
-      ## neo4j.config.dbms.heap_max_size -- the max java heap for neo4j
+      # neo4j.config.dbms.heap_max_size -- the max java heap for neo4j
       heap_max_size: 2G
-      ## neo4j.config.dbms.pagecache_size -- the page cache size for neo4j
+      # neo4j.config.dbms.pagecache_size -- the page cache size for neo4j
       pagecache_size: 2G
 
-  ## neo4j.persistence -- Neo4j persistence. Turn this on to keep your data between pod crashes, etc. This is also needed for backups.
+  # neo4j.persistence -- Neo4j persistence. Turn this on to keep your data between pod crashes, etc. This is also needed for backups.
   persistence: {}
   #  storageClass: gp2
   #  size: 10Gi
@@ -216,13 +213,13 @@ neo4j:
   #  efs:
   #    dns:
 
-  ## neo4j.backup -- If enabled is set to true, make sure and set the s3 path as well.
+  # neo4j.backup -- If enabled is set to true, make sure and set the s3 path as well.
   backup:
     # neo4j.backup.enabled - Whether to include the backup neo4j cron pod. If set to true, s3Path is required.
     enabled: false
-    ## neo4j.backup.s3Path -- The s3path to write to for backups.
+    # neo4j.backup.s3Path -- The s3path to write to for backups.
     s3Path: "s3://dev/null"
-    ## neo4j.backup.schedule -- The schedule to run backups on. Defaults to hourly.
+    # neo4j.backup.schedule -- The schedule to run backups on. Defaults to hourly.
     schedule: "0 * * * *"
     podAnnotations: {}
 
@@ -232,32 +229,32 @@ neo4j:
   annotations: {}
   podAnnotations: {}
 
-##
-## Configuration related to elasticsearch.
-##
-## To add values to dependent charts, prefix the value with the chart name (e.g. elasticsearch)
-## By default, the ES chart runs with 3,3,2 nodes for master, data, client. Amundsen likely does not need so much,
-## so, this has been tuned down to 1,1,1.
-##
+#
+# Configuration related to elasticsearch.
+#
+# To add values to dependent charts, prefix the value with the chart name (e.g. elasticsearch)
+# By default, the ES chart runs with 3,3,2 nodes for master, data, client. Amundsen likely does not need so much,
+# so, this has been tuned down to 1,1,1.
+#
 elasticsearch:
   # elasticsearch.enabled -- set this to false, if you want to provide your own ES instance.
   enabled: true
   cluster:
     env:
-      ## elasticsearch.cluster.env.MINIMUM_MASTER_NODES -- required to match master.replicas
+      # elasticsearch.cluster.env.MINIMUM_MASTER_NODES -- required to match master.replicas
       MINIMUM_MASTER_NODES: 1
-      ## elasticsearch.cluster.env.EXPECTED_MASTER_NODES -- required to match master.replicas
+      # elasticsearch.cluster.env.EXPECTED_MASTER_NODES -- required to match master.replicas
       EXPECTED_MASTER_NODES: 1
-      ## elasticsearch.cluster.env.RECOVER_AFTER_MASTER_NODES -- required to match master.replicas
+      # elasticsearch.cluster.env.RECOVER_AFTER_MASTER_NODES -- required to match master.replicas
       RECOVER_AFTER_MASTER_NODES: 1
   master:
-    ## elasticsearch.master.replicas -- only running amundsen on 1 master replica
+    # elasticsearch.master.replicas -- only running amundsen on 1 master replica
     replicas: 1
   data:
-    ## elasticsearch.data.replicas -- only running amundsen on 1 data replica
+    # elasticsearch.data.replicas -- only running amundsen on 1 data replica
     replicas: 1
   client:
-    ## elasticsearch.client.replicas -- only running amundsen on 1 client replica
+    # elasticsearch.client.replicas -- only running amundsen on 1 client replica
     replicas: 1
   #  serviceType: LoadBalancer
   #  serviceAnnotations:
