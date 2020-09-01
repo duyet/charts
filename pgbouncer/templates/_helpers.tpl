@@ -16,8 +16,8 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 {{- end -}}
 
 {{/*
-The app label for the pgbouncer Deployment.  This is used as a selector for Pods in its Deployment.
+Create chart name and version as used by the chart label.
 */}}
-{{- define "pgbouncer.appLabel" -}}
-app: {{ template "pgbouncer.fullname" . -}}
+{{- define "pgbouncer.chart" -}}
+{{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
