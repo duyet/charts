@@ -3,7 +3,7 @@ entries:
   amundsen:
   - apiVersion: v1
     appVersion: "1.0"
-    created: "2020-09-01T09:36:12.397352931Z"
+    created: "2020-09-07T03:14:19.779764616Z"
     dependencies:
     - condition: elasticsearch.enabled
       name: elasticsearch
@@ -11,7 +11,7 @@ entries:
       version: 1.32.5
     description: Amundsen is a metadata driven application for improving the productivity
       of data analysts, data scientists and engineers when interacting with data.
-    digest: 459231f3f19a233d880114f408453977b7ce4a1ca5b8ea83f183a5725d067fd4
+    digest: 190c53a7c8dfc2b847be2573701c491fad6ca891ac7ec01778ddcdbf2d25e459
     home: https://github.com/lyft/amundsen
     icon: https://github.com/lyft/amundsen/blob/master/docs/img/logos/amundsen_logo_on_light.svg
     keywords:
@@ -31,13 +31,13 @@ entries:
   commento:
   - apiVersion: v1
     appVersion: "1.0"
-    created: "2020-09-01T09:36:12.401805454Z"
+    created: "2020-09-07T03:14:19.782739316Z"
     dependencies:
     - name: postgresql
       repository: https://charts.bitnami.com/bitnami
       version: 9.3.3
     description: A Helm chart to deploy Commento.io
-    digest: 74dee89e73637598e55bf8d5ca4869ed442e7a0b30c308c0ae84d696c2225e82
+    digest: fb05af7f95a78add1d513f87be463780812608efecd3f459a6f9f5ed34f8e6c4
     home: https://github.com/duyet/charts/tree/master/commento
     maintainers:
     - email: me@duyet.net
@@ -50,10 +50,10 @@ entries:
   pgbouncer:
   - apiVersion: v1
     appVersion: "1.0"
-    created: "2020-09-01T09:36:12.402460672Z"
+    created: "2020-09-07T03:14:19.783229632Z"
     description: PgBouncer chart, folked from https://github.com/cradlepoint/kubernetes-helm-chart-pgbouncer
       with some custom values
-    digest: 77e2f0f59f76844a9402d830ee82218e95fa8bec997b3d51c6a2707979475083
+    digest: 5e0ee585db3b0d3fd2aa83dcd5dfbcb073bfb497694ccba0ddead93560f86642
     home: https://github.com/duyet/charts/tree/master/pgbouncer
     maintainers:
     - email: me@duyet.net
@@ -66,9 +66,9 @@ entries:
   spark-shuffle:
   - apiVersion: v1
     appVersion: "1.0"
-    created: "2020-09-01T09:36:12.402843483Z"
+    created: "2020-09-07T03:14:19.783490441Z"
     description: A Helm chart to deploy Spark shuffle service deamon set for Kubernetes
-    digest: bf9f37a790cee8a3f95ca086e1f9d24c5cf0bb6513bfcc98355ada3ad9677391
+    digest: 66dd1ac5a67244c8efe4b797f79825ac3d8bafd2a2f4eb20953593a784dd9f13
     home: https://github.com/duyet/charts/tree/master/spark-shuffle-service
     maintainers:
     - email: me@duyet.net
@@ -78,4 +78,4 @@ entries:
     urls:
     - https://duyet.github.io/charts/spark-shuffle-0.1.0.tgz
     version: 0.1.0
-generated: "2020-09-01T09:36:12.393358921Z"
+generated: "2020-09-07T03:14:19.746471498Z"
