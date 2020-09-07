@@ -1,9 +1,11 @@
 image:
+  # image.repository -- The image of the commento container.
   repository: registry.gitlab.com/commento/commento
+  # image.tag -- The image tag.
   tag: v1.8.0
   pullPolicy: IfNotPresent
 
-# COMMENTO_ORIGIN
+# originUrl -- COMMENTO_ORIGIN
 # This should be set to the subdomain or the IP address hosting Commento
 # All API requests will go to this server. This may include subdirectories
 # if Commento is hosted behind a reverse proxy, for example.
@@ -11,7 +13,7 @@ image:
 # E.g. http://commento.example.com
 originUrl: ''
 
-# Pod resources
+# resources -- Pod resources
 resources:
   limits:
     cpu: 200m
@@ -20,18 +22,19 @@ resources:
     cpu: 100m
     memory: 128Mi
 
+# podAnnotations -- K8S Pod annotations
 podAnnotations:
 
-# Extra environments
+# extraEnvs -- Extra environments
 extraEnvs: []
 
-# Existing secret to use for PostgreSQL passwords
+# existingSecret -- Existing secret to use for PostgreSQL passwords
 existingSecret:
 
-# Used to disable new dashboard registrations
+# dashboardRegistration -- Used to disable new dashboard registrations
 dashboardRegistration: true
 
-# SMTP credentials and configuration the server should use to send emails.
+# smtp -- SMTP credentials and configuration the server should use to send emails.
 # By default, all settings are empty and email features such as email
 # notification and reset password are turned off.
 smtp:
@@ -41,12 +44,12 @@ smtp:
   password:
   fromAddress:
 
-# Akismet API key.
+# akismetKey -- Akismet API key.
 # Create a key in your Akismet dashboard <https://akismet.com/account/>.
 # By default, Akismet integration is turned off when this value is left empty.
 akismetKey:
 
-# Google OAuth configuration
+# googleOAuth -- Google OAuth configuration
 # Create a new project in the Google developer console
 # to generate a set of credentials: https://console.developers.google.com/project
 googleOAuth:
@@ -54,7 +57,7 @@ googleOAuth:
   key:
   secret:
 
-# GitHub OAuth configuration.
+# githubOAuth -- GitHub OAuth configuration.
 # Create a new OAuth app in GitHub developer settings
 # to generate a set of credentials: https://github.com/settings/developers
 githubOAuth:
@@ -62,7 +65,7 @@ githubOAuth:
   key:
   secret:
 
-# Gitlab OAuth configuration.
+# gitlabOAuth -- Gitlab OAuth configuration.
 # Create a new application in your GitLab settings
 # to generate a set of credentials: https://gitlab.com/profile/applications
 gitlabOAuth:
@@ -70,7 +73,7 @@ gitlabOAuth:
   key:
   secret:
 
-# Twitter OAuth configuration.
+# twitterOAuth -- Twitter OAuth configuration.
 # Create an app in the Twitter developer dashboard
 # to generate a set of credentials: https://developer.twitter.com/en/apps
 twitterOAuth:
@@ -78,37 +81,40 @@ twitterOAuth:
   key:
   secret:
 
-# CDN
-# Useful if you'd like to use a CDN with Commento
 cdn:
+  # cdn.enabled -- Enable CDN. Useful if you'd like to use a CDN with Commento
   enabled: false
-  # e.g. cdnPrefix: http://d111111abcdef8.cloudfront.net
+  # cdn.cdnPrefix -- CDN Prefix, e.g. cdnPrefix: http://d111111abcdef8.cloudfront.net
   cdnPrefix:
 
-# Parameters of the PostgreSQL chart: https://hub.helm.sh/charts/bitnami/postgresql
+# postgresql -- Parameters of the PostgreSQL chart: https://hub.helm.sh/charts/bitnami/postgresql
 postgresql:
   volumePermissions:
+    # postgresql.volumePermissions.enabled -- Enable Postgres volumn permissions
     enabled: false
   replication:
+    # postgresql.replication.enabled -- Enable Postgres replication
     enabled: false
   persistence:
+    # postgresql.replication.enabled -- Enable Postgres persistence
     enabled: false
 
-  # Postgres username
+  # postgresql.postgresqlUsername -- Postgres username
   postgresqlUsername: postgres
 
-  # Postgres password
+  # postgresql.postgresqlPassword -- Postgres password
   # WARNING: you should NOT use this, instead specify `postgresql.existingSecret`
   postgresqlPassword: commento
 
-  # Postgres database name
+  # postgresql.postgresqlDatabase -- Postgres database name
   postgresqlDatabase: commento
 
-  # This existing secret to use for PostgreSQL passwords
+  # postgresql.existingSecret -- This existing secret to use for PostgreSQL passwords
   existingSecret:
 
-  # Extra envs and extra env configmap for postgres
+  # postgresql.extraEnv -- Extra envs for postgres
   extraEnv: []
+  # postgresql.extraEnvVarsCM -- Extra env configmap for postgres
   extraEnvVarsCM:
 
 # Define nodeSelector, affinity, tolerations
