@@ -1,0 +1,16 @@
+{{- if .Values.database.persistence.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "applause-btn.fullname" . }}-pvc
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "applause-btn.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    - {{ default "ReadWriteOnce" .Values.database.persistence.accessMode }}
+  storageClassName: "{{ default "" .Values.database.persistence.storageClass }}"
+  resources:
+    requests:
+      storage: {{ default "3Gi" .Values.database.persistence.size }}
+{{- end }}

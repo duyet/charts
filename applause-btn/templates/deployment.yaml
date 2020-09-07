@@ -26,6 +26,12 @@ spec:
       {{- end }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      {{ if .Values.database.persistence.enabled }}
+      volumes:
+        - name: {{ include "applause-btn.fullname" . }}-storage
+          persistentVolumeClaim:
+            claimName: {{ include "applause-btn.fullname" . }}-pvc
+      {{ end }}
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
@@ -36,6 +42,11 @@ spec:
             - name: http
               containerPort: 3000
               protocol: TCP
+          env:
+          {{ with .Values.database.location }}
+            - name: DB_LOCATION
+              value: {{ . }}
+          {{ end }}
           livenessProbe:
             httpGet:
               path: /
@@ -46,6 +57,13 @@ spec:
               port: http
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+
+          {{ if .Values.database.persistence.enabled }}
+          volumeMounts:
+            - mountPath: {{ .Values.database.location | quote }}
+              name: {{ include "applause-btn.fullname" . }}-storage
+          {{ end }}
+
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

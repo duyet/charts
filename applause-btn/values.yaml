@@ -11,8 +11,12 @@ fullnameOverride: ""
 
 # Database
 database:
-  persistence: true
-  location: /tmp/bagder
+  persistence:
+    enabled: false
+    size: 3Gi
+    accessMode: ReadWriteOnce
+    storageClass: ""
+  location: /badger
 
 podAnnotations: {}
 
