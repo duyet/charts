@@ -1,0 +1,48 @@
+# applause-btn
+
+![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.0.0](https://img.shields.io/badge/AppVersion-1.0.0-informational?style=flat-square)
+
+A Helm chart of [Applause Button](https://github.com/duyet/applause-btn) for Kubernetes
+
+**Homepage:** <https://github.com/duyet/charts/tree/master/applause-btn>
+
+## Maintainers
+
+| Name | Email | Url |
+| ---- | ------ | --- |
+| duyet | me@duyet.net | https://github.com/duyet/ |
+
+## Values
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| affinity | object | `{}` |  |
+| autoscaling.enabled | bool | `false` |  |
+| autoscaling.maxReplicas | int | `100` |  |
+| autoscaling.minReplicas | int | `1` |  |
+| autoscaling.targetCPUUtilizationPercentage | int | `80` |  |
+| database.location | string | `"/badger"` | Badger DB loaction on Disk |
+| database.persistence.accessMode | string | `"ReadWriteOnce"` |  |
+| database.persistence.enabled | bool | `false` | enabling persistence for Badger DB |
+| database.persistence.size | string | `"3Gi"` | Badger DB size |
+| database.persistence.storageClass | string | `""` | Storage class for PV (e.g. gp2, standard, ...) |
+| fullnameOverride | string | `""` |  |
+| image.pullPolicy | string | `"IfNotPresent"` |  |
+| image.repository | string | `"duyetdev/applause-btn"` |  |
+| image.tag | string | `"latest"` |  |
+| imagePullSecrets | list | `[]` |  |
+| ingress.annotations | object | `{}` |  |
+| ingress.enabled | bool | `false` |  |
+| ingress.hosts[0].host | string | `"chart-example.local"` |  |
+| ingress.hosts[0].paths | list | `[]` |  |
+| ingress.tls | list | `[]` |  |
+| nameOverride | string | `""` |  |
+| nodeSelector | object | `{}` |  |
+| podAnnotations | object | `{}` | Pod annotations |
+| podSecurityContext | object | `{}` | Pod security context (e.g. `{fsGroup: 2000}`) |
+| replicaCount | int | `1` |  |
+| resources | object | `{}` |  |
+| securityContext | object | `{}` |  |
+| service.port | int | `3000` |  |
+| service.type | string | `"ClusterIP"` |  |
+| tolerations | list | `[]` |  |
