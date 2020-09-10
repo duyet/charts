@@ -3,7 +3,7 @@ entries:
   amundsen:
   - apiVersion: v1
     appVersion: "1.0"
-    created: "2020-09-08T05:17:12.665026063Z"
+    created: "2020-09-10T10:57:46.046058653Z"
     dependencies:
     - condition: elasticsearch.enabled
       name: elasticsearch
@@ -11,7 +11,7 @@ entries:
       version: 1.32.5
     description: Amundsen is a metadata driven application for improving the productivity
       of data analysts, data scientists and engineers when interacting with data.
-    digest: ec476d114acd6fea9a493cd9523d3b750a1f8ee862db23f5bd2b6eee2eeee16e
+    digest: b352f8f68dd7e3b2cc39cb393889352a9513020492a420c5852b7a27263d312d
     home: https://github.com/lyft/amundsen
     icon: https://github.com/lyft/amundsen/blob/master/docs/img/logos/amundsen_logo_on_light.svg
     keywords:
@@ -31,7 +31,23 @@ entries:
   applause-btn:
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2020-09-08T05:17:12.665704665Z"
+    created: "2020-09-10T10:57:46.047257254Z"
+    description: A Helm chart of [Applause Button](https://github.com/duyet/applause-btn)
+      for Kubernetes
+    digest: 48a087e2040b99da5eaf63b69539e635844cbc726abd725340c4c96fc291a889
+    home: https://github.com/duyet/charts/tree/master/applause-btn
+    maintainers:
+    - email: me@duyet.net
+      name: duyet
+      url: https://github.com/duyet/
+    name: applause-btn
+    type: application
+    urls:
+    - https://duyet.github.io/charts/applause-btn-0.1.1.tgz
+    version: 0.1.1
+  - apiVersion: v2
+    appVersion: 1.0.0
+    created: "2020-09-10T10:57:46.046641254Z"
     description: A Helm chart of [Applause Button](https://github.com/duyet/applause-btn)
       for Kubernetes
     digest: 3e19431e464322514b1fd9cd55a248692015edca0d9d6838e666e398460f1fa0
@@ -48,7 +64,7 @@ entries:
   commento:
   - apiVersion: v1
     appVersion: "1.0"
-    created: "2020-09-08T05:17:12.674777296Z"
+    created: "2020-09-10T10:57:46.056997964Z"
     dependencies:
     - name: postgresql
       repository: https://charts.bitnami.com/bitnami
@@ -66,13 +82,13 @@ entries:
     version: 0.1.0
   - apiVersion: v1
     appVersion: "1.0"
-    created: "2020-09-08T05:17:12.67006248Z"
+    created: "2020-09-10T10:57:46.051825159Z"
     dependencies:
     - name: postgresql
       repository: https://charts.bitnami.com/bitnami
       version: 9.3.3
     description: A Helm chart to deploy Commento.io
-    digest: 6e1a8ea53b145650931d4dc41ad476cfee367f844d85cdbb4dd4b947c3566e62
+    digest: a38fdf5c715b2222ca1805e10688586b5b97c9ad44dc5635720f88b07ab24de5
     home: https://github.com/duyet/charts/tree/master/commento
     maintainers:
     - email: me@duyet.net
@@ -85,10 +101,10 @@ entries:
   pgbouncer:
   - apiVersion: v1
     appVersion: "1.0"
-    created: "2020-09-08T05:17:12.675735699Z"
+    created: "2020-09-10T10:57:46.058240565Z"
     description: PgBouncer chart, folked from https://github.com/cradlepoint/kubernetes-helm-chart-pgbouncer
       with some custom values
-    digest: 160845004dfaaca84cec9146b49b5da5a54f22dda76e3144347e8d0737e35182
+    digest: f549cf30d415e038c880c54188a97f8991d91764982b25cfe268883c7d6f8b8b
     home: https://github.com/duyet/charts/tree/master/pgbouncer
     maintainers:
     - email: me@duyet.net
@@ -101,9 +117,9 @@ entries:
   spark-shuffle:
   - apiVersion: v1
     appVersion: "1.0"
-    created: "2020-09-08T05:17:12.6762119Z"
+    created: "2020-09-10T10:57:46.058644066Z"
     description: A Helm chart to deploy Spark shuffle service deamon set for Kubernetes
-    digest: c597224a031c8fdd3c54a84bdee35726be3c14660779118179fddb7d575f0c9d
+    digest: 2d75713e2947bfd0889c34a1da7c259289ddcc06aa981b0c0b75f6f17c7a8287
     home: https://github.com/duyet/charts/tree/master/spark-shuffle-service
     maintainers:
     - email: me@duyet.net
@@ -113,4 +129,4 @@ entries:
     urls:
     - https://duyet.github.io/charts/spark-shuffle-0.1.0.tgz
     version: 0.1.0
-generated: "2020-09-08T05:17:12.660225347Z"
+generated: "2020-09-10T10:57:46.042182049Z"
