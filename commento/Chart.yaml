@@ -3,7 +3,7 @@ appVersion: "1.0"
 description: A Helm chart to deploy Commento.io
 name: commento
 home: https://github.com/duyet/charts/tree/master/commento
-version: 0.1.0-rc1
+version: 0.1.0
 maintainers:
   - name: duyet
     email: me@duyet.net

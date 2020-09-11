@@ -14,6 +14,7 @@ image:
 originUrl: ''
 
 # resources -- Pod resources
+# @default -- ""
 resources:
   limits:
     cpu: 200m
@@ -37,11 +38,17 @@ dashboardRegistration: true
 # smtp -- SMTP credentials and configuration the server should use to send emails.
 # By default, all settings are empty and email features such as email
 # notification and reset password are turned off.
+# @default -- see below
 smtp:
+  # smtp.host -- (string) SMTP Host
   host:
+  # smtp.port -- (int) SMTP Port
   port:
+  # smtp.username -- (string) SMTP user
   username:
+  # smtp.password -- (string) SMTP password
   password:
+  # smtp.fromAddress -- (string) SMTP fromAddress
   fromAddress:
 
 # akismetKey -- Akismet API key.
@@ -49,34 +56,34 @@ smtp:
 # By default, Akismet integration is turned off when this value is left empty.
 akismetKey:
 
-# googleOAuth -- Google OAuth configuration
-# Create a new project in the Google developer console
-# to generate a set of credentials: https://console.developers.google.com/project
 googleOAuth:
+  # googleOAuth.enabled -- Google OAuth configuration
+  # Create a new project in the Google developer console
+  # to generate a set of credentials: https://console.developers.google.com/project
   enabled: false
   key:
   secret:
 
-# githubOAuth -- GitHub OAuth configuration.
-# Create a new OAuth app in GitHub developer settings
-# to generate a set of credentials: https://github.com/settings/developers
 githubOAuth:
+  # githubOAuth.enabled -- GitHub OAuth configuration.
+  # Create a new OAuth app in GitHub developer settings
+  # to generate a set of credentials: https://github.com/settings/developers
   enabled: false
   key:
   secret:
 
-# gitlabOAuth -- Gitlab OAuth configuration.
-# Create a new application in your GitLab settings
-# to generate a set of credentials: https://gitlab.com/profile/applications
 gitlabOAuth:
+  # gitlabOAuth.enabled -- Gitlab OAuth configuration.
+  # Create a new application in your GitLab settings
+  # to generate a set of credentials: https://gitlab.com/profile/applications
   enabled: false
   key:
   secret:
 
-# twitterOAuth -- Twitter OAuth configuration.
-# Create an app in the Twitter developer dashboard
-# to generate a set of credentials: https://developer.twitter.com/en/apps
 twitterOAuth:
+  # twitterOAuth.enabled -- Twitter OAuth configuration.
+  # Create an app in the Twitter developer dashboard
+  # to generate a set of credentials: https://developer.twitter.com/en/apps
   enabled: false
   key:
   secret:
