@@ -77,6 +77,6 @@ Return the appropriate apiVersion.
 {{- if semverCompare "<1.14-0" .Capabilities.KubeVersion.GitVersion -}}
 {{- print "apps/v1beta2" -}}
 {{- else -}}
-{{- print "apps/v1" -}}
+{{- print "v1" -}}
 {{- end -}}
 {{- end -}}
