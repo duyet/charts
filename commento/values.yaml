@@ -87,7 +87,7 @@ cdn:
   # cdn.cdnPrefix -- CDN Prefix, e.g. cdnPrefix: http://d111111abcdef8.cloudfront.net
   cdnPrefix:
 
-# postgresql -- Parameters of the PostgreSQL chart: https://hub.helm.sh/charts/bitnami/postgresql
+# Parameters of the PostgreSQL chart: https://hub.helm.sh/charts/bitnami/postgresql
 postgresql:
   volumePermissions:
     # postgresql.volumePermissions.enabled -- Enable Postgres volumn permissions
@@ -116,6 +116,24 @@ postgresql:
   extraEnv: []
   # postgresql.extraEnvVarsCM -- Extra env configmap for postgres
   extraEnvVarsCM:
+
+service:
+  type: ClusterIP
+  port: 8080
+
+# Ingress config
+ingress:
+  enabled: false
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: chart-example.local
+      paths: []
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
 
 # Define nodeSelector, affinity, tolerations
 nodeSelector: {}

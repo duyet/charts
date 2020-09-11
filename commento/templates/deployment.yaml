@@ -3,15 +3,11 @@ kind: Deployment
 metadata:
   name: {{ include "commento.fullname" . }}
   labels:
-    app.kubernetes.io/name: {{ include "commento.name" . }}
-    helm.sh/chart: {{ include "commento.chart" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
-    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    {{- include "commento.labels" . | nindent 4 }}
 spec:
   selector:
     matchLabels:
-      app.kubernetes.io/name: {{ include "commento.name" . }}
-      app.kubernetes.io/instance: {{ .Release.Name }}
+      {{- include "commento.selectorLabels" . | nindent 6 }}
   replicas: 1
   template:
     metadata:
@@ -20,8 +16,7 @@ spec:
         {{ toYaml .Values.podAnnotations | indent 8 | trim }}
       {{- end }}
       labels:
-        app.kubernetes.io/name: {{ include "commento.name" . }}
-        app.kubernetes.io/instance: {{ .Release.Name }}
+        {{- include "commento.selectorLabels" . | nindent 8 }}
     spec:
       {{- with .Values.nodeSelector }}
       nodeSelector:
