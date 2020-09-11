@@ -28,7 +28,7 @@ A Helm chart to deploy Commento.io
 | cdn.enabled | bool | `false` | Enable CDN. Useful if you'd like to use a CDN with Commento |
 | dashboardRegistration | bool | `true` | Used to disable new dashboard registrations |
 | existingSecret | string | `nil` | Existing secret to use for PostgreSQL passwords |
-| extraEnvs | list | `[]` | Extra environments |
+| extraEnvs | object | [] | Extra environments |
 | githubOAuth.enabled | bool | `false` | GitHub OAuth configuration. Create a new OAuth app in GitHub developer settings to generate a set of credentials: https://github.com/settings/developers |
 | githubOAuth.key | string | `nil` |  |
 | githubOAuth.secret | string | `nil` |  |
@@ -49,6 +49,7 @@ A Helm chart to deploy Commento.io
 | nodeSelector | object | `{}` |  |
 | originUrl | string | `""` | COMMENTO_ORIGIN This should be set to the subdomain or the IP address hosting Commento All API requests will go to this server. This may include subdirectories if Commento is hosted behind a reverse proxy, for example. Include the protocol in the value to use HTTP/HTTPS. E.g. http://commento.example.com |
 | podAnnotations | string | `nil` | K8S Pod annotations |
+| postgresql.enabled | bool | `true` | Enable postgresql |
 | postgresql.existingSecret | string | `nil` | This existing secret to use for PostgreSQL passwords |
 | postgresql.extraEnv | list | `[]` | Extra envs for postgres |
 | postgresql.extraEnvVarsCM | string | `nil` | Extra env configmap for postgres |

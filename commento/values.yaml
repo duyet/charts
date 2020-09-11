@@ -27,7 +27,10 @@ resources:
 podAnnotations:
 
 # extraEnvs -- Extra environments
-extraEnvs: []
+# @default -- []
+extraEnvs:
+  # Set COMMENTO_POSTGRES if you disabled postgresql and use your own instead
+  COMMENTO_POSTGRES: ""
 
 # existingSecret -- Existing secret to use for PostgreSQL passwords
 existingSecret:
@@ -96,6 +99,9 @@ cdn:
 
 # Parameters of the PostgreSQL chart: https://hub.helm.sh/charts/bitnami/postgresql
 postgresql:
+  # postgresql.enabled -- Enable postgresql
+  enabled: true
+
   volumePermissions:
     # postgresql.volumePermissions.enabled -- Enable Postgres volumn permissions
     enabled: false
