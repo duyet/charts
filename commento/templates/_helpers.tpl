@@ -48,3 +48,35 @@ Return true if a secret object should be created
     {{- true -}}
 {{- end -}}
 {{- end -}}
+
+{{/*
+Common labels
+*/}}
+{{- define "commento.labels" -}}
+helm.sh/chart: {{ include "commento.chart" . }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{ include "commento.selectorLabels" . }}
+{{- if .Chart.AppVersion }}
+app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- end }}
+{{- end }}
+
+
+{{/*
+Selector labels
+*/}}
+{{- define "commento.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "commento.name" . }}
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
+
+{{/*
+Return the appropriate apiVersion.
+*/}}
+{{- define "commento.apiVersion" -}}
+{{- if semverCompare "<1.14-0" .Capabilities.KubeVersion.GitVersion -}}
+{{- print "apps/v1beta2" -}}
+{{- else -}}
+{{- print "apps/v1" -}}
+{{- end -}}
+{{- end -}}
