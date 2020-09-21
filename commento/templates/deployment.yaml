@@ -1,4 +1,4 @@
-apiVersion: {{ include "commento.apiVersion" . }}
+apiVersion: {{ include "commento.deployment.apiVersion" . }}
 kind: Deployment
 metadata:
   name: {{ include "commento.fullname" . }}

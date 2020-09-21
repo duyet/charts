@@ -130,6 +130,16 @@ postgresql:
   # postgresql.extraEnvVarsCM -- Extra env configmap for postgres
   extraEnvVarsCM:
 
+  # postgresql.resources -- CPU/Memory resource requests/limits
+  # @default -- Memory: `256Mi`, CPU: `250m`
+  resources:
+    requests:
+      memory: 256Mi
+      cpu: 250m
+    limits:
+      memory: 512Mi
+      cpu: 500m
+
 service:
   type: ClusterIP
   port: 8080
