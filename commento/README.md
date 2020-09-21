@@ -58,6 +58,7 @@ A Helm chart to deploy Commento.io
 | postgresql.postgresqlPassword | string | `"commento"` | Postgres password WARNING: you should NOT use this, instead specify `postgresql.existingSecret` |
 | postgresql.postgresqlUsername | string | `"postgres"` | Postgres username |
 | postgresql.replication.enabled | bool | `false` | Enable Postgres persistence |
+| postgresql.resources | object | Memory: `256Mi`, CPU: `250m` | CPU/Memory resource requests/limits |
 | postgresql.volumePermissions.enabled | bool | `false` | Enable Postgres volumn permissions |
 | resources | object | "" | Pod resources |
 | service.port | int | `8080` |  |
