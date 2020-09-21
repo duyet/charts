@@ -37,7 +37,9 @@ spec:
       - name: commento
         image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
         ports:
-          - containerPort: 8080
+          - name: http
+            containerPort: 8080
+            protocol: TCP
 
         envFrom:
           - secretRef:
