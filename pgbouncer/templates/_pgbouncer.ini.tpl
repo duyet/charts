@@ -46,11 +46,14 @@ unix_socket_dir = var/run/postgresql
 
 ;;; Authentication settings
 
-auth_type = {{ .Values.config.pgbouncer.auth_type }}
+auth_type = {{ .Values.settings.auth_type }}
 ;auth_file = /8.0/main/global/pg_auth
 auth_file = /etc/pgbouncer/userlist.txt
 ;auth_hba_file =
-;auth_query = SELECT usename, passwd FROM pg_shadow WHERE usename=$1
+
+{{- with .Values.settings.auth_query }}
+auth_query = {{ . }}
+{{- end }}
 
 ;;; Users allowed into database 'pgbouncer'
 {{- $users := (join ", " (keys .Values.users | sortAlpha)) }}
