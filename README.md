@@ -1,5 +1,9 @@
-# duyet/charts ![Helm Template Validation](https://github.com/duyet/charts/workflows/Helm%20Template%20Validation/badge.svg)
+# duyet/charts ![Helm Template Validation](https://github.com/duyet/charts/workflows/Helm%20Template%20Validation/badge.svg) [![Artifact HUB](https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/duyet)](https://artifacthub.io/packages/search?repo=duyet)
 Helm Charts for Kubernetes.
+
+- Repo: https://duyet.github.io/charts
+- Helm hub: https://hub.helm.sh/charts/duyet
+- Artifact hub: https://artifacthub.io/packages/search?repo=duyet
 
 # Before you begin
 
