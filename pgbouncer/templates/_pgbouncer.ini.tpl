@@ -53,7 +53,7 @@ auth_file = /etc/pgbouncer/userlist.txt
 
 {{- with .Values.settings.auth_query }}
 auth_query = {{ . }}
-{{- end}}
+{{- end }}
 
 ;;; Users allowed into database 'pgbouncer'
 {{- $users := (join ", " (keys .Values.users | sortAlpha)) }}
