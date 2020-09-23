@@ -4,14 +4,10 @@ kind: PodDisruptionBudget
 metadata:
   name: {{ include "pgbouncer.fullname" . }}
   labels:
-    app.kubernetes.io/name: {{ include "pgbouncer.fullname" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
-    app.kubernetes.io/managed-by: {{ .Release.Service }}
-    helm.sh/chart: {{ include "pgbouncer.chart" . }}
+    {{- include "pgbouncer.labels" . | nindent 4 }}
 spec:
   selector:
     matchLabels:
-      app.kubernetes.io/name: {{ include "pgbouncer.fullname" . }}
-      app.kubernetes.io/instance: {{ .Release.Name }}
+      {{- include "pgbouncer.selectorLabels" . | nindent 6 }}
   minAvailable: {{ .Values.budget.minAvailable }}
 {{- end -}}

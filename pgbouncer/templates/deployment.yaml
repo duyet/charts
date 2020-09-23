@@ -3,13 +3,7 @@ kind: Deployment
 metadata:
   name: {{ include "pgbouncer.fullname" . }}
   labels:
-    app.kubernetes.io/name: {{ include "pgbouncer.fullname" . }}
-    app.kubernetes.io/instance: {{ .Release.Name }}
-    app.kubernetes.io/managed-by: {{ .Release.Service }}
-    helm.sh/chart: {{ include "pgbouncer.chart" . }}
-    {{- if .Values.labels }}
-    {{- toYaml .Values.labels | nindent 4}}
-    {{- end }}
+    {{- include "pgbouncer.labels" . | nindent 4 }}
 spec:
   strategy:
     rollingUpdate:
@@ -17,16 +11,11 @@ spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app.kubernetes.io/name: {{ include "pgbouncer.fullname" . }}
-      app.kubernetes.io/instance: {{ .Release.Name }}
+      {{- include "pgbouncer.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: {{ include "pgbouncer.fullname" . }}
-        app.kubernetes.io/instance: {{ .Release.Name }}
-        {{- if .Values.spec.labels }}
-        {{- toYaml .Values.spec.labels | nindent 8 }}
-        {{- end }}
+        {{- include "pgbouncer.labels" . | nindent 8 }}
       annotations:
         checksum/ini: {{ include "pgbouncer.ini.1.0.0" . | sha256sum }}
         checksum/users: {{ include "userlist.txt.1.0.0" . | sha256sum }}
@@ -42,8 +31,7 @@ spec:
             - topologyKey: kubernetes.io/hostname
               labelSelector:
                 matchLabels:
-                  app.kubernetes.io/name: {{ include "pgbouncer.fullname" . }}
-                  app.kubernetes.io/instance: {{ .Release.Name }}
+                  {{- include "pgbouncer.selectorLabels" . | nindent 18 }}
         {{- else if eq .Values.antiAffinity "soft" }}
         podAntiAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
@@ -52,8 +40,7 @@ spec:
                 topologyKey: kubernetes.io/hostname
                 labelSelector:
                   matchLabels:
-                    app.kubernetes.io/name: {{ include "pgbouncer.fullname" . }}
-                    app.kubernetes.io/instance: {{ .Release.Name }}
+                    {{- include "pgbouncer.selectorLabels" . | nindent 20 }}
         {{- end }}
         {{- if .Values.nodeAffinity }}
         nodeAffinity:
