@@ -31,6 +31,7 @@ config:
   databases: {}
   pgbouncer:
     auth_type: plain
+    auth_query: "SELECT usename, passwd FROM pg_shadow WHERE usename=$1"
 
 connectionLimits:
   maxClientConn: 200
