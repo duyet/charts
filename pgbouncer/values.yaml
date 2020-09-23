@@ -62,6 +62,14 @@ statsPeriod: 60
 # add key: value map entries to customSettings to be added to pbgouncer.ini [pgbouncer] section
 customSettings: {}
 
+# Service configuration
+service:
+  enabled: false
+  type: ClusterIP
+  name: pgbouncer
+  port: 5432
+  annotations: {}
+
 global:
   # optionally use namespace as dbname
   namespacedDatabases: false
