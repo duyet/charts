@@ -43,10 +43,12 @@ spec:
             httpGet:
               path: /ping
               port: http
+            periodSeconds: 30
           readinessProbe:
             httpGet:
               path: /ping
               port: http
+            periodSeconds: 30
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}
