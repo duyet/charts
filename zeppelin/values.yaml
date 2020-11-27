@@ -1,8 +1,8 @@
 replicaCount: 1
 
 image:
-  repository: apache/zeppelin-server
-  tag: "0.9.0-SNAPSHOT"
+  repository: banzaicloud/zeppelin-server
+  tag: v0.9.0-k8s-1.0.79
   pullPolicy: IfNotPresent
 
 imagePullSecrets: []
