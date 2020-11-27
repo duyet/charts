@@ -66,12 +66,12 @@ zeppelinServerGateway:
     tag: 1.14.0
     pullPolicy: IfNotPresent
   resources:
-    limits:
-      cpu: 100m
-      memory: 256Mi
     requests:
-      cpu: 300m
+      cpu: 100m
       memory: 128Mi
+    limits:
+      cpu: 300m
+      memory: 256Mi
 
 # nginx requires dns resolver for dynamic dns resolution
 dnsmasq:
@@ -80,12 +80,12 @@ dnsmasq:
     tag: release-1.0.5
     pullPolicy: IfNotPresent
   resources:
-    limits:
-      cpu: 30m
-      memory: 128Mi
     requests:
-      cpu: 50m
+      cpu: 30m
       memory: 64Mi
+    limits:
+      cpu: 50m
+      memory: 128Mi
 
 autoscaling:
   enabled: false
