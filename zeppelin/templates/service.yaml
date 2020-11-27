@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "zeppelin.fullname" . }}
+  labels:
+    {{- include "zeppelin.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+    - port: 12320 # port name is referenced in the code. So it shouldn't be changed.
+      name: rpc
+  selector:
+    {{- include "zeppelin.selectorLabels" . | nindent 4 }}
+
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: zeppelin-server
+spec:
+  ports:
+    - name: http
+      port: 80
+    - name: rpc
+      port: 12320
+  selector:
+    app.kubernetes.io/name: zeppelin-server
