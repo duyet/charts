@@ -79,33 +79,6 @@ resources: {}
   #   cpu: 100m
   #   memory: 128Mi
 
-zeppelinServerGateway:
-  image:
-    repository: nginx
-    tag: 1.14.0
-    pullPolicy: IfNotPresent
-  resources:
-    requests:
-      cpu: 100m
-      memory: 128Mi
-    limits:
-      cpu: 300m
-      memory: 256Mi
-
-# nginx requires dns resolver for dynamic dns resolution
-dnsmasq:
-  image:
-    repository: janeczku/go-dnsmasq
-    tag: release-1.0.5
-    pullPolicy: IfNotPresent
-  resources:
-    requests:
-      cpu: 30m
-      memory: 64Mi
-    limits:
-      cpu: 50m
-      memory: 128Mi
-
 autoscaling:
   enabled: false
   minReplicas: 1

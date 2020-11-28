@@ -6,6 +6,8 @@ metadata:
     {{- include "zeppelin.labels" . | nindent 4 }}
 spec:
   type: {{ .Values.service.type }}
+  selector:
+    {{- include "zeppelin.selectorLabels" . | nindent 4 }}
   ports:
     - port: {{ .Values.service.port }}
       targetPort: http
@@ -17,5 +19,3 @@ spec:
       name: https
     - port: 12320 # port name is referenced in the code. So it shouldn't be changed.
       name: rpc
-  selector:
-    {{- include "zeppelin.selectorLabels" . | nindent 4 }}
