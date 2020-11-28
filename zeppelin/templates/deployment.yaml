@@ -30,13 +30,6 @@ spec:
       serviceAccountName: {{ include "zeppelin.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
-      volumes:
-      - name: nginx-conf
-        configMap:
-          name: {{ include "zeppelin.fullname" . }}-conf
-          items:
-          - key: nginx.conf
-            path: nginx.conf
       containers:
       - name: zeppelin-server
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
