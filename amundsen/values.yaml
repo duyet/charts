@@ -239,6 +239,7 @@ neo4j:
 elasticsearch:
   # elasticsearch.enabled -- set this to false, if you want to provide your own ES instance.
   enabled: true
+  image: docker.elastic.co/elasticsearch/elasticsearch-oss
   cluster:
     env:
       # elasticsearch.cluster.env.MINIMUM_MASTER_NODES -- required to match master.replicas
