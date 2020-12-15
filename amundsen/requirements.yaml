@@ -4,6 +4,6 @@ dependencies:
   #   repository: https://equinor.github.io/helm-charts/charts/
   #   condition: neo4j.enabled
   - name: elasticsearch
-    version: 1.32.5
-    repository: https://kubernetes-charts.storage.googleapis.com/
+    version: 6.8.13
+    repository: https://helm.elastic.co/
     condition: elasticsearch.enabled
