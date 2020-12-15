@@ -251,9 +251,13 @@ elasticsearch:
   master:
     # elasticsearch.master.replicas -- only running amundsen on 1 master replica
     replicas: 1
+    persistence:
+      enabled: false
   data:
     # elasticsearch.data.replicas -- only running amundsen on 1 data replica
     replicas: 1
+    persistence:
+      enabled: false
   client:
     # elasticsearch.client.replicas -- only running amundsen on 1 client replica
     replicas: 1
