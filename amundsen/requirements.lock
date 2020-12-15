@@ -1,6 +1,0 @@
-dependencies:
-- name: elasticsearch
-  repository: https://kubernetes-charts.storage.googleapis.com/
-  version: 1.32.5
-digest: sha256:e18d6592638c4fc284154c0ec8115479cccc5357e72770f553c2ecc2fa6e530d
-generated: "2020-08-28T11:44:10.611176756Z"
