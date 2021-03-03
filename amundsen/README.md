@@ -15,7 +15,7 @@ Amundsen is a metadata driven application for improving the productivity of data
 ## Source Code
 
 * <https://github.com/lyft/amundsen>
-* <https://github.com/duyet/charts/amundsen>
+* <https://github.com/duyet/charts/tree/master/amundsen>
 
 ## Requirements
 
