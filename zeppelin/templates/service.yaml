@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "zeppelin.fullname" . }}
+  labels:
+    {{- include "zeppelin.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  selector:
+    {{- include "zeppelin.selectorLabels" . | nindent 4 }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+    - port: 8443
+      targetPort: https
+      protocol: TCP
+      name: https
+    - port: 12320 # port name is referenced in the code. So it shouldn't be changed.
+      name: rpc
