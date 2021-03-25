@@ -73,3 +73,18 @@ service:
 global:
   # optionally use namespace as dbname
   namespacedDatabases: false
+
+tls:
+  #secretName: pgbouncer-tls
+  client:
+    enabled: false
+    sslmode: prefer
+    key: "tls.key"
+    cert: "tls.crt"
+    ciphers: fast
+    tlsProtocols: secure
+    dheParams: auto
+    ecdhCurve: auto
+  server:
+    enabled: false
+    sslmode: prefer
