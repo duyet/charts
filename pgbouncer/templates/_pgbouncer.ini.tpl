@@ -32,8 +32,8 @@ unix_socket_dir = var/run/postgresql
 {{- if .Values.tls.client.enabled }}
 ;client_tls_sslmode = {{ .Values.tls.client.sslmode }}
 ;client_tls_ca_file = {{ .Values.tls.client.ca | default "<system default>" }}
-;client_tls_key_file = /etc/pgbouncer/tls/{{ .Values.tls.client.key }}
-;client_tls_cert_file = /etc/pgbouncer/tls/{{ .Values.tls.client.cert }}
+;client_tls_key_file = /etc/pgbouncer/tls/client/{{ .Values.tls.client.key }}
+;client_tls_cert_file = /etc/pgbouncer/tls/client/{{ .Values.tls.client.cert }}
 ;client_tls_ciphers = {{ .Values.tls.client.ciphers }}
 ;client_tls_protocols = {{ .Values.tls.client.protocols }}
 ;client_tls_dheparams = {{ .Values.tls.client.dheParams }}
@@ -51,8 +51,8 @@ unix_socket_dir = var/run/postgresql
 {{- if .Values.tls.server.enabled }}
 ;server_tls_sslmode = {{ .Values.tls.client.sslmode }}
 ;server_tls_ca_file = {{ .Values.tls.server.ca | default "<system default>" }}
-;server_tls_key_file = /etc/pgbouncer/tls/{{ .Values.tls.server.key }}
-;server_tls_cert_file = /etc/pgbouncer/tls/{{ .Values.tls.server.cert }}
+;server_tls_key_file = /etc/pgbouncer/tls/server/{{ .Values.tls.server.key }}
+;server_tls_cert_file = /etc/pgbouncer/tls/server/{{ .Values.tls.server.cert }}
 ;server_tls_protocols = {{ .Values.tls.server.protocols }}
 ;server_tls_ciphers = {{ .Values.tls.server.ciphers }}
 ; any, trust, plain, crypt, md5, cert, hba, pam
