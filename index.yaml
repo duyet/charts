@@ -3,7 +3,7 @@ entries:
   amundsen:
   - apiVersion: v1
     appVersion: "1.0"
-    created: "2021-08-11T10:37:41.255225133Z"
+    created: "2021-08-30T16:02:48.843538944Z"
     dependencies:
     - condition: elasticsearch.enabled
       name: elasticsearch
@@ -31,10 +31,10 @@ entries:
   applause-btn:
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2021-08-11T10:37:41.257629425Z"
+    created: "2021-08-30T16:02:48.844859796Z"
     description: A Helm chart of [Applause Button](https://github.com/duyet/applause-btn)
       for Kubernetes
-    digest: 236ddeb85834b32c617ee78bd3ef85268e77caf5118d58c363978943f79a2e36
+    digest: 6e19618cd123b8216c5b59ad19e99199d893de361f5da667d4c29cfe4d09190e
     home: https://github.com/duyet/charts/tree/master/applause-btn
     maintainers:
     - email: me@duyet.net
@@ -47,7 +47,7 @@ entries:
     version: 0.1.1
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2021-08-11T10:37:41.255860958Z"
+    created: "2021-08-30T16:02:48.844170469Z"
     description: A Helm chart of [Applause Button](https://github.com/duyet/applause-btn)
       for Kubernetes
     digest: 3e19431e464322514b1fd9cd55a248692015edca0d9d6838e666e398460f1fa0
@@ -64,14 +64,14 @@ entries:
   commento:
   - apiVersion: v1
     appVersion: "1.0"
-    created: "2021-08-11T10:37:41.267343997Z"
+    created: "2021-08-30T16:02:48.8549565Z"
     dependencies:
     - condition: postgresql.enabled
       name: postgresql
       repository: https://charts.bitnami.com/bitnami
       version: 9.3.3
     description: A Helm chart to deploy Commento.io
-    digest: 5fc69e0065ca4eced8d7798958a8aa8655bba2784a629d5eebd46254fd86d5bf
+    digest: 1736fddb0188e67622a1476ed838e938a330e1717786b09349f0b8cb91d50489
     home: https://github.com/duyet/charts/tree/master/commento
     maintainers:
     - email: me@duyet.net
@@ -83,7 +83,7 @@ entries:
     version: 0.1.0
   - apiVersion: v1
     appVersion: "1.0"
-    created: "2021-08-11T10:37:41.262809124Z"
+    created: "2021-08-30T16:02:48.849360776Z"
     dependencies:
     - name: postgresql
       repository: https://charts.bitnami.com/bitnami
@@ -104,7 +104,7 @@ entries:
       category: Infrastructure
     apiVersion: v1
     appVersion: 0.7.1
-    created: "2021-08-11T10:37:41.268024323Z"
+    created: "2021-08-30T16:02:48.855628027Z"
     description: A Library Helm Chart for grouping common logic between bitnami charts.
       This chart is not deployable by itself.
     digest: 84cdb0a32d7c295a83f3fac032952f15fd410c0d2082df74bdf12d6b377dd9a1
@@ -129,9 +129,9 @@ entries:
   gaxy:
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2021-08-11T10:37:41.268621046Z"
+    created: "2021-08-30T16:02:48.856174749Z"
     description: A Helm chart for Google Analytics Proxy ([gaxy](https://github.com/duyet/gaxy))
-    digest: 77e03a22ab5c6869fba5e265cd5888cd7bc671ea497fb9eec91aef9b84f5f24a
+    digest: abee2269288c494f7119664f3e94d8122f71df18a4167208b44292db863d8c20
     home: https://github.com/duyet/charts/tree/master/gaxy
     maintainers:
     - email: me@duyet.net
@@ -145,10 +145,10 @@ entries:
   pgbouncer:
   - apiVersion: v1
     appVersion: "1.0"
-    created: "2021-08-11T10:37:41.269259271Z"
+    created: "2021-08-30T16:02:48.856865076Z"
     description: PgBouncer chart, folked from https://github.com/cradlepoint/kubernetes-helm-chart-pgbouncer
       with some custom values
-    digest: 69cd8061f6e36a745e4fb54bd157daf754d9d388a975fecfa59f69ca79d1179e
+    digest: 28d36323ded67f47200e5d339afc2d00edc9bfbaa5f6ed82c1f276e2303eb282
     home: https://github.com/duyet/charts/tree/master/pgbouncer
     maintainers:
     - email: me@duyet.net
@@ -163,7 +163,7 @@ entries:
       category: Database
     apiVersion: v1
     appVersion: 11.9.0
-    created: "2021-08-11T10:37:41.274913987Z"
+    created: "2021-08-30T16:02:48.860995141Z"
     dependencies:
     - name: common
       repository: https://charts.bitnami.com/bitnami
@@ -194,9 +194,9 @@ entries:
   spark-shuffle:
   - apiVersion: v1
     appVersion: "1.0"
-    created: "2021-08-11T10:37:41.275314803Z"
+    created: "2021-08-30T16:02:48.861375256Z"
     description: A Helm chart to deploy Spark shuffle service deamon set for Kubernetes
-    digest: bdfd6625b6f81c8010820c0be9f8b9dc698cefb94f94baf77dc54dd4fe1c6ac8
+    digest: 1b8deac1d76120f42b57113a42b363a3b9f3485fb265f6cc1937d30941582f3a
     home: https://github.com/duyet/charts/tree/master/spark-shuffle-service
     maintainers:
     - email: me@duyet.net
@@ -206,12 +206,28 @@ entries:
     urls:
     - https://duyet.github.io/charts/spark-shuffle-0.1.0.tgz
     version: 0.1.0
+  uptime-kuma:
+  - apiVersion: v2
+    appVersion: 1.3.2
+    created: "2021-08-30T16:02:48.86197808Z"
+    description: A Helm chart for Uptime Kuma
+    digest: f8ca7bb49418c63a19c3ce596ba045b26c618c9c35371499ec2350bcda70f72c
+    home: https://github.com/louislam/uptime-kuma
+    maintainers:
+    - email: me@duyet.net
+      name: duyet
+      url: https://github.com/duyet
+    name: uptime-kuma
+    type: application
+    urls:
+    - https://duyet.github.io/charts/uptime-kuma-0.1.0.tgz
+    version: 0.1.0
   zeppelin:
   - apiVersion: v2
     appVersion: 0.9.0-SNAPSHOT
-    created: "2021-08-11T10:37:41.275983928Z"
+    created: "2021-08-30T16:02:48.862748511Z"
     description: A Zeppelin helm chart for Kubernetes
-    digest: 6aa37fe56895500d20b58cbf2ac6821481ec5b87423d63c2f8bd2ccd0ac82a4c
+    digest: 90cda50a5d6e59ab368aa821a1c3f949a07dc16ae1be7e5056aa8842aafd5988
     home: https://github.com/duyet/charts/tree/master/zeppelin
     maintainers:
     - email: me@duyet.net
@@ -222,4 +238,4 @@ entries:
     urls:
     - https://duyet.github.io/charts/zeppelin-0.1.0.tgz
     version: 0.1.0
-generated: "2021-08-11T10:37:41.251709499Z"
+generated: "2021-08-30T16:02:48.839822795Z"
