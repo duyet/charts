@@ -1,16 +1,16 @@
-# uptime-kuma
+# zeppelin
 
-![Version: 0.1.1](https://img.shields.io/badge/Version-0.1.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.3.2](https://img.shields.io/badge/AppVersion-1.3.2-informational?style=flat-square)
+![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.9.0-SNAPSHOT](https://img.shields.io/badge/AppVersion-0.9.0--SNAPSHOT-informational?style=flat-square)
 
-A Helm chart for Uptime Kuma
+A Zeppelin helm chart for Kubernetes
 
-**Homepage:** <https://github.com/louislam/uptime-kuma>
+**Homepage:** <https://github.com/duyet/charts/tree/master/zeppelin>
 
 ## Maintainers
 
 | Name | Email | Url |
 | ---- | ------ | --- |
-| duyet | me@duyet.net | https://github.com/duyet |
+| duyet | me@duyet.net | https://github.com/duyet/ |
 
 ## Values
 
@@ -21,10 +21,17 @@ A Helm chart for Uptime Kuma
 | autoscaling.maxReplicas | int | `100` |  |
 | autoscaling.minReplicas | int | `1` |  |
 | autoscaling.targetCPUUtilizationPercentage | int | `80` |  |
+| env.SERVICE_DOMAIN | string | `"local.zeppelin-project.org:8080"` |  |
+| env.SPARK_HOME | string | `"/spark"` |  |
+| env.SPARK_MASTER | string | `"k8s://https://kubernetes.default.svc"` |  |
+| env.ZEPPELIN_HOME | string | `"/zeppelin"` |  |
+| env.ZEPPELIN_K8S_CONTAINER_IMAGE | string | `"apache/zeppelin-interpreter:0.9.0-SNAPSHOT"` |  |
+| env.ZEPPELIN_K8S_SPARK_CONTAINER_IMAGE | string | `"spark:2.4.5"` |  |
+| env.ZEPPELIN_SERVER_RPC_PORTRANGE | string | `"12320:12320"` |  |
 | fullnameOverride | string | `""` |  |
 | image.pullPolicy | string | `"IfNotPresent"` |  |
-| image.repository | string | `"louislam/uptime-kuma"` |  |
-| image.tag | string | `""` |  |
+| image.repository | string | `"apache/zeppelin"` |  |
+| image.tag | string | `"0.9.0"` |  |
 | imagePullSecrets | list | `[]` |  |
 | ingress.annotations | object | `{}` |  |
 | ingress.enabled | bool | `false` |  |
@@ -33,11 +40,6 @@ A Helm chart for Uptime Kuma
 | ingress.tls | list | `[]` |  |
 | nameOverride | string | `""` |  |
 | nodeSelector | object | `{}` |  |
-| persistence.accessMode | string | `"ReadWriteOnce"` |  |
-| persistence.enabled | bool | `false` |  |
-| persistence.path | string | `"/app/data"` |  |
-| persistence.size | string | `"5Gi"` |  |
-| persistence.storageClass | string | `""` |  |
 | podAnnotations | object | `{}` |  |
 | podSecurityContext | object | `{}` |  |
 | replicaCount | int | `1` |  |
@@ -45,6 +47,9 @@ A Helm chart for Uptime Kuma
 | securityContext | object | `{}` |  |
 | service.port | int | `80` |  |
 | service.type | string | `"ClusterIP"` |  |
+| serviceAccount.annotations | object | `{}` |  |
+| serviceAccount.create | bool | `true` |  |
+| serviceAccount.name | string | `""` |  |
 | tolerations | list | `[]` |  |
 
 ----------------------------------------------
