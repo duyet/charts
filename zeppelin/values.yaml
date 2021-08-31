@@ -2,7 +2,7 @@ replicaCount: 1
 
 image:
   repository: apache/zeppelin
-  tag: 0.9.0
+  tag: 0.10.0
   pullPolicy: IfNotPresent
 
 imagePullSecrets: []
