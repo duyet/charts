@@ -25,6 +25,7 @@ securityContext: {}
 
 persistence:
   enabled: false
+  existingClaim: ""
   path: /app/data
   storageClass: ""
   accessMode: ReadWriteOnce

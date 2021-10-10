@@ -67,7 +67,10 @@ spec:
       {{- end }}
       volumes:
         - name: data
-          {{- if .Values.persistence.enabled }}
+          {{- if and .Values.persistence.enabled .Values.persistence.existingClaim }}
+          persistentVolumeClaim: 
+            claimName: {{ .Values.persistence.existingClaim }}
+          {{- else if and .Values.persistence.enabled (not .Values.persistence.existingClaim) }}
           persistentVolumeClaim: 
             claimName: {{ include "uptime-kuma.fullname" . }}
           {{- else }}

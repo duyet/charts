@@ -1,6 +1,6 @@
 # uptime-kuma
 
-![Version: 0.1.3](https://img.shields.io/badge/Version-0.1.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.7.3](https://img.shields.io/badge/AppVersion-1.7.3-informational?style=flat-square)
+![Version: 0.1.4](https://img.shields.io/badge/Version-0.1.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.7.3](https://img.shields.io/badge/AppVersion-1.7.3-informational?style=flat-square)
 
 A Helm chart for Uptime Kuma
 
@@ -36,6 +36,7 @@ A Helm chart for Uptime Kuma
 | nodeSelector | object | `{}` |  |
 | persistence.accessMode | string | `"ReadWriteOnce"` |  |
 | persistence.enabled | bool | `false` |  |
+| persistence.existingClaim | string | `""` |  |
 | persistence.path | string | `"/app/data"` |  |
 | persistence.size | string | `"5Gi"` |  |
 | persistence.storageClass | string | `""` |  |
