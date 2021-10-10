@@ -8,5 +8,5 @@ maintainers:
   - name: duyet
     email: me@duyet.net
     url: https://github.com/duyet
-version: 0.1.3
+version: 0.1.4
 appVersion: "1.7.3"
