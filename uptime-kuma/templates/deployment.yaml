@@ -49,6 +49,10 @@ spec:
           volumeMounts:
           - name: data
             mountPath: {{ .Values.persistence.path }}
+          {{- with .Values.env }}
+          env:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

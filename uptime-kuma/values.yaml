@@ -71,3 +71,9 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+env: 
+  # - name: PUID
+  #   value: "1024"
+  # - name: PGID
+  #   value: "100"
