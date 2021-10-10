@@ -16,7 +16,7 @@ A Helm chart to deploy Commento.io
 
 | Repository | Name | Version |
 |------------|------|---------|
-| https://charts.bitnami.com/bitnami | postgresql | 9.3.3 |
+| https://charts.bitnami.com/bitnami | postgresql | 10.12.2 |
 
 ## Values
 

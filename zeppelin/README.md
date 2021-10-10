@@ -31,7 +31,7 @@ A Zeppelin helm chart for Kubernetes
 | fullnameOverride | string | `""` |  |
 | image.pullPolicy | string | `"IfNotPresent"` |  |
 | image.repository | string | `"apache/zeppelin"` |  |
-| image.tag | string | `"0.9.0"` |  |
+| image.tag | string | `"0.10.0"` |  |
 | imagePullSecrets | list | `[]` |  |
 | ingress.annotations | object | `{}` |  |
 | ingress.enabled | bool | `false` |  |
