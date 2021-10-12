@@ -30,11 +30,7 @@ jobs:
       uses: helm/chart-testing-action@v2.1.0
 
     - name: Run chart-testing (lint)
-      id: lint
-      uses: helm/chart-testing-action@v2.1.0
-      with:
-        config: .github/ct-lint.yaml
-        command: lint
+      run: ct lint --config .github/ct-lint.yaml
 
     - name: Helm build packages
       run: sudo ./build.sh
