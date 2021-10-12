@@ -61,3 +61,17 @@ Create the name of the service account to use
 {{- end }}
 {{- end }}
 
+{{/*
+Ingress API version
+*/}}
+{{- define "uptime-kuma.ingressApiVersion" -}}
+{{- $kubeVersion := .Capabilities.KubeVersion.GitVersion -}}
+{{- if semverCompare ">=1.19-0" $kubeVersion -}}
+networking.k8s.io/v1
+{{- else if semverCompare ">=1.14-0" $kubeVersion -}}
+networking.k8s.io/v1beta1
+{{- else -}}
+extensions/v1beta1
+{{- end }}
+{{- end }}
+

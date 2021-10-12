@@ -2,13 +2,8 @@
 {{- $fullName := include "uptime-kuma.fullname" . -}}
 {{- $svcPort := .Values.service.port -}}
 {{- $kubeVersion := .Capabilities.KubeVersion.GitVersion -}}
-{{- if semverCompare ">=1.19-0" $kubeVersion -}}
-apiVersion: networking.k8s.io/v1
-{{- else if semverCompare ">=1.14-0" $kubeVersion -}}
-apiVersion: networking.k8s.io/v1beta1
-{{- else -}}
-apiVersion: extensions/v1beta1
-{{- end }}
+
+apiVersion: {{ include "uptime-kuma.ingressApiVersion" . }}
 kind: Ingress
 metadata:
   name: {{ $fullName }}
@@ -36,24 +31,17 @@ spec:
         paths:
           {{- range .paths }}
           - path: {{ .path }}
-            {{- if semverCompare ">=1.19-0" $kubeVersion }}
             pathType: Prefix
             backend:
+              {{- if semverCompare ">=1.19-0" $kubeVersion }}
               service:
                 name: {{ $fullName }}
                 port: 
                   number: {{ $svcPort }}
-            {{- else -}}
-            backend:
-            {{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion }}
-              service:
-                name: {{ $fullName }}
-                port:
-                  number: {{ $svcPort }}
-            {{- else }}
+              {{- else -}}
               serviceName: {{ $fullName }}
               servicePort: {{ $svcPort }}
-            {{- end }}
-          {{- end }}
+              {{- end }}
     {{- end }}
   {{- end }}
+{{- end }}
