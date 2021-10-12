@@ -2,11 +2,11 @@ apiVersion: v2
 name: uptime-kuma
 description: A Helm chart for Uptime Kuma
 type: application
-home: https://github.com/louislam/uptime-kuma 
+home: https://github.com/louislam/uptime-kuma
 icon: https://github.com/louislam/uptime-kuma/raw/master/public/icon.svg
 maintainers:
   - name: duyet
     email: me@duyet.net
     url: https://github.com/duyet
-version: 0.1.4
+version: 0.1.5
 appVersion: "1.7.3"
