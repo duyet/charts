@@ -35,10 +35,7 @@ jobs:
 
     - name: Run chart-testing (lint)
       id: lint
-      uses: helm/chart-testing-action@v2.1.0
-      with:
-        config: .github/ct-lint.yaml
-        command: lint
+      run: ct lint --config .github/ct-lint.yaml
 
     - name: Create KinD cluster
       uses: helm/kind-action@v1.2.0
@@ -46,7 +43,4 @@ jobs:
       if: steps.lint.outputs.changed == 'true'
 
     - name: Run chart-testing (install)
-      uses: helm/chart-testing-action@v2.1.0
-      with:
-        config: .github/ct-install.yaml
-        command: install
+      run: ct install --config .github/ct-install.yaml
