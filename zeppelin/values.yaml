@@ -18,15 +18,15 @@ env:
   #
   # Default value is 'local.zeppelin-project.org' while it points 127.0.0.1 and `kubectl port-forward zeppelin-server` will give localhost to connects.
   # If you have your ingress controller configured to connect to `zeppelin-server` service and have a domain name for it (with wildcard subdomain point the same address), you can replace serviceDomain field with your own domain.
-  SERVICE_DOMAIN: local.zeppelin-project.org:8080
+  SERVICE_DOMAIN: ""
   ZEPPELIN_K8S_SPARK_CONTAINER_IMAGE: spark:2.4.5
   ZEPPELIN_K8S_CONTAINER_IMAGE: apache/zeppelin-interpreter:0.9.0-SNAPSHOT
-  ZEPPELIN_HOME: /zeppelin
+  ZEPPELIN_HOME: /opt/zeppelin
+  ZEPPELIN_PORT: 8080
   ZEPPELIN_SERVER_RPC_PORTRANGE: 12320:12320
-  # default value of 'master' property for spark interpreter.
+  SPARK_HOME: /opt/spark
+  FLINK_HOME: /opt/flink
   SPARK_MASTER: k8s://https://kubernetes.default.svc
-  # default value of 'SPARK_HOME' property for spark interpreter.
-  SPARK_HOME: /spark
 
 serviceAccount:
   # Specifies whether a service account should be created
@@ -61,7 +61,7 @@ ingress:
     # kubernetes.io/tls-acme: "true"
   hosts:
     - host: chart-example.local
-      paths: []
+      paths: ['/']
   tls: []
   #  - secretName: chart-example-tls
   #    hosts:

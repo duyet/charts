@@ -47,6 +47,8 @@ spec:
         - name: rpc
           containerPort: 12320
         env:
+        - name: SERVICE_DOMAIN
+          value: {{ include "zeppelin.serviceDomain" . }}
         - name: POD_UID
           valueFrom:
             fieldRef:
@@ -62,6 +64,14 @@ spec:
             name: {{ include "zeppelin.fullname" . }}-conf-map
         resources:
           {{- toYaml .Values.resources | nindent 10 }}
+        livenessProbe:
+          tcpSocket:
+            port: http
+          periodSeconds: 30
+        readinessProbe:
+          tcpSocket:
+            port: http
+          periodSeconds: 30
 
       # volumeMounts:
       #  - name: zeppelin-server-notebook-volume     # configure this to persist notebook
