@@ -47,6 +47,8 @@ spec:
         - name: rpc
           containerPort: 12320
         env:
+        - name: SERVICE_DOMAIN
+          value: {{ include "zeppelin.serviceDomain" . }}
         - name: POD_UID
           valueFrom:
             fieldRef:

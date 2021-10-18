@@ -83,3 +83,17 @@ Create the name of the role binding name to use
 {{- default "default" .Values.serviceAccount.name }}-role-binding
 {{- end }}
 {{- end }}
+
+{{/*
+'serviceDomain' is a Domain name to use for accessing Zeppelin UI.
+Should point IP address of 'zeppelin-server' service.
+*/}}
+{{- define "zeppelin.serviceDomain" -}}
+{{- if .Values.ingress.enabled }}
+{{- with (first .Values.ingress.hosts) }}
+{{- .host }}
+{{- end }}
+{{- else }}
+{{- default .Values.env.SERVICE_DOMAIN (include "zeppelin.fullname" .) }}
+{{- end }}
+{{- end }}
