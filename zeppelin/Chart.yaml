@@ -3,8 +3,8 @@ name: zeppelin
 description: A Zeppelin helm chart for Kubernetes
 home: https://github.com/duyet/charts/tree/master/zeppelin
 type: application
-version: 0.1.1
-appVersion: 0.9.0-SNAPSHOT
+version: 0.1.2
+appVersion: 0.10.0
 maintainers:
   - name: duyet
     email: me@duyet.net
