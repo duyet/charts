@@ -24,9 +24,9 @@ env:
   ZEPPELIN_HOME: /opt/zeppelin
   ZEPPELIN_PORT: 8080
   ZEPPELIN_SERVER_RPC_PORTRANGE: 12320:12320
-  SPARK_HOME: /opt/spark
   FLINK_HOME: /opt/flink
   SPARK_MASTER: k8s://https://kubernetes.default.svc
+  SPARK_HOME: /spark
 
 serviceAccount:
   # Specifies whether a service account should be created
