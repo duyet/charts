@@ -59,6 +59,8 @@ spec:
             fieldRef:
               apiVersion: v1
               fieldPath: metadata.name
+        - name: ZEPPELIN_K8S_SERVICE_NAME
+          value: {{ include "zeppelin.fullname" . }}
         envFrom:
         - configMapRef:
             name: {{ include "zeppelin.fullname" . }}-conf-map
