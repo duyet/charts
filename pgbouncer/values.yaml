@@ -73,3 +73,33 @@ service:
 global:
   # optionally use namespace as dbname
   namespacedDatabases: false
+
+# optional client and server tls settings.  See https://www.pgbouncer.org/config.html#tls-settings
+# for details.
+tls:
+  client:
+    # when true, enables tls settings for connections from clients
+    enabled: false
+    # the name of a kubernetes secret that contains the certificate and key for the tls connection
+    secretName: pgbouncer-client-tls
+    # value in kubernetes secret to use as the key
+    key: "tls.key"
+    #value in the kubernetes secret to use as the cert
+    cert: "tls.crt"
+    sslmode: prefer
+    ciphers: fast
+    protocols: secure
+    dheParams: auto
+    ecdhCurve: auto
+  server:
+    # when true, enables tls settings for connections to postgres servers
+    enabled: false
+    # the name of a kubernetes secret that contains the certificate and key for the tls connection
+    secretName: pgbouncer-server-tls
+    # value in the kubernetes secret to use as the key
+    key: "tls.key"
+    # value in the kubernetes secret to use as the cert
+    cert: "tls.crt"
+    sslmode: prefer
+    ciphers: fast
+    protocols: secure

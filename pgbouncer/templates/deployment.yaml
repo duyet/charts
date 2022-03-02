@@ -58,6 +58,16 @@ spec:
         - name: secret
           secret:
             secretName: {{ include "pgbouncer.fullname" . }}-secret
+      {{- if .Values.tls.client.enabled }}
+        - name: tls-client
+          secret:
+            secretName: {{ .Values.tls.client.secretName }}
+      {{- end }}
+      {{- if .Values.tls.server.enabled }}
+        - name: tls-server
+          secret:
+            secretName: {{ .Values.tls.server.secretName }}
+      {{- end }}
       containers:
         - name: pgbouncer
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -82,6 +92,16 @@ spec:
               subPath: pgbouncer.ini
               mountPath: /etc/pgbouncer/pgbouncer.ini
               readOnly: true
+            {{- if .Values.tls.client.enabled }}
+            - name: tls-client
+              mountPath: /etc/pgbouncer/tls/client
+              readOnly: true
+            {{- end }}
+            {{- if .Values.tls.server.enabled }}
+            - name: tls-server
+              mountPath: /etc/pgbouncer/tls/server
+              readOnly: true
+            {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
 
