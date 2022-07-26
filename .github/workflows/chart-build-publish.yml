@@ -40,7 +40,7 @@ jobs:
         DIST_DIR=.dist
         CURRENT_BRANCH=${GITHUB_REF#refs/heads/}
         TARGET_BRANCH=gh-pages
-        REMOTE_REPO="https://${GITHUB_ACTOR}:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git"
+        REMOTE_REPO="https://${GITHUB_ACTOR}:${{ secrets.BOT_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git"
 
         git config --local user.email "action@github.com"
         git config --local user.name "Auto Release Bot"
