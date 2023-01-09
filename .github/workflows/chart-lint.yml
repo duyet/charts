@@ -9,7 +9,8 @@ jobs:
     # Multiple KinD version
     strategy:
       matrix:
-        kubectl_version: [v1.20.15, v1.22.5]
+        helm_version: [v3.4.0]
+        k8s_version: [v1.20.15, v1.22.5]
 
     steps:
     - name: Checkout
@@ -21,7 +22,7 @@ jobs:
     - name: Set up Helm
       uses: azure/setup-helm@v3.5
       with:
-        version: v3.4.0
+        version: ${{ matrix.helm_version }}
 
     - name: Setup Python
       uses: actions/setup-python@v4
@@ -46,8 +47,8 @@ jobs:
     - name: Create KinD cluster
       uses: helm/kind-action@v1.5.0
       with:
-        kubectl_version: ${{ matrix.kubectl_version }}
-        node_image: kindest/node:${{ matrix.kubectl_version }}
+        kubectl_version: ${{ matrix.k8s_version }}
+        node_image: kindest/node:${{ matrix.k8s_version }}
       # if: steps.list-changed.outputs.changed == 'true'
 
     - name: Run chart-testing (install)
