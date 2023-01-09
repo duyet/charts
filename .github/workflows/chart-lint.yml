@@ -5,6 +5,12 @@ on: [push, pull_request]
 jobs:
   chart-lint:
     runs-on: ubuntu-latest
+
+    # Multiple KinD version
+    strategy:
+      matrix:
+        kubectl_version: [v1.20.13, v1.22.4]
+
     steps:
     - name: Checkout
       uses: actions/checkout@v3.3.0
@@ -39,6 +45,8 @@ jobs:
 
     - name: Create KinD cluster
       uses: helm/kind-action@v1.5.0
+      with:
+        kubectl_version: ${{ matrix.kubectl_version }}
       # if: steps.list-changed.outputs.changed == 'true'
 
     - name: Run chart-testing (install)
