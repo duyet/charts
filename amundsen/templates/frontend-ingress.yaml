@@ -1,7 +1,7 @@
 {{- if .Values.frontEnd.ingress.enabled -}}
 {{- $name := include "amundsen.fullname" . }}
 
-apiVersion: extensions/v1beta1
+apiVersion: {{ include "amundsen.ingress.apiVersion" . }} 
 kind: Ingress
 metadata:
   name: {{ include "amundsen.fullname" . }}-{{ .Values.frontEnd.serviceName }}
