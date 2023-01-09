@@ -239,23 +239,12 @@ neo4j:
 elasticsearch:
   # elasticsearch.enabled -- set this to false, if you want to provide your own ES instance.
   enabled: true
-  cluster:
-    env:
-      # elasticsearch.cluster.env.MINIMUM_MASTER_NODES -- required to match master.replicas
-      MINIMUM_MASTER_NODES: 1
-      # elasticsearch.cluster.env.EXPECTED_MASTER_NODES -- required to match master.replicas
-      EXPECTED_MASTER_NODES: 1
-      # elasticsearch.cluster.env.RECOVER_AFTER_MASTER_NODES -- required to match master.replicas
-      RECOVER_AFTER_MASTER_NODES: 1
   master:
-    # elasticsearch.master.replicas -- only running amundsen on 1 master replica
-    replicas: 1
+    # elasticsearch.master.replicaCount -- only running amundsen on 1 master replica
+    replicaCount: 1
   data:
-    # elasticsearch.data.replicas -- only running amundsen on 1 data replica
-    replicas: 1
-  client:
-    # elasticsearch.client.replicas -- only running amundsen on 1 client replica
-    replicas: 1
+    # elasticsearch.data.replicaCount -- only running amundsen on 1 data replica
+    replicaCount: 1
   #  serviceType: LoadBalancer
   #  serviceAnnotations:
   #    external-dns.alpha.kubernetes.io/hostname: amundsen-elasticsearch.dev.teamname.company.com
