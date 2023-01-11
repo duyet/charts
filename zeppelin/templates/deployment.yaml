@@ -64,6 +64,14 @@ spec:
         envFrom:
         - configMapRef:
             name: {{ include "zeppelin.fullname" . }}-conf-map
+        {{- if .Values.extraEnvVarsCM }}
+        - configMapRef:
+            name: {{ .Values.extraEnvVarsCM }}
+        {{- end }}
+        {{- if .Values.extraEnvVarsSecret }}
+        - secretRef:
+            name: {{ .Values.extraEnvVarsSecret }}
+        {{- end }}
         resources:
           {{- toYaml .Values.resources | nindent 10 }}
         livenessProbe:

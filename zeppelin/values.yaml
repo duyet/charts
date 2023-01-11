@@ -28,6 +28,12 @@ env:
   SPARK_MASTER: k8s://https://kubernetes.default.svc
   SPARK_HOME: /spark
 
+# extraEnvVarsCM -- Extra env configmap name
+extraEnvVarsCM: ""
+
+# extraEnvVarsSecret -- Extra env secret name
+extraEnvVarsSecret: ""
+
 serviceAccount:
   # Specifies whether a service account should be created
   create: true
