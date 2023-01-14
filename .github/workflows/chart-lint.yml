@@ -8,6 +8,7 @@ jobs:
 
     # Multiple KinD version
     strategy:
+      fail-fast: false
       matrix:
         helm_version: [v3.4.0]
         k8s_version: [v1.20.15, v1.22.5]
@@ -36,13 +37,76 @@ jobs:
       id: list-changed
       run: |
         changed=$(ct list-changed)
+        echo "list_changed=$changed" >> $GITHUB_ENV
         if [[ -n "$changed" ]]; then
           echo "::set-output name=changed::true"
+          echo "::set-output name=list::$changed"
         fi
+
+    - name: Comment
+      uses: peter-evans/create-or-update-comment@v2
+      id: comment
+      if: ${{ github.event.pull_request.number }}
+      with:
+        token: ${{ secrets.BOT_TOKEN }}
+        issue-number: ${{ github.event.pull_request.number }}
+        body: |
+          Testing on Kubernetes **${{ matrix.k8s_version }}**, Helm **${{ matrix.helm_version }}** ... [(Run ${{ github.run_id }})](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+          ${{ env.list_changed }}
 
     - name: Run chart-testing (lint)
       id: lint
-      run: ct lint --config .github/ct-lint.yaml
+      run: |
+        echo 'CT_LINT<<EOF' >> $GITHUB_ENV
+        ct lint --config .github/ct-lint.yaml 2>&1 >> $GITHUB_ENV
+        echo 'EOF' >> $GITHUB_ENV
+        echo $GITHUB_ENV
+
+    - name: Comment (after ct lint successfully)
+      uses: peter-evans/create-or-update-comment@v2
+      if: ${{ success() && github.event.pull_request.number }}
+      with:
+        token: ${{ secrets.BOT_TOKEN }}
+        issue-number: ${{ github.event.pull_request.number }}
+        comment-id: ${{ steps.comment.outputs.comment-id }}
+        edit-mode: append
+        body: |
+          <details>
+            <summary>Linting chart successfully.</summary>
+
+            ```
+            ${{ env.CT_LINT }}
+            ```
+          </details>
+
+    - name: Comment (after ct lint failure)
+      uses: peter-evans/create-or-update-comment@v2
+      if: ${{ failure() && github.event.pull_request.number }}
+      with:
+        token: ${{ secrets.BOT_TOKEN }}
+        issue-number: ${{ github.event.pull_request.number }}
+        comment-id: ${{ steps.comment.outputs.comment-id }}
+        edit-mode: append
+        reactions: -1
+        body: |
+          <details>
+            <summary>Linting chart failure!</summary>
+
+            ```
+            ${{ env.CT_LINT }}
+            ```
+          </details>
+
+    - name: Comment (before create KinD cluster)
+      uses: peter-evans/create-or-update-comment@v2
+      if: ${{ github.event.pull_request.number }}
+      with:
+        token: ${{ secrets.BOT_TOKEN }}
+        issue-number: ${{ github.event.pull_request.number }}
+        comment-id: ${{ steps.comment.outputs.comment-id }}
+        edit-mode: append
+        body: |
+          Creating KinD cluster ${{ matrix.kubectl_version }} ...<br />
 
     - name: Create KinD cluster
       uses: helm/kind-action@v1.5.0
@@ -51,5 +115,59 @@ jobs:
         node_image: kindest/node:${{ matrix.k8s_version }}
       # if: steps.list-changed.outputs.changed == 'true'
 
+    - name: Comment (after create KinD successfully)
+      uses: peter-evans/create-or-update-comment@v2
+      if: ${{ success() && github.event.pull_request.number }}
+      with:
+        token: ${{ secrets.BOT_TOKEN }}
+        issue-number: ${{ github.event.pull_request.number }}
+        comment-id: ${{ steps.comment.outputs.comment-id }}
+        edit-mode: append
+        reactions: rocket
+        body: |
+          Created KinD cluster ${{ matrix.k8s_version }} successfully.<br />
+          Installing charts and validating ...<br /><br />
+
     - name: Run chart-testing (install)
-      run: ct install --config .github/ct-install.yaml
+      id: ct
+      run: |
+        echo 'CT_TEST<<EOF' >> $GITHUB_ENV
+        ct install --config .github/ct-install.yaml 2>&1 >> $GITHUB_ENV
+        echo 'EOF' >> $GITHUB_ENV
+        echo $GITHUB_ENV
+
+    - name: Comment (after test success)
+      uses: peter-evans/create-or-update-comment@v2
+      if: ${{ success() && github.event.pull_request.number }}
+      with:
+        token: ${{ secrets.BOT_TOKEN }}
+        issue-number: ${{ github.event.pull_request.number }}
+        comment-id: ${{ steps.comment.outputs.comment-id }}
+        edit-mode: append
+        reactions: hooray
+        body: |
+          <details>
+            <summary>Testing chart successfully.</summary>
+
+            ```
+            ${{ env.CT_TEST }}
+            ```
+          </details>
+
+    - name: Comment (after test failure)
+      uses: peter-evans/create-or-update-comment@v2
+      if: ${{ failure() && github.event.pull_request.number }}
+      with:
+        token: ${{ secrets.BOT_TOKEN }}
+        issue-number: ${{ github.event.pull_request.number }}
+        comment-id: ${{ steps.comment.outputs.comment-id }}
+        edit-mode: append
+        reactions: -1
+        body: |
+          <details>
+            <summary>Testing chart failure!</summary>
+
+            ```
+            ${{ env.CT_TEST }}
+            ```
+          </details>
