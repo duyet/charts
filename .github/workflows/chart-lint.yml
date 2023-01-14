@@ -59,8 +59,10 @@ jobs:
       run: |
         echo 'CT_LINT<<EOF' >> $GITHUB_ENV
         ct lint --config .github/ct-lint.yaml 2>&1 >> $GITHUB_ENV
+        exit_code=$?
         echo 'EOF' >> $GITHUB_ENV
         echo $GITHUB_ENV
+        exit $exit_code
 
     - name: Comment (after ct lint successfully)
       uses: peter-evans/create-or-update-comment@v2
@@ -133,8 +135,10 @@ jobs:
       run: |
         echo 'CT_TEST<<EOF' >> $GITHUB_ENV
         ct install --config .github/ct-install.yaml 2>&1 >> $GITHUB_ENV
+        exit_code=$?
         echo 'EOF' >> $GITHUB_ENV
         echo $GITHUB_ENV
+        exit $exit_code
 
     - name: Comment (after test success)
       uses: peter-evans/create-or-update-comment@v2
