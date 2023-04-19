@@ -1,4 +1,4 @@
-# duyet/charts ![Helm Template Validation](https://github.com/duyet/charts/workflows/Helm%20Template%20Validation/badge.svg) [![Build & Publish](https://github.com/duyet/charts/actions/workflows/chart-build-publish.yml/badge.svg)](https://github.com/duyet/charts/actions/workflows/chart-build-publish.yml) [![Artifact HUB](https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/duyet)](https://artifacthub.io/packages/search?repo=duyet)
+# duyet/charts [![Chart Lint](https://github.com/duyet/charts/actions/workflows/chart-lint.yml/badge.svg)](https://github.com/duyet/charts/actions/workflows/chart-lint.yml) [![Build & Publish](https://github.com/duyet/charts/actions/workflows/chart-build-publish.yml/badge.svg)](https://github.com/duyet/charts/actions/workflows/chart-build-publish.yml) [![Artifact HUB](https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/duyet)](https://artifacthub.io/packages/search?repo=duyet)
 Helm Charts for Kubernetes.
 
 - Charts list: https://duyet.github.io/charts/index.yaml
