@@ -15,7 +15,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3.3.0
+        uses: actions/checkout@v3.5.2
 
       - name: Fetch history
         run: git fetch --prune --unshallow
@@ -31,7 +31,7 @@ jobs:
           python-version: 3.7
 
       - name: Set up chart-testing
-        uses: helm/chart-testing-action@v2.3.1
+        uses: helm/chart-testing-action@v2.4.0
 
       - name: Run chart-testing (list-changed)
         id: list-changed
@@ -44,7 +44,7 @@ jobs:
           fi
 
       - name: Comment
-        uses: peter-evans/create-or-update-comment@v2
+        uses: peter-evans/create-or-update-comment@v3
         id: comment
         if: ${{ github.event.pull_request.number }}
         with:
@@ -65,7 +65,7 @@ jobs:
           exit $exit_code
 
       - name: Comment (after ct lint successfully)
-        uses: peter-evans/create-or-update-comment@v2
+        uses: peter-evans/create-or-update-comment@v3
         if: ${{ success() && github.event.pull_request.number }}
         with:
           token: ${{ secrets.BOT_TOKEN }}
@@ -82,7 +82,7 @@ jobs:
             </details>
 
       - name: Comment (after ct lint failure)
-        uses: peter-evans/create-or-update-comment@v2
+        uses: peter-evans/create-or-update-comment@v3
         if: ${{ failure() && github.event.pull_request.number }}
         with:
           token: ${{ secrets.BOT_TOKEN }}
@@ -100,7 +100,7 @@ jobs:
             </details>
 
       - name: Comment (before create KinD cluster)
-        uses: peter-evans/create-or-update-comment@v2
+        uses: peter-evans/create-or-update-comment@v3
         if: ${{ github.event.pull_request.number }}
         with:
           token: ${{ secrets.BOT_TOKEN }}
@@ -118,7 +118,7 @@ jobs:
         # if: steps.list-changed.outputs.changed == 'true'
 
       - name: Comment (after create KinD successfully)
-        uses: peter-evans/create-or-update-comment@v2
+        uses: peter-evans/create-or-update-comment@v3
         if: ${{ success() && github.event.pull_request.number }}
         with:
           token: ${{ secrets.BOT_TOKEN }}
@@ -147,7 +147,7 @@ jobs:
           charts: .
 
       - name: Comment (after test success)
-        uses: peter-evans/create-or-update-comment@v2
+        uses: peter-evans/create-or-update-comment@v3
         if: ${{ success() && github.event.pull_request.number }}
         with:
           token: ${{ secrets.BOT_TOKEN }}
@@ -165,7 +165,7 @@ jobs:
             </details>
 
       - name: Comment (after test failure)
-        uses: peter-evans/create-or-update-comment@v2
+        uses: peter-evans/create-or-update-comment@v3
         if: ${{ failure() && github.event.pull_request.number }}
         with:
           token: ${{ secrets.BOT_TOKEN }}
