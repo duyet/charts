@@ -14,164 +14,170 @@ jobs:
         k8s_version: [v1.20.15, v1.22.5]
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@v3.5.2
+      - name: Checkout
+        uses: actions/checkout@v3.5.2
 
-    - name: Fetch history
-      run: git fetch --prune --unshallow
+      - name: Fetch history
+        run: git fetch --prune --unshallow
 
-    - name: Set up Helm
-      uses: azure/setup-helm@v3.5
-      with:
-        version: ${{ matrix.helm_version }}
+      - name: Set up Helm
+        uses: azure/setup-helm@v3.5
+        with:
+          version: ${{ matrix.helm_version }}
 
-    - name: Setup Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: 3.7
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.7
 
-    - name: Set up chart-testing
-      uses: helm/chart-testing-action@v2.4.0
+      - name: Set up chart-testing
+        uses: helm/chart-testing-action@v2.4.0
 
-    - name: Run chart-testing (list-changed)
-      id: list-changed
-      run: |
-        changed=$(ct list-changed)
-        echo "list_changed=$changed" >> $GITHUB_ENV
-        if [[ -n "$changed" ]]; then
-          echo "::set-output name=changed::true"
-          echo "::set-output name=list::$changed"
-        fi
+      - name: Run chart-testing (list-changed)
+        id: list-changed
+        run: |
+          changed=$(ct list-changed)
+          echo "list_changed=$changed" >> $GITHUB_ENV
+          if [[ -n "$changed" ]]; then
+            echo "::set-output name=changed::true"
+            echo "::set-output name=list::$changed"
+          fi
 
-    - name: Comment
-      uses: peter-evans/create-or-update-comment@v3
-      id: comment
-      if: ${{ github.event.pull_request.number }}
-      with:
-        token: ${{ secrets.BOT_TOKEN }}
-        issue-number: ${{ github.event.pull_request.number }}
-        body: |
-          Testing on Kubernetes **${{ matrix.k8s_version }}**, Helm **${{ matrix.helm_version }}** ... [(Run ${{ github.run_id }})](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
-          ${{ env.list_changed }}
+      - name: Comment
+        uses: peter-evans/create-or-update-comment@v3
+        id: comment
+        if: ${{ github.event.pull_request.number }}
+        with:
+          token: ${{ secrets.BOT_TOKEN }}
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            Testing on Kubernetes **${{ matrix.k8s_version }}**, Helm **${{ matrix.helm_version }}** ... [(Run ${{ github.run_id }})](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+            ${{ env.list_changed }}
 
-    - name: Run chart-testing (lint)
-      id: lint
-      run: |
-        echo 'CT_LINT<<EOF' >> $GITHUB_ENV
-        ct lint --config .github/ct-lint.yaml 2>&1 >> $GITHUB_ENV
-        exit_code=$?
-        echo 'EOF' >> $GITHUB_ENV
-        echo $GITHUB_ENV
-        exit $exit_code
+      - name: Run chart-testing (lint)
+        id: lint
+        run: |
+          echo 'CT_LINT<<EOF' >> $GITHUB_ENV
+          ct lint --config .github/ct-lint.yaml 2>&1 >> $GITHUB_ENV
+          exit_code=$?
+          echo 'EOF' >> $GITHUB_ENV
+          echo $GITHUB_ENV
+          exit $exit_code
 
-    - name: Comment (after ct lint successfully)
-      uses: peter-evans/create-or-update-comment@v3
-      if: ${{ success() && github.event.pull_request.number }}
-      with:
-        token: ${{ secrets.BOT_TOKEN }}
-        issue-number: ${{ github.event.pull_request.number }}
-        comment-id: ${{ steps.comment.outputs.comment-id }}
-        edit-mode: append
-        body: |
-          <details>
-            <summary>Linting chart successfully.</summary>
+      - name: Comment (after ct lint successfully)
+        uses: peter-evans/create-or-update-comment@v3
+        if: ${{ success() && github.event.pull_request.number }}
+        with:
+          token: ${{ secrets.BOT_TOKEN }}
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-id: ${{ steps.comment.outputs.comment-id }}
+          edit-mode: append
+          body: |
+            <details>
+              <summary>Linting chart successfully.</summary>
 
-            ```
-            ${{ env.CT_LINT }}
-            ```
-          </details>
+              ```
+              ${{ env.CT_LINT }}
+              ```
+            </details>
 
-    - name: Comment (after ct lint failure)
-      uses: peter-evans/create-or-update-comment@v3
-      if: ${{ failure() && github.event.pull_request.number }}
-      with:
-        token: ${{ secrets.BOT_TOKEN }}
-        issue-number: ${{ github.event.pull_request.number }}
-        comment-id: ${{ steps.comment.outputs.comment-id }}
-        edit-mode: append
-        reactions: -1
-        body: |
-          <details>
-            <summary>Linting chart failure!</summary>
+      - name: Comment (after ct lint failure)
+        uses: peter-evans/create-or-update-comment@v3
+        if: ${{ failure() && github.event.pull_request.number }}
+        with:
+          token: ${{ secrets.BOT_TOKEN }}
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-id: ${{ steps.comment.outputs.comment-id }}
+          edit-mode: append
+          reactions: -1
+          body: |
+            <details>
+              <summary>Linting chart failure!</summary>
 
-            ```
-            ${{ env.CT_LINT }}
-            ```
-          </details>
+              ```
+              ${{ env.CT_LINT }}
+              ```
+            </details>
 
-    - name: Comment (before create KinD cluster)
-      uses: peter-evans/create-or-update-comment@v3
-      if: ${{ github.event.pull_request.number }}
-      with:
-        token: ${{ secrets.BOT_TOKEN }}
-        issue-number: ${{ github.event.pull_request.number }}
-        comment-id: ${{ steps.comment.outputs.comment-id }}
-        edit-mode: append
-        body: |
-          Creating KinD cluster ${{ matrix.kubectl_version }} ...<br />
+      - name: Comment (before create KinD cluster)
+        uses: peter-evans/create-or-update-comment@v3
+        if: ${{ github.event.pull_request.number }}
+        with:
+          token: ${{ secrets.BOT_TOKEN }}
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-id: ${{ steps.comment.outputs.comment-id }}
+          edit-mode: append
+          body: |
+            Creating KinD cluster ${{ matrix.kubectl_version }} ...<br />
 
-    - name: Create KinD cluster
-      uses: helm/kind-action@v1.5.0
-      with:
-        kubectl_version: ${{ matrix.k8s_version }}
-        node_image: kindest/node:${{ matrix.k8s_version }}
-      # if: steps.list-changed.outputs.changed == 'true'
+      - name: Create KinD cluster
+        uses: helm/kind-action@v1.5.0
+        with:
+          kubectl_version: ${{ matrix.k8s_version }}
+          node_image: kindest/node:${{ matrix.k8s_version }}
+        # if: steps.list-changed.outputs.changed == 'true'
 
-    - name: Comment (after create KinD successfully)
-      uses: peter-evans/create-or-update-comment@v3
-      if: ${{ success() && github.event.pull_request.number }}
-      with:
-        token: ${{ secrets.BOT_TOKEN }}
-        issue-number: ${{ github.event.pull_request.number }}
-        comment-id: ${{ steps.comment.outputs.comment-id }}
-        edit-mode: append
-        reactions: rocket
-        body: |
-          Created KinD cluster ${{ matrix.k8s_version }} successfully.<br />
-          Installing charts and validating ...<br /><br />
+      - name: Comment (after create KinD successfully)
+        uses: peter-evans/create-or-update-comment@v3
+        if: ${{ success() && github.event.pull_request.number }}
+        with:
+          token: ${{ secrets.BOT_TOKEN }}
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-id: ${{ steps.comment.outputs.comment-id }}
+          edit-mode: append
+          reactions: rocket
+          body: |
+            Created KinD cluster ${{ matrix.k8s_version }} successfully.<br />
+            Installing charts and validating ...<br /><br />
 
-    - name: Run chart-testing (install)
-      id: ct
-      run: |
-        echo 'CT_TEST<<EOF' >> $GITHUB_ENV
-        ct install --config .github/ct-install.yaml 2>&1 >> $GITHUB_ENV
-        exit_code=$?
-        echo 'EOF' >> $GITHUB_ENV
-        echo $GITHUB_ENV
-        exit $exit_code
+      - name: Run chart-testing (install)
+        id: ct
+        run: |
+          echo 'CT_TEST<<EOF' >> $GITHUB_ENV
+          ct install --config .github/ct-install.yaml 2>&1 >> $GITHUB_ENV
+          exit_code=$?
+          echo 'EOF' >> $GITHUB_ENV
+          echo $GITHUB_ENV
+          exit $exit_code
 
-    - name: Comment (after test success)
-      uses: peter-evans/create-or-update-comment@v3
-      if: ${{ success() && github.event.pull_request.number }}
-      with:
-        token: ${{ secrets.BOT_TOKEN }}
-        issue-number: ${{ github.event.pull_request.number }}
-        comment-id: ${{ steps.comment.outputs.comment-id }}
-        edit-mode: append
-        reactions: hooray
-        body: |
-          <details>
-            <summary>Testing chart successfully.</summary>
+      - name: Run kubeconform
+        uses: nlamirault/helm-kubeconform-action@v0.2.0
+        id: kubeconform
+        with:
+          charts: .
 
-            ```
-            ${{ env.CT_TEST }}
-            ```
-          </details>
+      - name: Comment (after test success)
+        uses: peter-evans/create-or-update-comment@v3
+        if: ${{ success() && github.event.pull_request.number }}
+        with:
+          token: ${{ secrets.BOT_TOKEN }}
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-id: ${{ steps.comment.outputs.comment-id }}
+          edit-mode: append
+          reactions: hooray
+          body: |
+            <details>
+              <summary>Testing chart successfully.</summary>
 
-    - name: Comment (after test failure)
-      uses: peter-evans/create-or-update-comment@v3
-      if: ${{ failure() && github.event.pull_request.number }}
-      with:
-        token: ${{ secrets.BOT_TOKEN }}
-        issue-number: ${{ github.event.pull_request.number }}
-        comment-id: ${{ steps.comment.outputs.comment-id }}
-        edit-mode: append
-        reactions: -1
-        body: |
-          <details>
-            <summary>Testing chart failure!</summary>
+              ```
+              ${{ env.CT_TEST }}
+              ```
+            </details>
 
-            ```
-            ${{ env.CT_TEST }}
-            ```
-          </details>
+      - name: Comment (after test failure)
+        uses: peter-evans/create-or-update-comment@v3
+        if: ${{ failure() && github.event.pull_request.number }}
+        with:
+          token: ${{ secrets.BOT_TOKEN }}
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-id: ${{ steps.comment.outputs.comment-id }}
+          edit-mode: append
+          reactions: -1
+          body: |
+            <details>
+              <summary>Testing chart failure!</summary>
+
+              ```
+              ${{ env.CT_TEST }}
+              ```
+            </details>
