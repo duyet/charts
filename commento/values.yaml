@@ -160,5 +160,7 @@ ingress:
 
 # Define nodeSelector, affinity, tolerations
 nodeSelector: {}
+
 affinity: {}
+
 tolerations: {}

@@ -65,6 +65,7 @@ env:
   INJECT_PARAMS_FROM_REQ_HEADERS: ''
   PORT: '3000'
 
+# Define nodeSelector, tolerations and affinity
 nodeSelector: {}
 
 tolerations: []
