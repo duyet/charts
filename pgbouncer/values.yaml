@@ -12,8 +12,8 @@ budget:
   minAvailable: 0
 
 image:
-  repository: cradlepoint/pgbouncer
-  tag: latest
+  repository: bitnami/pgbouncer
+  tag: 1.19.1
   pullPolicy: Always
 
 databases: {}
@@ -73,3 +73,6 @@ service:
 global:
   # optionally use namespace as dbname
   namespacedDatabases: false
+
+# Deployment resources
+resources: {}
