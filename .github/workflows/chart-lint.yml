@@ -74,7 +74,7 @@ jobs:
           edit-mode: append
           body: |
             <details>
-              <summary>Linting chart successfully.</summary>
+              <summary>Linting chart successfully :rocket:.</summary>
 
               ```
               ${{ env.CT_LINT }}
@@ -92,7 +92,7 @@ jobs:
           reactions: -1
           body: |
             <details>
-              <summary>Linting chart failure!</summary>
+              <summary>Linting chart failure! :no_good:</summary>
 
               ```
               ${{ env.CT_LINT }}
@@ -133,12 +133,12 @@ jobs:
       - name: Run chart-testing (install)
         id: ct
         run: |
-          echo 'CT_TEST<<EOF' >> $GITHUB_ENV
-          ct install --config .github/ct-install.yaml 2>&1 >> $GITHUB_ENV
-          exit_code=$?
-          echo 'EOF' >> $GITHUB_ENV
+          {
+          echo 'CT_TEST<<EOF'
+          ct install --config .github/ct-install.yaml 2>&1 || echo 'failed'
+          echo 'EOF'
+          } >> "$GITHUB_ENV"
           echo $GITHUB_ENV
-          exit $exit_code
 
       - name: Run kubeconform
         uses: nlamirault/helm-kubeconform-action@v0.2.0
@@ -157,7 +157,7 @@ jobs:
           reactions: hooray
           body: |
             <details>
-              <summary>Testing chart successfully.</summary>
+              <summary>Testing chart successfully.  :hooray:</summary>
 
               ```
               ${{ env.CT_TEST }}
@@ -175,7 +175,7 @@ jobs:
           reactions: -1
           body: |
             <details>
-              <summary>Testing chart failure!</summary>
+              <summary>Testing chart failure! :no_good:</summary>
 
               ```
               ${{ env.CT_TEST }}

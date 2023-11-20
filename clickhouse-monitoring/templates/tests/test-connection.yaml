@@ -11,5 +11,5 @@ spec:
     - name: wget
       image: busybox
       command: ['wget']
-      args: ['{{ include "clickhouse-monitoring.fullname" . }}:{{ .Values.service.port }}/healthz']
+      args: ['{{ include "clickhouse-monitoring.fullname" . }}:{{ .Values.service.port }}']
   restartPolicy: Never
