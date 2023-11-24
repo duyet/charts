@@ -6,6 +6,11 @@ jobs:
   chart-lint:
     runs-on: ubuntu-latest
 
+    env:
+      # Force running all charts on master branch
+      # --all Disables changed charts detection and version increment checking
+      CT_ALL: ${{ github.ref == 'refs/heads/master' }}
+
     # Multiple KinD version
     strategy:
       fail-fast: false
