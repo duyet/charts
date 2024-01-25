@@ -49,7 +49,7 @@ jobs:
           fi
 
       - name: Comment
-        uses: peter-evans/create-or-update-comment@v3
+        uses: peter-evans/create-or-update-comment@v4
         id: comment
         if: ${{ github.event.pull_request.number }}
         with:
@@ -70,7 +70,7 @@ jobs:
           exit $exit_code
 
       - name: Comment (after ct lint successfully)
-        uses: peter-evans/create-or-update-comment@v3
+        uses: peter-evans/create-or-update-comment@v4
         if: ${{ success() && github.event.pull_request.number }}
         with:
           token: ${{ secrets.BOT_TOKEN }}
@@ -87,7 +87,7 @@ jobs:
             </details>
 
       - name: Comment (after ct lint failure)
-        uses: peter-evans/create-or-update-comment@v3
+        uses: peter-evans/create-or-update-comment@v4
         if: ${{ failure() && github.event.pull_request.number }}
         with:
           token: ${{ secrets.BOT_TOKEN }}
@@ -105,7 +105,7 @@ jobs:
             </details>
 
       - name: Comment (before create KinD cluster)
-        uses: peter-evans/create-or-update-comment@v3
+        uses: peter-evans/create-or-update-comment@v4
         if: ${{ github.event.pull_request.number }}
         with:
           token: ${{ secrets.BOT_TOKEN }}
@@ -123,7 +123,7 @@ jobs:
         # if: steps.list-changed.outputs.changed == 'true'
 
       - name: Comment (after create KinD successfully)
-        uses: peter-evans/create-or-update-comment@v3
+        uses: peter-evans/create-or-update-comment@v4
         if: ${{ success() && github.event.pull_request.number }}
         with:
           token: ${{ secrets.BOT_TOKEN }}
@@ -152,7 +152,7 @@ jobs:
           charts: .
 
       - name: Comment (after test success)
-        uses: peter-evans/create-or-update-comment@v3
+        uses: peter-evans/create-or-update-comment@v4
         if: ${{ success() && github.event.pull_request.number }}
         with:
           token: ${{ secrets.BOT_TOKEN }}
@@ -170,7 +170,7 @@ jobs:
             </details>
 
       - name: Comment (after test failure)
-        uses: peter-evans/create-or-update-comment@v3
+        uses: peter-evans/create-or-update-comment@v4
         if: ${{ failure() && github.event.pull_request.number }}
         with:
           token: ${{ secrets.BOT_TOKEN }}
