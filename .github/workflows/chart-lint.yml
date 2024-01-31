@@ -62,11 +62,15 @@ jobs:
       - name: Run chart-testing (lint)
         id: lint
         run: |
-          echo 'CT_LINT<<EOF' >> $GITHUB_ENV
-          ct lint --config .github/ct-lint.yaml 2>&1 >> $GITHUB_ENV
-          exit_code=$?
+          echo 'LINT_STATUS<<EOF' >> $GITHUB_ENV
+          ct lint --config .github/ct-lint.yaml || { 
+            echo "$(cat)"
+            echo "$(cat)" >> $GITHUB_ENV; 
+            echo "$(cat)" >> $GITHUB_STEP_SUMMARY; 
+            STATUS=$(cat); 
+            exit_code=$?; }
+          echo >> $GITHUB_ENV
           echo 'EOF' >> $GITHUB_ENV
-          echo $GITHUB_ENV
           exit $exit_code
 
       - name: Comment (after ct lint successfully)
@@ -82,7 +86,7 @@ jobs:
               <summary>Linting chart successfully :rocket:.</summary>
 
               ```
-              ${{ env.CT_LINT }}
+              ${{ env.LINT_STATUS }}
               ```
             </details>
 
@@ -100,7 +104,7 @@ jobs:
               <summary>Linting chart failure! :no_good:</summary>
 
               ```
-              ${{ env.CT_LINT }}
+              ${{ env.LINT_STATUS }}
               ```
             </details>
 
@@ -139,8 +143,9 @@ jobs:
         id: ct
         run: |
           {
-          echo 'CT_TEST<<EOF'
+          echo 'TEST_STATUS<<EOF'
           ct install --config .github/ct-install.yaml 2>&1 || echo 'failed'
+          echo
           echo 'EOF'
           } >> "$GITHUB_ENV"
           echo $GITHUB_ENV
@@ -165,7 +170,7 @@ jobs:
               <summary>Testing chart successfully.  :hooray:</summary>
 
               ```
-              ${{ env.CT_TEST }}
+              ${{ env.TEST_STATUS }}
               ```
             </details>
 
@@ -183,6 +188,6 @@ jobs:
               <summary>Testing chart failure! :no_good:</summary>
 
               ```
-              ${{ env.CT_TEST }}
+              ${{ env.TEST_STATUS }}
               ```
             </details>
