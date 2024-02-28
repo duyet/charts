@@ -8,8 +8,8 @@ spec:
   type: {{ .Values.service.type }}
   ports:
     - port: {{ .Values.service.port }}
-      targetPort: http
+      targetPort: {{ .Values.port.portName }}
       protocol: TCP
-      name: http
+      name: {{ .Values.service.portName }}
   selector:
     {{- include "clickhouse-monitoring.selectorLabels" . | nindent 4 }}
