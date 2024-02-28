@@ -43,8 +43,13 @@ securityContext:
   # runAsNonRoot: true
   # runAsUser: 1000
 
+port:
+  containerPort: 3000
+  portName: http
+
 service:
   type: ClusterIP
+  portName: http
   port: 3000
 
 ingress:
