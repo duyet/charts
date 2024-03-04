@@ -8,6 +8,12 @@ metadata:
 spec:
   concurrencyPolicy: {{ .Values.concurrencyPolicy }}
   schedule: {{ include "scheduling-restart.schedule" . }}
+  {{ with .Values.successfulJobsHistoryLimit }}
+  successfulJobsHistoryLimit: {{ . }} 
+  {{ end }}
+  {{ with .Values.failedJobsHistoryLimit }}
+  failedJobsHistoryLimit: {{ . }} 
+  {{ end }}
   jobTemplate:
     spec:
       {{ with .Values.backoffLimit }}
@@ -16,14 +22,6 @@ spec:
 
       {{ with .Values.activeDeadlineSeconds }}
       activeDeadlineSeconds: {{ . }} 
-      {{ end }}
-
-      {{ with .Values.successfulJobsHistoryLimit }}
-      successfulJobsHistoryLimit: {{ . }} 
-      {{ end }}
-
-      {{ with .Values.failedJobsHistoryLimit }}
-      failedJobsHistoryLimit: {{ . }} 
       {{ end }}
 
       {{- with .Values.imagePullSecrets }}
