@@ -38,6 +38,20 @@ Create chart name and version as used by the chart label.
 {{- end }}
 
 {{/*
+Persistent Volume Claim Name
+*/}}
+{{- define "clickhouse-keeper.claimName" -}}
+{{- printf "%s-data" (include "clickhouse-keeper.fullname" .) | replace "+" "_" | trunc 63 | trimSuffix "-" }}
+{{- end }}
+
+{{/*
+Configmap Name
+*/}}
+{{- define "clickhouse-keeper.configMapName" -}}
+{{- printf "%s-settings" (include "clickhouse-keeper.fullname" .) | replace "+" "_" | trunc 63 | trimSuffix "-" }}
+{{- end }}
+
+{{/*
 Common labels
 */}}
 {{- define "clickhouse-keeper.labels" -}}
