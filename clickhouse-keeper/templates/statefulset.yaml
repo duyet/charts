@@ -40,6 +40,8 @@ spec:
           ports:
             - name: prometheus
               containerPort: {{ .Values.service.port }}
+            - name: http
+              containerPort: 9182
           {{- with .Values.livenessProbe }}
           livenessProbe:
             {{- toYaml . | nindent 12 }}
@@ -55,7 +57,7 @@ spec:
             - bash
             - -x
             - -c
-            - {{ toYaml .Values.command }}
+            - {{ toYaml .Values.command | indent 12 }}
           volumeMounts:
             - name: clickhouse-keeper-settings
               mountPath: /etc/clickhouse-keeper/
@@ -67,14 +69,14 @@ spec:
       volumes:
         - name: clickhouse-keeper-settings
           configMap:
-            name: {{ include "clickhouse-keeper.fullname" . }}-settings
+            name: {{ include "clickhouse-keeper.configMapName" . }}
             items:
               - key: keeper_config.xml
                 path: keeper_config.xml
         - name: clickhouse-keeper-data
           {{- if .Values.persistence.enabled }}
           persistentVolumeClaim:
-            claimName: {{ .Values.persistence.existingClaim | default (printf "%s-data" (include "clickhouse-keeper.fullname" .)) }}
+            claimName: {{ .Values.persistence.existingClaim | default (include "clickhouse-keeper.claimName" .) }}
           {{- else }}
           emptyDir: {}
           {{- end }} 
@@ -98,10 +100,14 @@ spec:
     - metadata:
         name: {{ printf "%s-data" (include "clickhouse-keeper.fullname" .) }}
       spec:
+        {{- with .Values.persistence.accessMode }}
         accessModes:
-          - {{ .Values.persistence.accessModes }}
+          - {{ . }}
+        {{- end }}
+        {{- with .Values.persistence.storageClass }}
+        storageClassName: {{ . }}
+        {{- end }}
         resources:
           requests:
             storage: {{ .Values.persistence.size }}
   {{- end }}
-  
