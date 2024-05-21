@@ -8,7 +8,7 @@ spec:
   replicas: {{ .Values.replicaCount }}
   updateStrategy:
     type: RollingUpdate
-  podManagementPolicy: Parallel
+  podManagementPolicy: OrderedReady
   selector:
     matchLabels:
       {{- include "clickhouse-keeper.selectorLabels" . | nindent 6 }}
