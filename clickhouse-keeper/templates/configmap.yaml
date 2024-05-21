@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ include "clickhouse-keeper.configMapName" . }}
+  name: { { include "clickhouse-keeper.configMapName" . } }
 data:
   keeper_config.xml: |
     {{ .Values.keeperConfig | nindent 4 }}
@@ -34,7 +34,7 @@ data:
     set -ex
     source /conf/env.sh
     source /conf/keeperFunctions.sh
-    
+
     HOST=`hostname -s`
     if [[ $HOST =~ (.*)-([0-9]+)$ ]]; then
       NAME=${BASH_REMATCH[1]}
@@ -89,11 +89,17 @@ data:
         echo "</keeper_server></yandex>"
       } > /tmp/clickhouse-keeper/config.d/generated-keeper-settings.xml
     fi
-    
-    # run clickhouse-keeper    
+
+    # run clickhouse-keeper
     cat /tmp/clickhouse-keeper/config.d/generated-keeper-settings.xml
     rm -rfv /var/lib/clickhouse-keeper/terminated
-    clickhouse-keeper --config-file=/etc/clickhouse-keeper/keeper_config.xml
+    # clickhouse-keeper --config-file=/etc/clickhouse-keeper/keeper_config.xml
+
+    if [[ "1" == "$MY_ID" ]]; then
+      clickhouse-keeper --config-file=/etc/clickhouse-keeper/keeper_config.xml --force-recovery
+    else
+      clickhouse-keeper --config-file=/etc/clickhouse-keeper/keeper_config.xml
+    fi
 
   keeperTeardown.sh: |
     #!/usr/bin/env bash
@@ -151,7 +157,6 @@ data:
     touch /var/lib/clickhouse-keeper/terminated
     # Kill the primary process ourselves to circumvent the terminationGracePeriodSeconds
     ps -ef | grep clickhouse-keeper | grep -v grep | awk '{print $1}' | xargs kill
-    
 
   keeperLive.sh: |
     #!/usr/bin/env bash
@@ -204,7 +209,7 @@ data:
         exit 0
       else
         echo "clickhouse-keeper instance is ready to add as participant with 1 weight."
-    
+
         ROLE=participant
         WEIGHT=1
         KEEPER_URL=$(keeperConnectionString)
