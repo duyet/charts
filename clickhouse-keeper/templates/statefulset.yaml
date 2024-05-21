@@ -8,7 +8,7 @@ spec:
   replicas: {{ .Values.replicaCount }}
   updateStrategy:
     type: RollingUpdate
-  podManagementPolicy: Parallel
+  podManagementPolicy: OrderedReady
   selector:
     matchLabels:
       {{- include "clickhouse-keeper.selectorLabels" . | nindent 6 }}
@@ -42,27 +42,36 @@ spec:
               containerPort: {{ .Values.service.port }}
             - name: http
               containerPort: 9182
+            - name: client
+              containerPort: 2181
+              protocol: TCP
+            - name: quorum
+              containerPort: 9444
+              protocol: TCP
           {{- with .Values.livenessProbe }}
           livenessProbe:
             {{- toYaml . | nindent 12 }}
           {{- end }}
+          {{- with .Values.readinessProbe }}
+          readinessProbe:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-          env:
-            - name: SERVERS
-              value: {{ .Values.replicaCount | quote }}
-            - name: RAFT_PORT
-              value: "9444"
           command:
-            - bash
-            - -x
-            - -c
-            - {{ toYaml .Values.command | indent 12 }}
+            - /conf/keeperStart.sh
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                  - /conf/keeperTeardown.sh
           volumeMounts:
             - name: clickhouse-keeper-settings
               mountPath: /etc/clickhouse-keeper/
             - name: clickhouse-keeper-data
               mountPath: /var/lib/clickhouse-keeper
+            - name: clickhouse-keeper-scripts
+              mountPath: /conf/
           {{- with .Values.volumeMounts }}
             {{- toYaml . | nindent 12 }}
           {{- end }}
@@ -73,6 +82,10 @@ spec:
             items:
               - key: keeper_config.xml
                 path: keeper_config.xml
+        - name: clickhouse-keeper-scripts
+          configMap:
+            name: {{ include "clickhouse-keeper.configMapName" . }}
+            defaultMode: 0755
         - name: clickhouse-keeper-data
           {{- if .Values.persistence.enabled }}
           persistentVolumeClaim:
