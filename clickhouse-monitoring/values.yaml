@@ -8,7 +8,7 @@ image:
   repository: ghcr.io/duyet/clickhouse-monitoring
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
-  tag: main
+  tag: latest
 
 imagePullSecrets: []
 nameOverride: ''
