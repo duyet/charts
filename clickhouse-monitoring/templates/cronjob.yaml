@@ -1,0 +1,89 @@
+{{- if $.Values.cronjob.enabled }}
+{{- range $endpoint := $.Values.cronjob.endpoints }}
+
+---
+apiVersion: {{ include "clickhouse-monitoring.cronJobApiVersion" $ }}
+kind: CronJob
+metadata:
+  name: {{ include "clickhouse-monitoring.cronjobName" (merge $endpoint $) }}
+  labels:
+    {{- include "clickhouse-monitoring.labels" $ | nindent 4 }}
+spec:
+  schedule: {{ $endpoint.schedule | quote }}
+  successfulJobsHistoryLimit: {{ $.Values.cronjob.successfulJobsHistoryLimit }}
+  failedJobsHistoryLimit: {{ $.Values.cronjob.failedJobsHistoryLimit }}
+  jobTemplate:
+    metadata:
+      {{- with $.Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "clickhouse-monitoring.labels" $ | nindent 8 }}
+        {{- with $.Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      template:
+        spec:
+          {{- with $.Values.imagePullSecrets }}
+          imagePullSecrets:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          securityContext:
+            {{- toYaml $.Values.podSecurityContext | nindent 12 }}
+          containers:
+            - name: {{ $.Chart.Name }}
+              securityContext:
+                {{- toYaml $.Values.securityContext | nindent 16 }}
+              {{- with $.Values.cronjob.image }}
+              image: "{{ .repository }}:{{ .tag }}"
+              imagePullPolicy: {{ .pullPolicy | default $.Values.image.pullPolicy }}
+              {{- end }}
+              resources:
+                {{- toYaml $.Values.cronjob.resources | nindent 16 }}
+              env:
+                - name: ENDPOINT
+                  value: {{ include "clickhouse-monitoring.fullname" $ }}:{{ $.Values.service.port }}
+                {{- with $.Values.env }}
+                {{- toYaml . | nindent 16 }}
+                {{- end }}
+              {{- if or $.Values.extraEnvVarsCM $.Values.extraEnvVarsSecret }}
+              envFrom:
+                {{- if $.Values.extraEnvVarsCM }}
+                - configMapRef:
+                    name: {{ include "clickhouse-monitoring.tplValue" ( dict "value" $.Values.extraEnvVarsCM "context" $ ) }}
+                {{- end }}
+                {{- if $.Values.extraEnvVarsSecret }}
+                - secretRef:
+                    name: {{ include "clickhouse-monitoring.tplValue" ( dict "value" $.Values.extraEnvVarsSecret "context" $ ) }}
+                {{- end }}
+              {{- end }}
+              command:
+                - curl
+                - -H
+                - 'Content-type: application/json'
+                - $(ENDPOINT){{ $endpoint.endpoint }}
+
+              {{- with $.Values.volumeMounts }}
+              volumeMounts:
+                {{- toYaml . | nindent 16 }}
+              {{- end }}
+          {{- with $.Values.volumes }}
+          volumes:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with $.Values.nodeSelector }}
+          nodeSelector:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with $.Values.affinity }}
+          affinity:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with $.Values.tolerations }}
+          tolerations:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+{{- end }}
+{{- end }}
