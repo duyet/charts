@@ -167,7 +167,7 @@ jobs:
           reactions: hooray
           body: |
             <details>
-              <summary>Testing chart successfully.  :hooray:</summary>
+              <summary>Testing chart result </summary>
 
               ```
               ${{ env.TEST_STATUS }}
