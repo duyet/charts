@@ -1,6 +1,6 @@
 # clickhouse-monitoring
 
-![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.16.0](https://img.shields.io/badge/AppVersion-1.16.0-informational?style=flat-square)
+![Version: 0.1.2](https://img.shields.io/badge/Version-0.1.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.16.0](https://img.shields.io/badge/AppVersion-1.16.0-informational?style=flat-square)
 
 A Helm chart for ClickHouse Monitoring (https://github.com/duyet/clickhouse-monitoring)
 
@@ -21,6 +21,15 @@ A Helm chart for ClickHouse Monitoring (https://github.com/duyet/clickhouse-moni
 | autoscaling.maxReplicas | int | `100` |  |
 | autoscaling.minReplicas | int | `1` |  |
 | autoscaling.targetCPUUtilizationPercentage | int | `80` |  |
+| cronjob.enabled | bool | `true` |  |
+| cronjob.endpoints[0].endpoint | string | `"/api/clean"` |  |
+| cronjob.endpoints[0].schedule | string | `"*/30 * * * *"` |  |
+| cronjob.failedJobsHistoryLimit | int | `3` |  |
+| cronjob.image.pullPolicy | string | `"IfNotPresent"` |  |
+| cronjob.image.repository | string | `"alpine/curl"` |  |
+| cronjob.image.tag | string | `"8.8.0"` |  |
+| cronjob.resources | object | `{}` |  |
+| cronjob.successfulJobsHistoryLimit | int | `1` |  |
 | env[0].name | string | `"CLICKHOUSE_HOST"` |  |
 | env[0].value | string | `"http://localhost:8123"` |  |
 | env[1].name | string | `"CLICKHOUSE_USER"` |  |
@@ -32,7 +41,7 @@ A Helm chart for ClickHouse Monitoring (https://github.com/duyet/clickhouse-moni
 | fullnameOverride | string | `""` |  |
 | image.pullPolicy | string | `"Always"` |  |
 | image.repository | string | `"ghcr.io/duyet/clickhouse-monitoring"` |  |
-| image.tag | string | `"main"` |  |
+| image.tag | string | `"latest"` |  |
 | imagePullSecrets | list | `[]` |  |
 | ingress.annotations | object | `{}` |  |
 | ingress.className | string | `""` |  |
@@ -46,10 +55,13 @@ A Helm chart for ClickHouse Monitoring (https://github.com/duyet/clickhouse-moni
 | podAnnotations | object | `{}` |  |
 | podLabels | object | `{}` |  |
 | podSecurityContext | object | `{}` |  |
+| port.containerPort | int | `3000` |  |
+| port.portName | string | `"http"` |  |
 | replicaCount | int | `1` |  |
 | resources | object | `{}` |  |
 | securityContext | object | `{}` |  |
 | service.port | int | `3000` |  |
+| service.portName | string | `"http"` |  |
 | service.type | string | `"ClusterIP"` |  |
 | tolerations | list | `[]` |  |
 | volumeMounts | list | `[]` |  |

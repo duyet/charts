@@ -22,6 +22,34 @@ env:
   - name: CLICKHOUSE_PASSWORD
     value: ''
 
+cronjob:
+  enabled: true
+
+  endpoints:
+    - schedule: "*/30 * * * *"
+      endpoint: /api/clean
+
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 3
+
+  image:
+    repository: alpine/curl
+    tag: 8.8.0
+    pullPolicy: IfNotPresent
+
+  resources:
+    {}
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #   cpu: 100m
+    #   memory: 128Mi
+    # requests:
+    #   cpu: 100m
+    #   memory: 128Mi
+
 # Name of a ConfigMap containing extra env vars
 extraEnvVarsCM:
 # Name of a Secret containing extra env vars
