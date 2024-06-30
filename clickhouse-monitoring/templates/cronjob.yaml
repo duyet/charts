@@ -1,6 +1,5 @@
 {{- if $.Values.cronjob.enabled }}
 {{- range $endpoint := $.Values.cronjob.endpoints }}
-
 ---
 apiVersion: {{ include "clickhouse-monitoring.cronJobApiVersion" $ }}
 kind: CronJob
@@ -30,13 +29,12 @@ spec:
           imagePullSecrets:
             {{- toYaml . | nindent 12 }}
           {{- end }}
+          restartPolicy: {{ $.Values.cronjob.restartPolicy | default "OnFailure" }}
           securityContext:
             {{- toYaml $.Values.podSecurityContext | nindent 12 }}
           restartPolicy: {{- $.Values.cronjob.restartPolicy | default "OnFailure" }}
           containers:
             - name: {{ $.Chart.Name }}
-              securityContext:
-                {{- toYaml $.Values.securityContext | nindent 16 }}
               {{- with $.Values.cronjob.image }}
               image: "{{ .repository }}:{{ .tag }}"
               imagePullPolicy: {{ .pullPolicy | default $.Values.image.pullPolicy }}
