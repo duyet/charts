@@ -59,6 +59,7 @@ spec:
               {{- end }}
               command:
                 - curl
+                - -v
                 - -H
                 - 'Content-type: application/json'
                 - $(ENDPOINT){{ $endpoint.endpoint }}
