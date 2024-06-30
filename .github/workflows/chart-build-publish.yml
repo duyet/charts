@@ -37,13 +37,16 @@ jobs:
 
       - name: Commit files
         run: |
-          DIST_DIR=.dist
-          CURRENT_BRANCH=${GITHUB_REF#refs/heads/}
-          TARGET_BRANCH=gh-pages
-          REMOTE_REPO="https://${GITHUB_ACTOR}:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git"
+          set -x
+
+          export DIST_DIR=.dist
+          export CURRENT_BRANCH=${GITHUB_REF#refs/heads/}
+          export TARGET_BRANCH=gh-pages
+          export REMOTE_REPO="https://${GITHUB_ACTOR}:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git"
 
           git config --local user.email "duyetbot@users.noreply.github.com"
           git config --local user.name "Auto Release Bot"
+          git checkout $TARGET_BRANCH
           git status
           git add $DIST_DIR
           git commit -m "[skip ci] Build and Publish Charts"
