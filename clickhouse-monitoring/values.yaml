@@ -32,6 +32,7 @@ cronjob:
       # -- Endpoint for the cron job to call, must be unique as using for generate cronjob name as well.
       endpoint: /api/clean
 
+  restartPolicy: OnFailure
   successfulJobsHistoryLimit: 1
   failedJobsHistoryLimit: 3
 
