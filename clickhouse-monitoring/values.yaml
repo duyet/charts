@@ -22,11 +22,14 @@ env:
   - name: CLICKHOUSE_PASSWORD
     value: ''
 
+# -- Enable cronjob for monitoring background tasks
 cronjob:
   enabled: true
 
   endpoints:
-    - schedule: "*/30 * * * *"
+    - # -- Cron schedule expression
+      schedule: "*/30 * * * *"
+      # -- Endpoint for the cron job to call, must be unique as using for generate cronjob name as well.
       endpoint: /api/clean
 
   successfulJobsHistoryLimit: 1

@@ -21,15 +21,9 @@ A Helm chart for ClickHouse Monitoring (https://github.com/duyet/clickhouse-moni
 | autoscaling.maxReplicas | int | `100` |  |
 | autoscaling.minReplicas | int | `1` |  |
 | autoscaling.targetCPUUtilizationPercentage | int | `80` |  |
-| cronjob.enabled | bool | `true` |  |
-| cronjob.endpoints[0].endpoint | string | `"/api/clean"` |  |
-| cronjob.endpoints[0].schedule | string | `"*/30 * * * *"` |  |
-| cronjob.failedJobsHistoryLimit | int | `3` |  |
-| cronjob.image.pullPolicy | string | `"IfNotPresent"` |  |
-| cronjob.image.repository | string | `"alpine/curl"` |  |
-| cronjob.image.tag | string | `"8.8.0"` |  |
-| cronjob.resources | object | `{}` |  |
-| cronjob.successfulJobsHistoryLimit | int | `1` |  |
+| cronjob | object | `{"enabled":true,"endpoints":[{"endpoint":"/api/clean","schedule":"*/30 * * * *"}],"failedJobsHistoryLimit":3,"image":{"pullPolicy":"IfNotPresent","repository":"alpine/curl","tag":"8.8.0"},"resources":{},"successfulJobsHistoryLimit":1}` | Enable cronjob for monitoring background tasks |
+| cronjob.endpoints[0].endpoint | string | `"/api/clean"` | Endpoint for the cron job to call, must be unique as using for generate cronjob name as well. |
+| cronjob.endpoints[0].schedule | string | `"*/30 * * * *"` | Cron schedule expression |
 | env[0].name | string | `"CLICKHOUSE_HOST"` |  |
 | env[0].value | string | `"http://localhost:8123"` |  |
 | env[1].name | string | `"CLICKHOUSE_USER"` |  |
