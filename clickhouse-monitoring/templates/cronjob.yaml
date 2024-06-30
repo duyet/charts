@@ -32,7 +32,6 @@ spec:
           restartPolicy: {{ $.Values.cronjob.restartPolicy | default "OnFailure" }}
           securityContext:
             {{- toYaml $.Values.podSecurityContext | nindent 12 }}
-          restartPolicy: {{- $.Values.cronjob.restartPolicy | default "OnFailure" }}
           containers:
             - name: {{ $.Chart.Name }}
               {{- with $.Values.cronjob.image }}
