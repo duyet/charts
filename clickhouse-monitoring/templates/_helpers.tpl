@@ -71,3 +71,14 @@ Usage:
 {{- define "clickhouse-monitoring.cronjobName" -}}
 {{- printf "%s-%s" (include "clickhouse-monitoring.fullname" .) .endpoint | replace "/" "-" | trunc 63 | trimSuffix "-" }}
 {{- end }}
+
+{{/*
+Cronjob API Version
+*/}}
+{{- define "clickhouse-monitoring.cronJobApiVersion" -}}
+{{- if semverCompare ">=1.21-0" .Capabilities.KubeVersion.GitVersion -}}
+batch/v1
+{{- else -}}
+batch/v1beta1
+{{- end -}}
+{{- end -}}

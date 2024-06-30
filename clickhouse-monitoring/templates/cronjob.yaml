@@ -2,7 +2,7 @@
 {{- range $endpoint := $.Values.cronjob.endpoints }}
 
 ---
-apiVersion: batch/v1
+apiVersion: {{ include "clickhouse-monitoring.cronJobApiVersion" $ }}
 kind: CronJob
 metadata:
   name: {{ include "clickhouse-monitoring.cronjobName" (merge $endpoint $) }}
