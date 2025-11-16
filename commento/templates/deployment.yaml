@@ -8,29 +8,30 @@ spec:
   selector:
     matchLabels:
       {{- include "commento.selectorLabels" . | nindent 6 }}
-  replicas: 1
+  replicas: {{ .Values.replicaCount }}
   template:
     metadata:
-      {{- if .Values.podAnnotations }}
       annotations:
-        {{ toYaml .Values.podAnnotations | indent 8 | trim }}
+        checksum/secret: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
+      {{- if .Values.podAnnotations }}
+        {{ toYaml .Values.podAnnotations | nindent 8 }}
       {{- end }}
       labels:
         {{- include "commento.selectorLabels" . | nindent 8 }}
     spec:
       {{- with .Values.nodeSelector }}
       nodeSelector:
-        {{ toYaml . | indent 8 | trim }}
+        {{- toYaml . | nindent 8 }}
       {{- end }}
 
       {{- with .Values.affinity }}
       affinity:
-        {{ toYaml . | indent 8 | trim }}
+        {{- toYaml . | nindent 8 }}
       {{- end }}
 
       {{- with .Values.tolerations }}
       tolerations:
-        {{ toYaml . | indent 8 | trim }}
+        {{- toYaml . | nindent 8 }}
       {{- end }}
 
       containers:
@@ -66,53 +67,53 @@ spec:
 
           {{- if .Values.cdn.enabled }}
           - name: COMMENTO_CDN_PREFIX
-            value: {{ .Values.cdn.cdnPrefix}}
+            value: {{ .Values.cdn.cdnPrefix | quote }}
           {{- end }}
 
           {{- with .Values.smtp }}
           - name: COMMENTO_SMTP_HOST
-            value: {{ .host }}
+            value: {{ .host | quote }}
           - name: COMMENTO_SMTP_PORT
-            value: {{ .port }}
+            value: {{ .port | quote }}
           - name: COMMENTO_SMTP_USERNAME
-            value: {{ .username }}
+            value: {{ .username | quote }}
           - name: COMMENTO_SMTP_PASSWORD
-            value: {{ .password }}
+            value: {{ .password | quote }}
           - name: COMMENTO_SMTP_FROM_ADDRESS
-            value: {{ .fromAddress }}
+            value: {{ .fromAddress | quote }}
           {{- end }}
 
           {{- with .Values.akismetKey }}
           - name: COMMENTO_AKISMET_KEY
-            value: {{ . }}
+            value: {{ . | quote }}
           {{- end }}
 
           {{- if .Values.googleOAuth.enabled }}
           - name: COMMENTO_GOOGLE_KEY
-            value: {{ .Values.googleOAuth.key }}
+            value: {{ .Values.googleOAuth.key | quote }}
           - name: COMMENTO_GOOGLE_SECRET
-            value: {{ .Values.googleOAuth.secret }}
+            value: {{ .Values.googleOAuth.secret | quote }}
           {{- end }}
 
           {{- if .Values.githubOAuth.enabled }}
           - name: COMMENTO_GITHUB_KEY
-            value: {{ .Values.githubOAuth.key }}
+            value: {{ .Values.githubOAuth.key | quote }}
           - name: COMMENTO_GITHUB_SECRET
-            value: {{ .Values.githubOAuth.secret }}
+            value: {{ .Values.githubOAuth.secret | quote }}
           {{- end }}
 
           {{- if .Values.gitlabOAuth.enabled }}
           - name: COMMENTO_GITLAB_KEY
-            value: {{ .Values.gitlabOAuth.key }}
+            value: {{ .Values.gitlabOAuth.key | quote }}
           - name: COMMENTO_GITLAB_SECRET
-            value: {{ .Values.gitlabOAuth.secret }}
+            value: {{ .Values.gitlabOAuth.secret | quote }}
           {{- end }}
 
           {{- if .Values.twitterOAuth.enabled }}
           - name: COMMENTO_TWITTER_KEY
-            value: {{ .Values.twitterOAuth.key }}
+            value: {{ .Values.twitterOAuth.key | quote }}
           - name: COMMENTO_TWITTER_SECRET
-            value: {{ .Values.twitterOAuth.secret }}
+            value: {{ .Values.twitterOAuth.secret | quote }}
           {{- end }}
 
           {{- range $key, $value :=  .Values.extraEnvs }}
@@ -125,5 +126,5 @@ spec:
 
         {{- with .Values.resources }}
         resources:
-          {{ toYaml . | indent 10 | trim }}
+          {{- toYaml . | nindent 10 }}
         {{- end }}

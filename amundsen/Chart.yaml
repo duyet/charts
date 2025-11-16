@@ -1,13 +1,10 @@
-apiVersion: v1
-appVersion: "1.0"
-description: Amundsen is a metadata driven application for improving the productivity of data analysts, data scientists and engineers when interacting with data.
+apiVersion: v2
 name: amundsen
-version: 1.0.0
-icon: https://github.com/lyft/amundsen/blob/master/docs/img/logos/amundsen_logo_on_light.svg
+description: Amundsen is a metadata driven application for improving the productivity of data analysts, data scientists and engineers when interacting with data.
+version: 1.1.0
+appVersion: "1.0"
 home: https://github.com/lyft/amundsen
-maintainers:
-  - name: duyet
-    email: me@duyet.net
+icon: https://github.com/lyft/amundsen/blob/master/docs/img/logos/amundsen_logo_on_light.svg
 sources:
   - https://github.com/lyft/amundsen
   - https://github.com/duyet/charts/amundsen
@@ -15,3 +12,11 @@ keywords:
   - metadata
   - data
   - amundsen
+maintainers:
+  - name: duyet
+    email: me@duyet.net
+dependencies:
+  - name: elasticsearch
+    version: 19.5.6
+    repository: https://charts.bitnami.com/bitnami
+    condition: elasticsearch.enabled
