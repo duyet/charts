@@ -1,9 +1,0 @@
-dependencies:
-  # - name: neo4j-community
-  #   version: 1.1.0
-  #   repository: https://equinor.github.io/helm-charts/charts/
-  #   condition: neo4j.enabled
-  - name: elasticsearch
-    version: 19.5.6
-    repository: https://charts.bitnami.com/bitnami
-    condition: elasticsearch.enabled

@@ -21,7 +21,7 @@ spec:
     metadata:
       {{- with default .Values.podAnnotations .Values.metadata.podAnnotations }}
       annotations:
-{{ toYaml . | indent 8 }}
+        {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
         app.kubernetes.io/component: {{ .Values.metadata.serviceName }}
@@ -31,15 +31,15 @@ spec:
     spec:
       {{- with default .Values.nodeSelector .Values.metadata.nodeSelector }}
       nodeSelector:
-{{ toYaml . | indent 8 }}
+        {{- toYaml . | nindent 8 }}
       {{- end }}
       {{- with default .Values.affinity .Values.metadata.affinity }}
       affinity:
-{{ toYaml . | indent 8 }}
+        {{- toYaml . | nindent 8 }}
       {{- end }}
       {{- with default .Values.tolerations .Values.metadata.tolerations }}
       tolerations:
-{{ toYaml . | indent 8 }}
+        {{- toYaml . | nindent 8 }}
       {{- end }}
       volumes:
       {{- if .Values.frontEnd.oidcEnabled }}
@@ -50,7 +50,7 @@ spec:
       containers:
       - name: {{ .Chart.Name }}-{{ .Values.metadata.serviceName }}
         image: {{ .Values.metadata.image }}:{{ .Values.metadata.imageTag }}
-        imagePullPolicy: Always
+        imagePullPolicy: {{ .Values.metadata.imagePullPolicy }}
         ports:
         - name: metadataport
           containerPort: 5002
@@ -83,5 +83,5 @@ spec:
         {{- end }}
         {{- with .Values.metadata.resources }}
         resources:
-{{ toYaml . | indent 10 }}
+          {{- toYaml . | nindent 10 }}
         {{- end }}

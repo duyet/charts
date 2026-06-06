@@ -1,8 +1,8 @@
-apiVersion: v1
-appVersion: "1.0"
-version: 1.0.8
-description: PgBouncer chart, folked from https://github.com/cradlepoint/kubernetes-helm-chart-pgbouncer with some custom values
+apiVersion: v2
 name: pgbouncer
+description: PgBouncer chart, forked from https://github.com/cradlepoint/kubernetes-helm-chart-pgbouncer with some custom values
+version: 1.1.1
+appVersion: "1.21.0"
 home: https://github.com/duyet/charts/tree/master/pgbouncer
 maintainers:
   - name: duyet

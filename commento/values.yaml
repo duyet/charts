@@ -1,3 +1,6 @@
+# replicaCount -- Number of replicas for the commento deployment
+replicaCount: 1
+
 image:
   # image.repository -- The image of the commento container.
   repository: registry.gitlab.com/commento/commento

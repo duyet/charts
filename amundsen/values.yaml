@@ -26,6 +26,9 @@ search:
   # search.imageTag -- The image tag of the search container.
   imageTag: 2.4.0
 
+  # search.imagePullPolicy -- The image pull policy for the search container.
+  imagePullPolicy: IfNotPresent
+
   # search.replicas -- How many replicas of the search service to run.
   replicas: 1
 
@@ -63,6 +66,9 @@ metadata:
   # metadata.imageTag -- The image tag of the metadata container.
   imageTag: 2.5.4
 
+  # metadata.imagePullPolicy -- The image pull policy for the metadata container.
+  imagePullPolicy: IfNotPresent
+
   # metadata.replicas -- How many replicas of the metadata service to run.
   replicas: 1
 
@@ -96,6 +102,9 @@ frontEnd:
 
   # frontEnd.imageTag -- The image tag of the frontend container.
   imageTag: 2.1.1
+
+  # frontEnd.imagePullPolicy -- The image pull policy for the frontend container.
+  imagePullPolicy: IfNotPresent
 
   # frontEnd.servicePort -- The port the frontend service will be exposed on via the loadbalancer.
   servicePort: 80
@@ -177,6 +186,9 @@ neo4j:
 
   # neo4j.version -- The neo4j application version used by amundsen.
   version: 3.3.0
+
+  # neo4j.replicas -- How many replicas of the neo4j service to run.
+  replicas: 1
 
   # Use password authentication
   authEnabled: false

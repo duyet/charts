@@ -15,10 +15,11 @@ spec:
   serviceName: {{ include "clickhouse-keeper.service-name" . }}
   template:
     metadata:
-      {{- with .Values.podAnnotations }}
       annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        {{- with .Values.podAnnotations }}
         {{- toYaml . | nindent 8 }}
-      {{- end }}
+        {{- end }}
       labels:
         {{- include "clickhouse-keeper.labels" . | nindent 8 }}
         {{- with .Values.podLabels }}
