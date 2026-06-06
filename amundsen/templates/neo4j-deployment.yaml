@@ -15,13 +15,14 @@ spec:
       app.kubernetes.io/name: {{ include "amundsen.name" . }}-neo4j
       app.kubernetes.io/instance: {{ .Release.Name }}
       app.kubernetes.io/component: neo4j
-  replicas: 1
+  replicas: {{ .Values.neo4j.replicas }}
   template:
     metadata:
-      {{- with default .Values.podAnnotations .Values.neo4j.podAnnotations }}
       annotations:
-{{ toYaml . | indent 8 }}
-      {{- end }}
+        checksum/config: {{ include (print $.Template.BasePath "/neo4j-configmap.yaml") . | sha256sum }}
+        {{- with default .Values.podAnnotations .Values.neo4j.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
       labels:
         app.kubernetes.io/name: {{ include "amundsen.name" . }}-neo4j
         app.kubernetes.io/instance: {{ .Release.Name }}
@@ -29,15 +30,15 @@ spec:
     spec:
       {{- with .Values.neo4j.nodeSelector }}
       nodeSelector:
-{{ toYaml . | indent 8 }}
+        {{- toYaml . | nindent 8 }}
       {{- end }}
       {{- with .Values.neo4j.affinity }}
       affinity:
-{{ toYaml . | indent 8 }}
+        {{- toYaml . | nindent 8 }}
       {{- end }}
       {{- with .Values.neo4j.tolerations }}
       tolerations:
-{{ toYaml . | indent 8 }}
+        {{- toYaml . | nindent 8 }}
       {{- end }}
       initContainers:
         - name: init-neo4j-plugins
@@ -61,7 +62,7 @@ spec:
               mountPath: /var/lib/neo4j/plugins
           {{- with .Values.neo4j.resources }}
           resources:
-{{ toYaml . | indent 12 }}
+            {{- toYaml . | nindent 12 }}
           {{- end}}
       containers:
       - name: neo4j
@@ -84,7 +85,7 @@ spec:
           mountPath: /var/lib/neo4j/plugins
         {{- with .Values.neo4j.resources }}
         resources:
-{{ toYaml . | indent 10 }}
+          {{- toYaml . | nindent 10 }}
         {{- end}}
       volumes:
         - name: conf

@@ -1,0 +1,25 @@
+---
+extends: default
+
+rules:
+  line-length:
+    max: 120
+    level: warning
+  document-start: disable
+  truthy:
+    allowed-values: ['true', 'false', 'on', 'off']
+  comments:
+    min-spaces-from-content: 1
+  indentation:
+    spaces: 2
+    indent-sequences: true
+  braces:
+    max-spaces-inside: 1
+  brackets:
+    max-spaces-inside: 1
+
+ignore: |
+  .dist/
+  .github/
+  */charts/
+  */tmpcharts/
