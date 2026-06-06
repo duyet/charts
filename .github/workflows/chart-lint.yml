@@ -5,46 +5,65 @@ on: [push, pull_request]
 jobs:
   chart-lint:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+
+    env:
+      # Force running all charts on master branch
+      # --all Disables changed charts detection and version increment checking
+      CT_ALL: ${{ github.ref == 'refs/heads/master' }}
 
     # Multiple KinD version
     strategy:
       fail-fast: false
       matrix:
-        helm_version: [v3.4.0]
-        k8s_version: [v1.20.15, v1.22.5]
+        helm_version: [v3.14.0]
+        # Updated to stable, tested Kubernetes versions with confirmed kubectl availability
+        k8s_version: [v1.27.16, v1.28.13, v1.29.10, v1.30.6, v1.31.2]
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3.5.2
+        uses: actions/checkout@v6.0.3
 
       - name: Fetch history
         run: git fetch --prune --unshallow
 
       - name: Set up Helm
-        uses: azure/setup-helm@v3.5
+        uses: azure/setup-helm@v4
         with:
           version: ${{ matrix.helm_version }}
 
       - name: Setup Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v6
         with:
-          python-version: 3.7
+          python-version: '3.14'
 
       - name: Set up chart-testing
-        uses: helm/chart-testing-action@v2.4.0
+        uses: helm/chart-testing-action@v2.6.1
 
       - name: Run chart-testing (list-changed)
         id: list-changed
         run: |
-          changed=$(ct list-changed)
+          changed=$(ct list-changed | tr '\n' ' ')
           echo "list_changed=$changed" >> $GITHUB_ENV
           if [[ -n "$changed" ]]; then
-            echo "::set-output name=changed::true"
-            echo "::set-output name=list::$changed"
+            echo "changed=true" >> $GITHUB_OUTPUT
+            echo "list=$changed" >> $GITHUB_OUTPUT
           fi
 
+      - name: Update dependencies
+        if: steps.list-changed.outputs.changed == 'true'
+        run: |
+          helm repo add stable https://charts.helm.sh/stable
+          helm repo add bitnami https://charts.bitnami.com/bitnami
+          for chart in ${{ steps.list-changed.outputs.list }}; do
+            echo "Updating dependencies for $chart..."
+            helm dependency update "$chart"
+          done
+
       - name: Comment
-        uses: peter-evans/create-or-update-comment@v3
+        uses: peter-evans/create-or-update-comment@v4
         id: comment
         if: ${{ github.event.pull_request.number }}
         with:
@@ -57,15 +76,29 @@ jobs:
       - name: Run chart-testing (lint)
         id: lint
         run: |
-          echo 'CT_LINT<<EOF' >> $GITHUB_ENV
-          ct lint --config .github/ct-lint.yaml 2>&1 >> $GITHUB_ENV
+          set +e
+          output=$(ct lint --config .github/ct-lint.yaml 2>&1)
           exit_code=$?
-          echo 'EOF' >> $GITHUB_ENV
-          echo $GITHUB_ENV
+          set -e
+
+          {
+            echo 'LINT_STATUS<<EOF'
+            echo "$output"
+            echo 'EOF'
+          } >> $GITHUB_ENV
+
+          # Also add to step summary
+          {
+            echo '## Chart Linting Results'
+            echo '```'
+            echo "$output"
+            echo '```'
+          } >> $GITHUB_STEP_SUMMARY
+
           exit $exit_code
 
       - name: Comment (after ct lint successfully)
-        uses: peter-evans/create-or-update-comment@v3
+        uses: peter-evans/create-or-update-comment@v4
         if: ${{ success() && github.event.pull_request.number }}
         with:
           token: ${{ secrets.BOT_TOKEN }}
@@ -74,15 +107,15 @@ jobs:
           edit-mode: append
           body: |
             <details>
-              <summary>Linting chart successfully.</summary>
+              <summary>Linting chart successfully :rocket:.</summary>
 
               ```
-              ${{ env.CT_LINT }}
+              ${{ env.LINT_STATUS }}
               ```
             </details>
 
       - name: Comment (after ct lint failure)
-        uses: peter-evans/create-or-update-comment@v3
+        uses: peter-evans/create-or-update-comment@v4
         if: ${{ failure() && github.event.pull_request.number }}
         with:
           token: ${{ secrets.BOT_TOKEN }}
@@ -92,15 +125,15 @@ jobs:
           reactions: -1
           body: |
             <details>
-              <summary>Linting chart failure!</summary>
+              <summary>Linting chart failure! :no_good:</summary>
 
               ```
-              ${{ env.CT_LINT }}
+              ${{ env.LINT_STATUS }}
               ```
             </details>
 
       - name: Comment (before create KinD cluster)
-        uses: peter-evans/create-or-update-comment@v3
+        uses: peter-evans/create-or-update-comment@v4
         if: ${{ github.event.pull_request.number }}
         with:
           token: ${{ secrets.BOT_TOKEN }}
@@ -111,14 +144,14 @@ jobs:
             Creating KinD cluster ${{ matrix.kubectl_version }} ...<br />
 
       - name: Create KinD cluster
-        uses: helm/kind-action@v1.7.0
+        uses: helm/kind-action@v1.13.0
         with:
           kubectl_version: ${{ matrix.k8s_version }}
           node_image: kindest/node:${{ matrix.k8s_version }}
         # if: steps.list-changed.outputs.changed == 'true'
 
       - name: Comment (after create KinD successfully)
-        uses: peter-evans/create-or-update-comment@v3
+        uses: peter-evans/create-or-update-comment@v4
         if: ${{ success() && github.event.pull_request.number }}
         with:
           token: ${{ secrets.BOT_TOKEN }}
@@ -133,11 +166,25 @@ jobs:
       - name: Run chart-testing (install)
         id: ct
         run: |
-          echo 'CT_TEST<<EOF' >> $GITHUB_ENV
-          ct install --config .github/ct-install.yaml 2>&1 >> $GITHUB_ENV
+          set +e
+          output=$(ct install --config .github/ct-install.yaml 2>&1)
           exit_code=$?
-          echo 'EOF' >> $GITHUB_ENV
-          echo $GITHUB_ENV
+          set -e
+
+          {
+            echo 'TEST_STATUS<<EOF'
+            echo "$output"
+            echo 'EOF'
+          } >> "$GITHUB_ENV"
+
+          # Also add to step summary
+          {
+            echo '## Chart Installation Test Results'
+            echo '```'
+            echo "$output"
+            echo '```'
+          } >> $GITHUB_STEP_SUMMARY
+
           exit $exit_code
 
       - name: Run kubeconform
@@ -147,7 +194,7 @@ jobs:
           charts: .
 
       - name: Comment (after test success)
-        uses: peter-evans/create-or-update-comment@v3
+        uses: peter-evans/create-or-update-comment@v4
         if: ${{ success() && github.event.pull_request.number }}
         with:
           token: ${{ secrets.BOT_TOKEN }}
@@ -157,15 +204,15 @@ jobs:
           reactions: hooray
           body: |
             <details>
-              <summary>Testing chart successfully.</summary>
+              <summary>Testing chart result </summary>
 
               ```
-              ${{ env.CT_TEST }}
+              ${{ env.TEST_STATUS }}
               ```
             </details>
 
       - name: Comment (after test failure)
-        uses: peter-evans/create-or-update-comment@v3
+        uses: peter-evans/create-or-update-comment@v4
         if: ${{ failure() && github.event.pull_request.number }}
         with:
           token: ${{ secrets.BOT_TOKEN }}
@@ -175,9 +222,9 @@ jobs:
           reactions: -1
           body: |
             <details>
-              <summary>Testing chart failure!</summary>
+              <summary>Testing chart failure! :no_good:</summary>
 
               ```
-              ${{ env.CT_TEST }}
+              ${{ env.TEST_STATUS }}
               ```
             </details>
