@@ -20,9 +20,9 @@ spec:
     metadata:
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/neo4j-configmap.yaml") . | sha256sum }}
-      {{- with default .Values.podAnnotations .Values.neo4j.podAnnotations }}
+        {{- with default .Values.podAnnotations .Values.neo4j.podAnnotations }}
         {{- toYaml . | nindent 8 }}
-      {{- end }}
+        {{- end }}
       labels:
         app.kubernetes.io/name: {{ include "amundsen.name" . }}-neo4j
         app.kubernetes.io/instance: {{ .Release.Name }}
