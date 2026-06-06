@@ -11,7 +11,7 @@ metadata:
     app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- with .Values.neo4j.annotations }}
   annotations:
-{{ toYaml . | indent 4 }}
+    {{- toYaml . | nindent 4 }}
 {{- end}}   
 spec:
   type: {{ .Values.neo4j.serviceType }}
