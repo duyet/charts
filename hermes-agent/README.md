@@ -170,6 +170,16 @@ Kubernetes: `>=1.23.0-0`
 | config.values.providers | object | `{}` | Per-provider overrides for built-in providers (api_key, base_url, ...). |
 | config.values.security.allow_private_urls | bool | `false` | Allow the agent to reach private/loopback IPs (SSRF protection is on by default). |
 | config.values.terminal.backend | string | `"local"` | Code-execution isolation backend: local, docker, ssh, modal, or daytona. `cwd` is injected automatically. |
+| config.values.web | object | `{}` | Web search & extraction tools. Backend: firecrawl | searxng | parallel | tavily | exa. Can split search_backend and extract_backend across providers. |
+| config.values.browser | object | `{}` | Browser automation (cloud providers or local Chromium via CDP). Requires `shm.enabled` for local Chromium. |
+| config.values.code_execution | object | `{}` | Code-execution limits (mode: project|strict, timeout, max_tool_calls). |
+| config.values.discord | object | `{}` | Discord guild behavior (require_mention, free_response_channels, auto_thread). Put DISCORD_BOT_TOKEN in secrets.data. |
+| config.values.voice | object | `{}` | Voice input/output feature toggle (enabled: true/false). |
+| config.values.tts | object | `{}` | Text-to-speech output (enabled: true/false, engine). |
+| config.values.stt | object | `{}` | Speech-to-text input (enabled: true/false, engine). |
+| config.values.file_read_max_chars | int | `100000` | Maximum characters the agent will read from a single file. |
+| config.values.compression | object | `{}` | Context compression for long conversations (enabled, threshold). |
+| config.values.max_concurrent_sessions | int | | Maximum concurrent sessions (limit varies by backend). |
 | dashboard | object | `{"auth":{"basicAuthUsername":"","oauthClientId":"","oidcClientId":"","oidcIssuer":""},"enabled":true,"host":"0.0.0.0","insecure":false,"port":9119}` | -------------------------------------------------------------------------- |
 | dashboard.auth.basicAuthUsername | string | `""` | HTTP Basic auth username. Username is non-secret and lives here; the password/secret live in the Secret (see secrets.HERMES_DASHBOARD_*). |
 | dashboard.auth.oauthClientId | string | `""` | Nous Portal OAuth client id (non-secret). |
