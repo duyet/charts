@@ -1,0 +1,16 @@
+# Preset: minimal — just enough to boot the gateway.
+# No web/browser tools, default persona; relies on a single provider key.
+#
+#   helm upgrade --install hermes . -n hermes-agent --create-namespace \
+#     -f examples/minimal.yaml
+secrets:
+  data:
+    API_SERVER_KEY: "change-me-min-8-chars"
+    OPENROUTER_API_KEY: "sk-or-..."
+
+config:
+  values:
+    model:
+      default: openrouter/auto
+      provider: openrouter
+      api_key: ${OPENROUTER_API_KEY}

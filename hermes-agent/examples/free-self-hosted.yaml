@@ -1,0 +1,30 @@
+# Preset: free / self-hosted tools — no paid API keys.
+# SearXNG (self-hosted metasearch, no key) for web search + a local Chromium
+# attached over CDP for browser automation. Both run in-cluster, so SSRF
+# protection is relaxed to reach private service IPs.
+#
+#   helm upgrade --install hermes . -n hermes-agent --create-namespace \
+#     -f examples/free-self-hosted.yaml
+secrets:
+  data:
+    API_SERVER_KEY: "change-me-min-8-chars"
+    OPENROUTER_API_KEY: "sk-or-..."
+    # Point at your in-cluster SearXNG instance.
+    SEARXNG_URL: "http://searxng.searxng.svc:8080"
+
+config:
+  values:
+    model:
+      default: openrouter/free
+      provider: openrouter
+      api_key: ${OPENROUTER_API_KEY}
+    web:
+      # SearXNG is search-only; extract auto-detects from any extract-capable
+      # key present (set FIRECRAWL_API_KEY in secrets to add extraction).
+      search_backend: searxng
+    browser:
+      # Attach to an in-cluster headless Chrome (e.g. browserless/chromium).
+      cdp_url: "ws://chrome.browser.svc:9222"
+    security:
+      # Required so the agent may reach the private in-cluster SearXNG / Chrome.
+      allow_private_urls: true

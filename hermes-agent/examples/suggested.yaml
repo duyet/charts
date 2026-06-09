@@ -1,0 +1,42 @@
+# Preset: suggested — recommended config showing how little it takes to enable
+# tools. Web search via Firecrawl, browser automation, a persona, and a free
+# fallback model. Drop in your keys and go.
+#
+#   helm upgrade --install hermes . -n hermes-agent --create-namespace \
+#     -f examples/suggested.yaml
+secrets:
+  data:
+    API_SERVER_KEY: "change-me-min-8-chars"
+    OPENROUTER_API_KEY: "sk-or-..."
+    FIRECRAWL_API_KEY: "fc-..."
+
+dashboard:
+  enabled: true
+  # Only enable insecure behind your own auth (e.g. an authenticated Ingress).
+  insecure: true
+
+config:
+  values:
+    model:
+      default: openrouter/anthropic/claude-sonnet-4
+      provider: openrouter
+      api_key: ${OPENROUTER_API_KEY}
+    fallback_providers:
+      - provider: openrouter
+        model: openrouter/free
+        base_url: https://openrouter.ai/api/v1
+        api_mode: chat_completions
+    display:
+      personality: "You are a concise, helpful assistant."
+      busy_input_mode: steer
+      busy_ack_enabled: true
+    # Web search + extract via Firecrawl (one key, both capabilities).
+    web:
+      backend: firecrawl
+    # Browser automation (Firecrawl cloud by default; see examples/free-self-hosted
+    # for local Chromium over CDP).
+    browser:
+      inactivity_timeout: 120
+      dialog_policy: must_respond
+    approvals:
+      mode: smart
