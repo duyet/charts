@@ -205,6 +205,19 @@ config:
   # value in `secrets.data` (or an existingSecret). Hermes expands the env var
   # at runtime — secrets never live in this rendered ConfigMap.
   #
+  # PASSTHROUGH: any Hermes config key works here even if it has no documented
+  # default below — it is rendered verbatim. So `skills`, `discord`, `memory`,
+  # `compression`, `context`, `voice`, `tts`, `stt`, `auxiliary`, `worktree`,
+  # `timezone`, etc. need no chart change; just add them under config.values.
+  #
+  #   config:
+  #     values:
+  #       discord:
+  #         require_mention: true
+  #         auto_thread: true
+  #       skills:
+  #         guard_agent_created: true
+  #
   # Full schema: https://hermes-agent.nousresearch.com/docs/user-guide/configuration
   values:
     # -- Primary model the agent uses.
