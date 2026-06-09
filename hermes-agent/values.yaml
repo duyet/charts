@@ -313,6 +313,13 @@ config:
       # website_blocklist:            # deny-list domains the agent may fetch
       #   enabled: false
       #   domains: []
+
+    # -- Discord chat platform (guild behavior, auto-threading). Put your bot
+    # token in secrets.data: DISCORD_BOT_TOKEN.
+    discord: {}
+      # require_mention: true         # only respond to @mentions
+      # free_response_channels: ""     # comma-list channels where bot replies freely
+      # auto_thread: true              # thread replies in busy channels
   # -- Raw config.yaml content. ESCAPE HATCH: if set (non-empty), this string is
   # used verbatim and `config.values` is ignored. terminal.cwd is NOT
   # auto-injected here — set it yourself. Prefer `config.values` above.
