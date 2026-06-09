@@ -34,12 +34,18 @@ the web dashboard, backed by **two separate persistent volumes**.
 ## Quick start
 
 ```console
+# Add the repo
 helm repo add duyet https://duyet.github.io/charts
+
+# Minimal install (OpenRouter, no extras)
 helm install hermes duyet/hermes-agent \
   --set secrets.data.API_SERVER_KEY="$(openssl rand -hex 16)" \
-  --set secrets.data.ANTHROPIC_API_KEY="sk-ant-..." \
-  --set secrets.data.HERMES_DASHBOARD_BASIC_AUTH_PASSWORD="change-me" \
-  --set dashboard.auth.basicAuthUsername=admin
+  --set secrets.data.OPENROUTER_API_KEY="sk-or-..." \
+  --set config.values.model.default=openrouter/auto \
+  --set config.values.model.provider=openrouter \
+  --set config.values.model.api_key='${OPENROUTER_API_KEY}'
+
+# Or use a preset from the examples directory (see below)
 ```
 
 Open the dashboard:
@@ -120,6 +126,34 @@ See the
 - Hermes blocks private/loopback IPs (SSRF protection). To let it reach
   in-cluster services, set `config.values.security.allow_private_urls: true`.
 - See the [Hermes security docs](https://hermes-agent.nousresearch.com/docs/user-guide/security).
+
+## Example presets
+
+The chart includes example configurations for common use cases in the `examples/` directory:
+
+| File | Use case |
+| ---- | -------- |
+| `minimal.yaml` | Just the gateway, no tools |
+| `suggested.yaml` | Recommended: web search, browser, persona, fallback |
+| `free-self-hosted.yaml` | SearXNG + local Chromium (no paid APIs) |
+| `free-self-hosted-firecrawl.yaml` | Self-hosted Firecrawl for web tools |
+| `custom-provider.yaml` | Custom OpenAI-compatible provider (anyrouter, vLLM, ollama) |
+| `discord.yaml` | Discord bot integration |
+| `discord-web.yaml` | Discord + web search |
+| `discord-voice.yaml` | Discord + voice (TTS/STT) |
+| `telegram.yaml` | Telegram bot integration |
+| `voice.yaml` | Voice-enabled Hermes |
+| `memory-tuned.yaml` | Reduced resource footprint |
+
+Use them with:
+
+```console
+helm upgrade --install hermes duyet/hermes-agent \
+  -n hermes-agent --create-namespace \
+  -f https://raw.githubusercontent.com/duyet/charts/main/hermes-agent/examples/suggested.yaml \
+  --set secrets.data.OPENROUTER_API_KEY="sk-or-..." \
+  --set secrets.data.FIRECRAWL_API_KEY="fc-..."
+```
 
 ## Upgrading
 

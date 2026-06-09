@@ -1,0 +1,38 @@
+# Preset: custom LLM provider — use any OpenAI-compatible endpoint.
+# Shows how to register a custom provider (e.g. anyrouter, local vLLM, ollama)
+# and reference it from the model config. Replace URLs/keys with your own.
+#
+#   helm upgrade --install hermes . -n hermes-agent --create-namespace \
+#     -f examples/custom-provider.yaml
+secrets:
+  data:
+    API_SERVER_KEY: "change-me-min-8-chars"
+    # Your custom provider's API key (if required)
+    CUSTOM_API_KEY: "sk-..."
+
+extraEnv:
+  # Point to your custom provider's base URL (optional: can also set in config)
+  - name: CUSTOM_API_BASE
+    value: "https://your-provider.example.com/api/v1"
+
+config:
+  values:
+    model:
+      # Reference the custom provider by name (format: <provider-name>/<model>)
+      default: myprovider/your-model-name
+      provider: custom  # "custom" tells Hermes to look in custom_providers
+      api_key: ${CUSTOM_API_KEY}
+      base_url: ${CUSTOM_API_BASE}
+    # Register one or more custom OpenAI-compatible providers
+    custom_providers:
+      - name: myprovider           # referenced by model: "myprovider/<model>"
+        base_url: ${CUSTOM_API_BASE}
+        api_key: ${CUSTOM_API_KEY}
+        # model: google/gemma-4-26b-a4b-it  # optional: default model for this provider
+        api_mode: chat_completions   # chat_completions | responses
+    # Optional: fallback to a public provider
+    fallback_providers:
+      - provider: openrouter
+        model: openrouter/free
+        base_url: https://openrouter.ai/api/v1
+        api_mode: chat_completions
