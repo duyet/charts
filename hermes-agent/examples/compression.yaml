@@ -1,0 +1,36 @@
+# Preset: Compression — memory optimization with cheaper auxiliary model.
+# Hermes compresses long conversations when they exceed a threshold. Use a
+# cheaper/faster model (like gemma) for compression to save costs while keeping
+# the main model powerful (like claude-sonnet-4).
+#
+#   helm upgrade --install hermes . -n hermes-agent --create-namespace \
+#     -f examples/compression.yaml
+secrets:
+  data:
+    API_SERVER_KEY: "change-me-min-8-chars"
+    ANTHROPIC_API_KEY: "sk-ant-..."
+    OPENROUTER_API_KEY: "sk-or-..."  # For cheaper compression model
+
+config:
+  values:
+    model:
+      default: anthropic/claude-sonnet-4  # Main model (powerful)
+      provider: anthropic
+      api_key: ${ANTHROPIC_API_KEY}
+
+    # Compression settings
+    compression:
+      enabled: true
+      threshold: 80000  # Compress when context exceeds 80k chars
+      target_ratio: 0.5  # Target 50% size reduction
+      protect_last_n: 20  # Always keep last 20 messages uncompressed
+      protect_first_n: 5  # Always keep first 5 messages (system prompt)
+
+    # Auxiliary compression model override (cheaper/faster)
+    auxiliary:
+      compression:
+        provider: openrouter
+        model: google/gemma-3-27b-it  # Free or cheap model
+        api_key: ${OPENROUTER_API_KEY}
+        base_url: https://openrouter.ai/api/v1
+        api_mode: chat_completions

@@ -144,6 +144,9 @@ The chart includes example configurations for common use cases in the `examples/
 | `telegram.yaml` | Telegram bot integration |
 | `voice.yaml` | Voice-enabled Hermes |
 | `memory-tuned.yaml` | Reduced resource footprint |
+| `mcp.yaml` | MCP servers (filesystem, database, GitHub, web search) |
+| `skills.yaml` | External skills + toolset selection |
+| `compression.yaml` | Context compression with cheaper auxiliary model |
 
 Use them with:
 
@@ -212,8 +215,13 @@ Kubernetes: `>=1.23.0-0`
 | config.values.tts | object | `{}` | Text-to-speech output (enabled: true/false, engine). |
 | config.values.stt | object | `{}` | Speech-to-text input (enabled: true/false, engine). |
 | config.values.file_read_max_chars | int | `100000` | Maximum characters the agent will read from a single file. |
-| config.values.compression | object | `{}` | Context compression for long conversations (enabled, threshold). |
+| config.values.compression | object | `{}` | Context compression for long conversations (enabled, threshold, target_ratio, protect_last_n). |
 | config.values.max_concurrent_sessions | int | | Maximum concurrent sessions (limit varies by backend). |
+| config.values.mcp_servers | list | `[]` | Model Context Protocol servers for external tools (filesystem, database, web, etc.). Each server: name, command/args (stdio) or url/headers (SSE), env. |
+| config.values.skills | object | `{}` | External Python skill packages (external_dirs for mount paths, always_load list). |
+| config.values.always_load | list | `[]` | Skills to auto-load on startup (subset of skills.external_dirs). |
+| config.values.toolsets | list | `[]` | Built-in tool categories to enable (code_execution, browser, web, terminal). Empty = all enabled. |
+| config.values.auxiliary | object | `{}` | Per-task model overrides (compression, vision, web_extract, approval, etc.). Each has provider, model, api_key, base_url. |
 | dashboard | object | `{"auth":{"basicAuthUsername":"","oauthClientId":"","oidcClientId":"","oidcIssuer":""},"enabled":true,"host":"0.0.0.0","insecure":false,"port":9119}` | -------------------------------------------------------------------------- |
 | dashboard.auth.basicAuthUsername | string | `""` | HTTP Basic auth username. Username is non-secret and lives here; the password/secret live in the Secret (see secrets.HERMES_DASHBOARD_*). |
 | dashboard.auth.oauthClientId | string | `""` | Nous Portal OAuth client id (non-secret). |

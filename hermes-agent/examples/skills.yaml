@@ -1,0 +1,43 @@
+# Preset: Skills + toolsets — external Python skill packages and tool selection.
+# Skills are Python packages that extend Hermes with custom tools. Toolsets control
+# which built-in tools are enabled (code_execution, browser, web, etc.).
+#
+#   helm upgrade --install hermes . -n hermes-agent --create-namespace \
+#     -f examples/skills.yaml
+secrets:
+  data:
+    API_SERVER_KEY: "change-me-min-8-chars"
+    ANTHROPIC_API_KEY: "sk-ant-..."
+
+config:
+  values:
+    model:
+      default: anthropic/claude-sonnet-4
+      provider: anthropic
+      api_key: ${ANTHROPIC_API_KEY}
+
+    # External skill directories (mounted as volumes)
+    skills:
+      external_dirs:
+        - /hermes/skills  # Mount local skills via extraVolumes
+
+    # Skills to auto-load on startup
+    always_load:
+      - my_custom_skill
+      - data_analysis
+
+    # Toolsets - control which tool categories are enabled
+    # Built-in toolsets: code_execution, browser, web, terminal, etc.
+    # Empty list = all tools enabled
+    toolsets: []  # Enable all built-in tools
+
+    # Example: Restrict to specific toolsets
+    # toolsets:
+    #   - code_execution  # Allow running code
+    #   - web            # Allow web search/extract
+    #   - terminal       # Allow terminal commands
+
+    # Example: Disable specific tool categories
+    # (Leave toolsets empty, use approval mode instead)
+    approvals:
+      mode: smart  # smart/manual/off

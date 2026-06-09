@@ -84,4 +84,28 @@ config:
     compression:
       enabled: true
       threshold: 80000
+      target_ratio: 0.5
+      protect_last_n: 20
+      protect_first_n: 5
     max_concurrent_sessions: 3
+    mcp_servers:
+      - name: test-filesystem
+        command: npx
+        args: ["-y", "@modelcontextprotocol/server-filesystem", "/tmp"]
+      - name: test-sse
+        url: https://example.com/mcp
+        headers:
+          Authorization: "Bearer ${TEST_MCP_TOKEN}"
+    skills:
+      external_dirs:
+        - /hermes/skills
+    always_load:
+      - test_skill
+    toolsets: []
+    auxiliary:
+      compression:
+        provider: openrouter
+        model: google/gemma-3-27b-it
+        api_key: ${OPENROUTER_API_KEY}
+        base_url: https://openrouter.ai/api/v1
+        api_mode: chat_completions

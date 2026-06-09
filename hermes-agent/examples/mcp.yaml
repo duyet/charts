@@ -1,0 +1,51 @@
+# Preset: MCP servers — external Model Context Protocol integrations.
+# MCP enables Hermes to use external tools like filesystem, database, or web APIs.
+# Each MCP server runs as a separate process; Hermes connects via stdio or SSE.
+#
+#   helm upgrade --install hermes . -n hermes-agent --create-namespace \
+#     -f examples/mcp.yaml
+secrets:
+  data:
+    API_SERVER_KEY: "change-me-min-8-chars"
+    ANTHROPIC_API_KEY: "sk-ant-..."
+
+config:
+  values:
+    model:
+      default: anthropic/claude-sonnet-4
+      provider: anthropic
+      api_key: ${ANTHROPIC_API_KEY}
+    # MCP servers - external tools via Model Context Protocol
+    mcp_servers:
+      # Filesystem access (read-only home directory)
+      - name: filesystem
+        command: npx
+        args: ["-y", "@modelcontextprotocol/server-filesystem", "/allowed/path"]
+        # For stdio-based servers, Hermes sets environment via MCP env mapping
+
+      # PostgreSQL database queries
+      - name: postgres
+        command: npx
+        args: ["-y", "@modelcontextprotocol/server-postgres", "postgresql://user:pass@localhost:5432/db"]
+
+      # GitHub integration (read repos, issues, PRs)
+      - name: github
+        command: uvx
+        args: ["--with", "httpx", "mcp-server-github"]
+        env:
+          GITHUB_TOKEN: ${GITHUB_TOKEN}  # Set in secrets.data
+
+      # Brave Search (web search via MCP)
+      - name: brave-search
+        command: npx
+        args: ["-y", "@modelcontextprotocol/server-brave-search"]
+        env:
+          BRAVE_API_KEY: ${BRAVE_API_KEY}  # Set in secrets.data
+
+      # SSE-based server (connects via HTTP)
+      - name: custom-sse
+        url: https://example.com/mcp/sse
+        headers:
+          Authorization: "Bearer ${CUSTOM_MCP_TOKEN}"
+        # tools: Tools to include (empty = all)
+        # exclude: Tools to exclude
