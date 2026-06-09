@@ -1,0 +1,4 @@
+# ci: minimal valid install (apiServer needs a key)
+secrets:
+  data:
+    API_SERVER_KEY: "ci-test-key-123456"

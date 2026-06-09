@@ -1,0 +1,17 @@
+# ci: dashboard only, api server disabled, probes off, basic auth
+apiServer:
+  enabled: false
+probes:
+  liveness:
+    enabled: false
+  readiness:
+    enabled: false
+  startup:
+    enabled: false
+dashboard:
+  enabled: true
+  auth:
+    basicAuthUsername: admin
+secrets:
+  data:
+    HERMES_DASHBOARD_BASIC_AUTH_PASSWORD: "ci-dashboard-pass"

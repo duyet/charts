@@ -1,0 +1,44 @@
+# ci: every optional feature enabled to exercise all templates
+secrets:
+  data:
+    API_SERVER_KEY: "ci-test-key-123456"
+    ANTHROPIC_API_KEY: "sk-ant-ci-dummy"
+    HERMES_DASHBOARD_BASIC_AUTH_PASSWORD: "ci-dashboard-pass"
+dashboard:
+  enabled: true
+  auth:
+    basicAuthUsername: admin
+ingress:
+  enabled: true
+  className: nginx
+  hosts:
+    - host: hermes.ci.local
+      paths:
+        - path: /
+          pathType: Prefix
+          backend: dashboard
+        - path: /v1
+          pathType: Prefix
+          backend: api
+networkPolicy:
+  enabled: true
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 0
+serviceMonitor:
+  enabled: true
+  labels:
+    release: kube-prometheus-stack
+persistence:
+  data:
+    size: 1Gi
+  workspace:
+    size: 1Gi
+config:
+  values:
+    approvals:
+      mode: manual
+    terminal:
+      backend: local
+    security:
+      allow_private_urls: true

@@ -1,0 +1,31 @@
+{{- if and .Values.persistence.workspace.enabled (not .Values.persistence.workspace.existingClaim) -}}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "hermes-agent.workspaceClaimName" . }}
+  labels:
+    {{- include "hermes-agent.labels" . | nindent 4 }}
+    app.kubernetes.io/component: workspace
+  {{- if or .Values.persistence.workspace.retain .Values.persistence.workspace.annotations }}
+  annotations:
+    {{- if .Values.persistence.workspace.retain }}
+    helm.sh/resource-policy: keep
+    {{- end }}
+    {{- with .Values.persistence.workspace.annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  {{- end }}
+spec:
+  accessModes:
+    {{- toYaml .Values.persistence.workspace.accessModes | nindent 4 }}
+  resources:
+    requests:
+      storage: {{ .Values.persistence.workspace.size | quote }}
+  {{- if .Values.persistence.workspace.storageClass }}
+  {{- if (eq "-" .Values.persistence.workspace.storageClass) }}
+  storageClassName: ""
+  {{- else }}
+  storageClassName: {{ .Values.persistence.workspace.storageClass | quote }}
+  {{- end }}
+  {{- end }}
+{{- end }}

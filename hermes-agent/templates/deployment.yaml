@@ -1,0 +1,240 @@
+{{- /* ---- Validation guards (fail fast with clear messages) ---- */ -}}
+{{- if and (gt (int .Values.replicaCount) 1) .Values.persistence.data.enabled -}}
+{{- fail "hermes-agent is single-writer: replicaCount must be 1 when persistence.data.enabled is true. Running multiple replicas against one data volume corrupts state." -}}
+{{- end -}}
+{{- if .Values.apiServer.enabled -}}
+{{- if not (or .Values.secrets.existingSecret (and .Values.secrets.data (index .Values.secrets.data "API_SERVER_KEY"))) -}}
+{{- fail "apiServer.enabled is true but no API key was provided. Set secrets.data.API_SERVER_KEY (>=8 chars) or secrets.existingSecret containing API_SERVER_KEY, or disable apiServer." -}}
+{{- end -}}
+{{- end -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "hermes-agent.fullname" . }}
+  labels:
+    {{- include "hermes-agent.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  # Recreate: tear the old single-writer pod down before starting the new one so
+  # an upgrade never runs two writers against the same PVC.
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      {{- include "hermes-agent.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      annotations:
+        {{- if .Values.config.enabled }}
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        {{- end }}
+        {{- if and (not .Values.secrets.existingSecret) .Values.secrets.data }}
+        checksum/secret: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
+        {{- end }}
+        {{- with .Values.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      labels:
+        {{- include "hermes-agent.selectorLabels" . | nindent 8 }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "hermes-agent.serviceAccountName" . }}
+      automountServiceAccountToken: {{ .Values.serviceAccount.automountServiceAccountToken }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      {{- if or .Values.config.enabled .Values.extraInitContainers }}
+      initContainers:
+        {{- if .Values.config.enabled }}
+        - name: bootstrap-config
+          image: busybox:stable
+          imagePullPolicy: IfNotPresent
+          command:
+            - /bin/sh
+            - -c
+            - |
+              set -e
+              TARGET="{{ .Values.persistence.data.mountPath }}/config.yaml"
+              if [ ! -f "$TARGET" ] || [ "{{ .Values.config.overwrite }}" = "true" ]; then
+                cp /bootstrap/config.yaml "$TARGET"
+                echo "hermes-agent: seeded $TARGET"
+              else
+                echo "hermes-agent: $TARGET already exists, leaving it untouched"
+              fi
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          volumeMounts:
+            - name: data
+              mountPath: {{ .Values.persistence.data.mountPath }}
+            - name: bootstrap
+              mountPath: /bootstrap
+              readOnly: true
+        {{- end }}
+        {{- with .Values.extraInitContainers }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- with .Values.command }}
+          command:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- if .Values.args }}
+          args:
+            {{- toYaml .Values.args | nindent 12 }}
+          {{- else }}
+          args:
+            - gateway
+            - run
+          {{- end }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          env:
+            - name: HERMES_HOME
+              value: {{ .Values.persistence.data.mountPath | quote }}
+            {{- if .Values.apiServer.enabled }}
+            - name: API_SERVER_ENABLED
+              value: "true"
+            - name: API_SERVER_HOST
+              value: {{ .Values.apiServer.host | quote }}
+            - name: API_SERVER_PORT
+              value: {{ .Values.apiServer.port | quote }}
+            {{- with .Values.apiServer.corsOrigins }}
+            - name: API_SERVER_CORS_ORIGINS
+              value: {{ . | quote }}
+            {{- end }}
+            {{- end }}
+            {{- if .Values.dashboard.enabled }}
+            - name: HERMES_DASHBOARD
+              value: "1"
+            - name: HERMES_DASHBOARD_HOST
+              value: {{ .Values.dashboard.host | quote }}
+            - name: HERMES_DASHBOARD_PORT
+              value: {{ .Values.dashboard.port | quote }}
+            {{- if .Values.dashboard.insecure }}
+            - name: HERMES_DASHBOARD_INSECURE
+              value: "1"
+            {{- end }}
+            {{- with .Values.dashboard.auth.basicAuthUsername }}
+            - name: HERMES_DASHBOARD_BASIC_AUTH_USERNAME
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.dashboard.auth.oauthClientId }}
+            - name: HERMES_DASHBOARD_OAUTH_CLIENT_ID
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.dashboard.auth.oidcIssuer }}
+            - name: HERMES_DASHBOARD_OIDC_ISSUER
+              value: {{ . | quote }}
+            {{- end }}
+            {{- with .Values.dashboard.auth.oidcClientId }}
+            - name: HERMES_DASHBOARD_OIDC_CLIENT_ID
+              value: {{ . | quote }}
+            {{- end }}
+            {{- end }}
+            {{- with .Values.extraEnv }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          {{- if or (and (not .Values.secrets.existingSecret) .Values.secrets.data) .Values.secrets.existingSecret .Values.extraEnvFrom }}
+          envFrom:
+            {{- if or .Values.secrets.existingSecret .Values.secrets.data }}
+            - secretRef:
+                name: {{ include "hermes-agent.secretName" . }}
+            {{- end }}
+            {{- with .Values.extraEnvFrom }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          {{- end }}
+          ports:
+            {{- if .Values.apiServer.enabled }}
+            - name: api
+              containerPort: {{ .Values.apiServer.port }}
+              protocol: TCP
+            {{- end }}
+            {{- if .Values.dashboard.enabled }}
+            - name: dashboard
+              containerPort: {{ .Values.dashboard.port }}
+              protocol: TCP
+            {{- end }}
+          {{- if .Values.probes.liveness.enabled }}
+          livenessProbe:
+            {{- omit .Values.probes.liveness "enabled" | toYaml | nindent 12 }}
+          {{- end }}
+          {{- if .Values.probes.readiness.enabled }}
+          readinessProbe:
+            {{- omit .Values.probes.readiness "enabled" | toYaml | nindent 12 }}
+          {{- end }}
+          {{- if .Values.probes.startup.enabled }}
+          startupProbe:
+            {{- omit .Values.probes.startup "enabled" | toYaml | nindent 12 }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - name: data
+              mountPath: {{ .Values.persistence.data.mountPath }}
+            {{- if .Values.persistence.workspace.enabled }}
+            - name: workspace
+              mountPath: {{ .Values.persistence.workspace.mountPath }}
+            {{- end }}
+            {{- if .Values.shm.enabled }}
+            - name: dshm
+              mountPath: /dev/shm
+            {{- end }}
+            {{- with .Values.extraVolumeMounts }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+        {{- with .Values.extraContainers }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      volumes:
+        - name: data
+          {{- if .Values.persistence.data.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ include "hermes-agent.dataClaimName" . }}
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
+        {{- if .Values.persistence.workspace.enabled }}
+        - name: workspace
+          persistentVolumeClaim:
+            claimName: {{ include "hermes-agent.workspaceClaimName" . }}
+        {{- end }}
+        {{- if .Values.config.enabled }}
+        - name: bootstrap
+          configMap:
+            name: {{ include "hermes-agent.fullname" . }}-config
+        {{- end }}
+        {{- if .Values.shm.enabled }}
+        - name: dshm
+          emptyDir:
+            medium: Memory
+            sizeLimit: {{ .Values.shm.sizeLimit }}
+        {{- end }}
+        {{- with .Values.extraVolumes }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.topologySpreadConstraints }}
+      topologySpreadConstraints:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

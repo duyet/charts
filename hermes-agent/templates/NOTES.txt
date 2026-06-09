@@ -1,0 +1,60 @@
+Hermes Agent ({{ .Chart.AppVersion }}) has been deployed as "{{ .Release.Name }}" in namespace "{{ .Release.Namespace }}".
+
+Pod state:
+  kubectl get pods -n {{ .Release.Namespace }} -l "app.kubernetes.io/instance={{ .Release.Name }}" -w
+
+Persistent volumes (separate by design):
+  - core agent state : {{ include "hermes-agent.dataClaimName" . }}  ->  {{ .Values.persistence.data.mountPath }}
+{{- if .Values.persistence.workspace.enabled }}
+  - working directory : {{ include "hermes-agent.workspaceClaimName" . }}  ->  {{ .Values.persistence.workspace.mountPath }}  (agent terminal.cwd)
+{{- end }}
+
+{{- if .Values.dashboard.enabled }}
+
+Dashboard (port {{ .Values.dashboard.port }}):
+{{- if .Values.ingress.enabled }}
+  {{- range .Values.ingress.hosts }}
+  {{- range .paths }}
+  {{- if eq (.backend | default "dashboard") "dashboard" }}
+  http{{ if $.Values.ingress.tls }}s{{ end }}://{{ .host }}{{ .path }}
+  {{- end }}
+  {{- end }}
+  {{- end }}
+{{- else }}
+  kubectl port-forward -n {{ .Release.Namespace }} svc/{{ include "hermes-agent.fullname" . }} {{ .Values.dashboard.port }}:{{ .Values.service.dashboardPort }}
+  Then open: http://127.0.0.1:{{ .Values.dashboard.port }}
+{{- end }}
+  {{- if .Values.dashboard.insecure }}
+  WARNING: dashboard.insecure=true — the auth gate is DISABLED. Only expose behind
+  your own auth layer (e.g. an authenticated Ingress) or on a trusted network.
+  {{- else if or .Values.dashboard.auth.oauthClientId .Values.dashboard.auth.oidcIssuer }}
+  Auth: OAuth/OIDC (provider configured via dashboard.auth.*).
+  {{- else }}
+  NOTE: current Hermes builds REFUSE to bind the dashboard to {{ .Values.dashboard.host }}
+  unless an OAuth/OIDC provider is registered. With only basic-auth (or no auth)
+  the dashboard will NOT serve on the Service port. Configure dashboard.auth OAuth/OIDC,
+  or set dashboard.insecure=true behind your own auth. (The API on {{ .Values.apiServer.port }} is unaffected.)
+  {{- end }}
+{{- end }}
+
+{{- if .Values.apiServer.enabled }}
+
+OpenAI-compatible API (port {{ .Values.apiServer.port }}):
+  kubectl port-forward -n {{ .Release.Namespace }} svc/{{ include "hermes-agent.fullname" . }} {{ .Values.apiServer.port }}:{{ .Values.service.apiPort }}
+  curl -H "Authorization: Bearer <API_SERVER_KEY>" http://127.0.0.1:{{ .Values.apiServer.port }}/v1/models
+  Health: curl http://127.0.0.1:{{ .Values.apiServer.port }}/health
+{{- end }}
+
+Upgrade (seamless — change the tag only):
+  helm upgrade {{ .Release.Name }} <repo>/hermes-agent --set image.tag=<newer-tag> --reuse-values
+
+{{- if not .Values.persistence.data.enabled }}
+
+WARNING: persistence.data.enabled=false — all agent state lives in an emptyDir and
+is LOST on pod restart. Enable it for any real use.
+{{- end }}
+{{- if and .Values.config.enabled (index .Values.config.values "security" | default dict | pluck "allow_private_urls" | first) }}
+
+NOTE: security.allow_private_urls=true — Hermes will reach private/in-cluster IPs.
+Keep this off unless you specifically need it (SSRF protection).
+{{- end }}

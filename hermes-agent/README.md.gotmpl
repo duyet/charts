@@ -1,0 +1,99 @@
+{{ template "chart.header" . }}
+
+{{ template "chart.versionBadge" . }}{{ template "chart.typeBadge" . }}{{ template "chart.appVersionBadge" . }}
+
+{{ template "chart.description" . }}
+
+{{ template "chart.homepageLine" . }}
+
+Deploys [Hermes Agent](https://hermes-agent.nousresearch.com) (NousResearch) — a
+self-hosted autonomous AI agent — using **basic Kubernetes resources only** (no
+CRDs, no operator). A single stateful pod runs the OpenAI-compatible gateway and
+the web dashboard, backed by **two separate persistent volumes**.
+
+## Features
+
+- **Two-volume persistence by design**
+  - `data` → `/opt/data` (`HERMES_HOME`): core agent state — config, sessions,
+    memories, skills, logs.
+  - `workspace` → `/opt/workspace`: the agent's **working directory**
+    (`terminal.cwd`) for git projects and data. Sized, backed up and recycled
+    independently from core state.
+- **Dashboard** (port `9119`) and **OpenAI-compatible API** (port `8642`) in one
+  container — toggle each independently.
+- **Secrets**: chart-managed Secret or `existingSecret` for LLM provider keys,
+  API key, dashboard credentials, bot tokens.
+- **Monitoring**: optional Prometheus `ServiceMonitor`.
+- **Network isolation**: optional `NetworkPolicy` with default-deny ingress and
+  DNS+HTTPS-only egress.
+- **Seamless upgrades**: change `image.tag` and `helm upgrade` — `Recreate`
+  strategy guarantees the old single-writer pod stops before the new one starts.
+- **Safe defaults**: non-root (UID 10000), dropped capabilities, seccomp
+  `RuntimeDefault`, config checksum auto-restart, fail-fast validation.
+
+## Quick start
+
+```console
+helm repo add duyet https://duyet.github.io/charts
+helm install hermes duyet/hermes-agent \
+  --set secrets.data.API_SERVER_KEY="$(openssl rand -hex 16)" \
+  --set secrets.data.ANTHROPIC_API_KEY="sk-ant-..." \
+  --set secrets.data.HERMES_DASHBOARD_BASIC_AUTH_PASSWORD="change-me" \
+  --set dashboard.auth.basicAuthUsername=admin
+```
+
+Open the dashboard:
+
+```console
+kubectl port-forward svc/hermes-hermes-agent 9119:9119
+# visit http://127.0.0.1:9119
+```
+
+## Persistence: core vs. working directory
+
+| Volume | Default mount | Holds | Value key |
+| ------ | ------------- | ----- | --------- |
+| Core state | `/opt/data` | config, sessions, memories, skills, logs | `persistence.data.*` |
+| Working dir | `/opt/workspace` | git repos, data the agent operates on | `persistence.workspace.*` |
+
+The chart injects `terminal.cwd: /opt/workspace` into `config.yaml` automatically
+when the workspace volume is enabled, so the agent does its work on the second
+disk while its identity/memory lives on the first. Set
+`persistence.*.existingClaim` to reuse a pre-provisioned PVC, or
+`persistence.*.retain: true` to keep volumes after `helm uninstall`.
+
+## Configuration (`config.yaml`)
+
+`config.enabled: true` renders `config.values` into a ConfigMap and an init
+container seeds it into the data volume on first boot. `config.overwrite: false`
+(default) means runtime/dashboard edits survive restarts. Provide raw YAML via
+`config.content` to take full control. See the
+[Hermes configuration docs](https://hermes-agent.nousresearch.com/docs/user-guide/configuration).
+
+## Security
+
+- Dashboard auth: HTTP Basic (`dashboard.auth.basicAuthUsername` +
+  `HERMES_DASHBOARD_BASIC_AUTH_PASSWORD` secret), or OAuth/OIDC. `dashboard.insecure`
+  disables the gate — never in production.
+- API auth: `API_SERVER_KEY` (≥8 chars) is **required** when `apiServer.enabled`.
+- Hermes blocks private/loopback IPs (SSRF protection). To let it reach
+  in-cluster services, set `config.values.security.allow_private_urls: true`.
+- See the [Hermes security docs](https://hermes-agent.nousresearch.com/docs/user-guide/security).
+
+## Upgrading
+
+```console
+helm upgrade hermes duyet/hermes-agent --set image.tag=v2026.6.5 --reuse-values
+```
+
+State persists on the PVCs; only the pod is replaced.
+
+{{ template "chart.maintainersSection" . }}
+
+{{ template "chart.sourcesSection" . }}
+
+{{ template "chart.requirementsSection" . }}
+
+{{ template "chart.valuesSection" . }}
+
+{{ template "helm-docs.versionFooter" . }}

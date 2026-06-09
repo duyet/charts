@@ -1,0 +1,21 @@
+{{- if .Values.config.enabled -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "hermes-agent.fullname" . }}-config
+  labels:
+    {{- include "hermes-agent.labels" . | nindent 4 }}
+data:
+  config.yaml: |
+  {{- if .Values.config.content }}
+    {{- .Values.config.content | nindent 4 }}
+  {{- else }}
+    {{- $cfg := deepCopy .Values.config.values }}
+    {{- if .Values.persistence.workspace.enabled }}
+      {{- $terminal := index $cfg "terminal" | default dict }}
+      {{- $_ := set $terminal "cwd" .Values.persistence.workspace.mountPath }}
+      {{- $_ := set $cfg "terminal" $terminal }}
+    {{- end }}
+    {{- toYaml $cfg | nindent 4 }}
+  {{- end }}
+{{- end }}

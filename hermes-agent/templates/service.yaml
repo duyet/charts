@@ -1,0 +1,29 @@
+{{- if or .Values.apiServer.enabled .Values.dashboard.enabled -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "hermes-agent.fullname" . }}
+  labels:
+    {{- include "hermes-agent.labels" . | nindent 4 }}
+  {{- with .Values.service.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ .Values.service.type }}
+  selector:
+    {{- include "hermes-agent.selectorLabels" . | nindent 4 }}
+  ports:
+    {{- if .Values.apiServer.enabled }}
+    - name: api
+      port: {{ .Values.service.apiPort }}
+      targetPort: api
+      protocol: TCP
+    {{- end }}
+    {{- if .Values.dashboard.enabled }}
+    - name: dashboard
+      port: {{ .Values.service.dashboardPort }}
+      targetPort: dashboard
+      protocol: TCP
+    {{- end }}
+{{- end }}

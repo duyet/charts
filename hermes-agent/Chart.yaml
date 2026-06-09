@@ -1,0 +1,27 @@
+apiVersion: v2
+name: hermes-agent
+description: Hermes Agent by NousResearch — a self-hosted autonomous AI agent with an OpenAI-compatible gateway, web dashboard, persistent memory, and sandboxed tool execution.
+type: application
+home: https://hermes-agent.nousresearch.com
+sources:
+  - https://github.com/NousResearch/hermes-agent
+  - https://hermes-agent.nousresearch.com/docs
+icon: https://hermes-agent.nousresearch.com/img/logo.svg
+keywords:
+  - ai
+  - agent
+  - llm
+  - hermes
+  - nousresearch
+  - autonomous-agent
+maintainers:
+  - name: duyet
+    email: me@duyet.net
+    url: https://github.com/duyet
+# Hermes is a stateful single-writer workload: one replica owns the data volume.
+kubeVersion: ">=1.23.0-0"
+version: 0.1.0
+# appVersion tracks the upstream Docker image tag. Bump this (or override
+# image.tag) to upgrade — the chart is designed so a tag change is the only
+# action needed for a seamless rolling upgrade.
+appVersion: "v2026.6.5"

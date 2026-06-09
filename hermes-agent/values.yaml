@@ -1,0 +1,404 @@
+# Default values for hermes-agent.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+#
+# Hermes Agent (NousResearch) is a STATEFUL, SINGLE-WRITER workload: exactly one
+# pod owns the data volume. The chart enforces replicaCount: 1 with a Recreate
+# strategy so an upgrade never runs two writers against the same disk.
+#
+# Seamless upgrades: change `image.tag` (or the chart appVersion) and re-run
+# `helm upgrade`. State persists on the PVCs; the old pod is torn down before the
+# new one starts (Recreate), so there is no data race.
+
+# -- Number of replicas. Hermes is single-writer; values other than 1 are
+# rejected unless you disable persistence. Do not change without external
+# coordination.
+replicaCount: 1
+
+image:
+  # -- The container image repository.
+  repository: nousresearch/hermes-agent
+  # -- Image pull policy (IfNotPresent, Always, Never).
+  pullPolicy: IfNotPresent
+  # -- Image tag. Defaults to the chart appVersion. Override this single value
+  # to upgrade Hermes (e.g. "v2026.6.5", "latest", or "main").
+  tag: ""
+
+# -- Image pull secrets for private registries.
+imagePullSecrets: []
+
+# -- Override the chart name.
+nameOverride: ""
+# -- Override the fully qualified app name.
+fullnameOverride: ""
+
+# -- Extra labels applied to every rendered resource.
+commonLabels: {}
+
+serviceAccount:
+  # -- Specifies whether a service account should be created.
+  create: true
+  # -- Annotations to add to the service account.
+  annotations: {}
+  # -- The name of the service account to use. Generated from fullname if empty.
+  name: ""
+  # -- Auto-mount the API token. Hermes does not talk to the Kubernetes API, so
+  # this is disabled by default for least privilege.
+  automountServiceAccountToken: false
+
+# -- Annotations added to the pod. A config/secret checksum is always added on
+# top so config changes trigger a rolling restart automatically.
+podAnnotations: {}
+# -- Labels added to the pod.
+podLabels: {}
+
+# -- Pod-level security context.
+# IMPORTANT: the Hermes image uses s6-overlay v3, which MUST start as root
+# (uid 0) to fix /run permissions and set up supervision, then drops to the
+# unprivileged hermes user (uid 10000) itself via s6-setuidgid. Forcing
+# runAsNonRoot/runAsUser=10000 here breaks startup with:
+#   "/run belongs to uid 0 instead of 10000 ... lacking the privileges to fix it".
+# The agent process therefore runs as root only during s6 boot and as uid 10000
+# at runtime. fsGroup 10000 keeps the persistent volumes writable after the drop.
+# (Verified on a live k3s cluster — see chart README.)
+podSecurityContext:
+  runAsUser: 0
+  runAsGroup: 0
+  fsGroup: 10000
+  fsGroupChangePolicy: OnRootMismatch
+  seccompProfile:
+    type: RuntimeDefault
+
+# -- Container-level security context.
+# s6-overlay needs to chown /run and drop privileges at boot, so we cannot drop
+# all Linux capabilities or enforce runAsNonRoot. no_new_privs
+# (allowPrivilegeEscalation: false) is still safe because s6 only DROPS
+# privileges. The agent runs unprivileged (uid 10000) after boot.
+securityContext:
+  allowPrivilegeEscalation: false
+  seccompProfile:
+    type: RuntimeDefault
+  # readOnlyRootFilesystem is left false: s6 and the agent write to several root
+  # paths (/run, /var, /tmp). Enable only with matching emptyDir mounts.
+  readOnlyRootFilesystem: false
+
+# ----------------------------------------------------------------------------
+# Gateway / API server (OpenAI-compatible) — container port 8642
+# ----------------------------------------------------------------------------
+apiServer:
+  # -- Enable the OpenAI-compatible API server. When true an API key is required
+  # (see secrets.API_SERVER_KEY or apiServer.existingKeySecret).
+  enabled: true
+  # -- Bind address inside the container. Must be 0.0.0.0 to be reachable via a
+  # Service; 127.0.0.1 would only serve localhost.
+  host: "0.0.0.0"
+  # -- Container port for the gateway/API server. Also serves /health.
+  port: 8642
+  # -- Comma-separated CORS origins (e.g. "https://chat.example.com"). Empty
+  # disables cross-origin requests.
+  corsOrigins: ""
+
+# ----------------------------------------------------------------------------
+# Web dashboard — container port 9119
+# ----------------------------------------------------------------------------
+dashboard:
+  # -- Enable the Hermes web dashboard (sets HERMES_DASHBOARD=1). Runs in the
+  # same container, supervised by s6 — no sidecar needed.
+  enabled: true
+  # -- Bind address inside the container.
+  host: "0.0.0.0"
+  # -- Container port for the dashboard.
+  port: 9119
+  # -- Disable the dashboard's auth gate so it binds on non-loopback (0.0.0.0).
+  # IMPORTANT (verified on a live cluster): current Hermes builds REFUSE to bind
+  # the dashboard to 0.0.0.0 unless an OAuth/OIDC auth provider is registered.
+  # Basic-auth credentials alone may not register a provider on every version.
+  # So to actually reach the dashboard over the Service you must EITHER configure
+  # OAuth/OIDC below, OR set insecure: true (only behind your own auth/private
+  # network — e.g. an authenticated Ingress). The gateway API on 8642 is
+  # unaffected and works regardless.
+  insecure: false
+  auth:
+    # -- HTTP Basic auth username. Username is non-secret and lives here; the
+    # password/secret live in the Secret (see secrets.HERMES_DASHBOARD_*).
+    basicAuthUsername: ""
+    # -- Nous Portal OAuth client id (non-secret).
+    oauthClientId: ""
+    # -- Self-hosted OIDC issuer URL.
+    oidcIssuer: ""
+    # -- Self-hosted OIDC client id.
+    oidcClientId: ""
+
+# ----------------------------------------------------------------------------
+# Persistence — TWO separate volumes by design
+#   data      -> /opt/data  : core agent state (config, sessions, memories, skills)
+#   workspace -> working dir : where the agent operates on git projects / data
+# Keeping them apart lets you back up, size, and recycle each independently.
+# ----------------------------------------------------------------------------
+persistence:
+  data:
+    # -- Persist the core agent state volume. Strongly recommended; without it
+    # all sessions, memories, skills and config are lost on pod restart.
+    enabled: true
+    # -- Use an existing PVC for core state instead of creating one.
+    existingClaim: ""
+    # -- Mount path for core agent state. Maps to HERMES_HOME inside the
+    # container. Do not change unless you also set env HERMES_HOME.
+    mountPath: /opt/data
+    # -- StorageClass for the core state PVC. "" uses the cluster default.
+    storageClass: ""
+    # -- Access mode. Single-writer, so ReadWriteOnce is correct.
+    accessModes:
+      - ReadWriteOnce
+    # -- Requested size for the core state volume.
+    size: 5Gi
+    # -- Annotations for the core state PVC.
+    annotations: {}
+    # -- Keep the PVC after `helm uninstall` (helm.sh/resource-policy: keep).
+    retain: false
+  workspace:
+    # -- Persist a SEPARATE working-directory volume for the agent's projects,
+    # git checkouts and data. The chart points the agent's terminal.cwd here.
+    enabled: true
+    # -- Use an existing PVC for the working directory instead of creating one.
+    existingClaim: ""
+    # -- Mount path for the working directory (the agent's cwd).
+    mountPath: /opt/workspace
+    # -- StorageClass for the workspace PVC. "" uses the cluster default.
+    storageClass: ""
+    # -- Access mode for the workspace PVC.
+    accessModes:
+      - ReadWriteOnce
+    # -- Requested size for the workspace volume.
+    size: 10Gi
+    # -- Annotations for the workspace PVC.
+    annotations: {}
+    # -- Keep the PVC after `helm uninstall`.
+    retain: false
+
+# -- Shared memory (/dev/shm) sizing for browser automation (Chromium needs it).
+# Mounted as an in-memory emptyDir.
+shm:
+  enabled: true
+  sizeLimit: 1Gi
+
+# ----------------------------------------------------------------------------
+# Agent configuration (config.yaml) bootstrap
+# Rendered into a ConfigMap and seeded into the data volume on first boot by an
+# init container. This is how the working directory (terminal.cwd) gets wired.
+# ----------------------------------------------------------------------------
+config:
+  # -- Manage config.yaml via this chart. When false, the chart writes nothing
+  # and you manage /opt/data/config.yaml yourself (e.g. via the dashboard).
+  enabled: true
+  # -- Overwrite config.yaml on every pod start. false = seed once, then leave
+  # the file alone so dashboard/runtime edits survive restarts.
+  overwrite: false
+  # -- Structured config merged into config.yaml. `terminal.cwd` is injected
+  # automatically to the workspace mountPath when persistence.workspace.enabled.
+  # Anything you put here is rendered verbatim (toYaml). See the Hermes docs:
+  # https://hermes-agent.nousresearch.com/docs/user-guide/configuration
+  values:
+    approvals:
+      # smart | manual | off  — controls command-execution approval gating.
+      mode: smart
+    terminal:
+      # local | docker | ssh | modal | daytona — code-execution isolation
+      # backend. "local" runs in-pod (simplest in K8s). The container already
+      # drops privileges; use ssh/modal/daytona for stronger isolation.
+      backend: local
+    security:
+      # Hermes blocks private/loopback IPs (SSRF protection) by default. Set
+      # true only if the agent must reach in-cluster services on private IPs.
+      allow_private_urls: false
+  # -- Raw config.yaml content. If set (non-empty), this string is used verbatim
+  # and `config.values` is ignored. terminal.cwd is NOT auto-injected here — set
+  # it yourself.
+  content: ""
+
+# ----------------------------------------------------------------------------
+# Secrets — LLM provider keys, API server key, dashboard credentials, bot tokens
+# ----------------------------------------------------------------------------
+secrets:
+  # -- Use an existing Secret (referenced via envFrom) instead of the
+  # chart-managed one below. When set, the `secrets.data` map is ignored.
+  existingSecret: ""
+  # -- Key/value pairs rendered into a chart-managed Secret and injected as env
+  # vars via envFrom. Only non-empty values are rendered. Put any of:
+  #   ANTHROPIC_API_KEY, OPENAI_API_KEY, OPENROUTER_API_KEY, GOOGLE_API_KEY,
+  #   GROQ_API_KEY, DEEPSEEK_API_KEY, XAI_API_KEY, MINIMAX_API_KEY,
+  #   API_SERVER_KEY (>=8 chars, required when apiServer.enabled),
+  #   HERMES_DASHBOARD_BASIC_AUTH_PASSWORD, HERMES_DASHBOARD_BASIC_AUTH_SECRET,
+  #   HERMES_DASHBOARD_OAUTH_CLIENT_SECRET, TELEGRAM_BOT_TOKEN, ...
+  data: {}
+    # ANTHROPIC_API_KEY: "sk-ant-..."
+    # API_SERVER_KEY: "change-me-min-8-chars"
+    # HERMES_DASHBOARD_BASIC_AUTH_PASSWORD: "change-me"
+
+# -- Extra plain (non-secret) environment variables as a name/value list.
+extraEnv: []
+  # - name: HERMES_API_TIMEOUT
+  #   value: "1800"
+
+# -- Extra envFrom sources (configMapRef / secretRef).
+extraEnvFrom: []
+
+# ----------------------------------------------------------------------------
+# Service
+# ----------------------------------------------------------------------------
+service:
+  # -- Service type (ClusterIP, NodePort, LoadBalancer).
+  type: ClusterIP
+  # -- Service port for the gateway/API server (maps to apiServer.port).
+  apiPort: 8642
+  # -- Service port for the dashboard (maps to dashboard.port).
+  dashboardPort: 9119
+  # -- Annotations for the Service.
+  annotations: {}
+
+# ----------------------------------------------------------------------------
+# Ingress (basic networking.k8s.io/v1 — no CRDs)
+# ----------------------------------------------------------------------------
+ingress:
+  # -- Enable an Ingress for the dashboard and/or API.
+  enabled: false
+  # -- Ingress class name.
+  className: ""
+  # -- Ingress annotations.
+  annotations: {}
+  # -- Which backend each host path routes to: "dashboard" or "api".
+  # Hosts list. Each host routes its paths to the named backend port.
+  hosts:
+    - host: hermes.local
+      paths:
+        - path: /
+          pathType: Prefix
+          backend: dashboard
+  # -- TLS configuration.
+  tls: []
+  #  - secretName: hermes-tls
+  #    hosts:
+  #      - hermes.local
+
+# ----------------------------------------------------------------------------
+# NetworkPolicy — isolate the agent's namespace/pod
+# ----------------------------------------------------------------------------
+networkPolicy:
+  # -- Create a NetworkPolicy to isolate Hermes. Requires a CNI that enforces
+  # NetworkPolicy (Calico, Cilium, etc.).
+  enabled: false
+  ingress:
+    # -- Restrict inbound traffic. When true, only the rules below are allowed.
+    enabled: true
+    # -- Namespace selectors allowed to reach Hermes (empty = same namespace via
+    # podSelector only). Each item is a Kubernetes labelSelector matchLabels map.
+    fromNamespaces: []
+    # -- Pod selectors allowed to reach Hermes within allowed namespaces.
+    fromPods: []
+  egress:
+    # -- Restrict outbound traffic. Hermes needs DNS + HTTPS to reach LLM
+    # providers; those are allowed by default when this is enabled.
+    enabled: true
+    # -- Allow DNS resolution to kube-system (UDP/TCP 53).
+    allowDNS: true
+    # -- Allow outbound HTTPS (443) to the internet for LLM provider APIs.
+    allowHTTPS: true
+    # -- Additional egress rules appended verbatim (list of NetworkPolicy egress
+    # rule objects).
+    extraRules: []
+
+# ----------------------------------------------------------------------------
+# Probes — liveness/readiness/startup. Defaults hit the gateway /health on 8642.
+# ----------------------------------------------------------------------------
+probes:
+  # -- Liveness probe. Disable if apiServer.enabled is false (no /health then).
+  liveness:
+    enabled: true
+    httpGet:
+      path: /health
+      port: api
+    initialDelaySeconds: 30
+    periodSeconds: 30
+    timeoutSeconds: 5
+    failureThreshold: 6
+  # -- Readiness probe.
+  readiness:
+    enabled: true
+    httpGet:
+      path: /health
+      port: api
+    initialDelaySeconds: 15
+    periodSeconds: 15
+    timeoutSeconds: 5
+    failureThreshold: 6
+  # -- Startup probe (gives the agent time to migrate config/state on first run).
+  startup:
+    enabled: true
+    httpGet:
+      path: /health
+      port: api
+    initialDelaySeconds: 10
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 30
+
+# ----------------------------------------------------------------------------
+# Monitoring — Prometheus Operator ServiceMonitor (optional, no bundled CRD)
+# ----------------------------------------------------------------------------
+serviceMonitor:
+  # -- Create a ServiceMonitor (requires the Prometheus Operator CRD to already
+  # exist in the cluster — the chart does not install it).
+  enabled: false
+  # -- Scrape path.
+  path: /metrics
+  # -- Which port to scrape ("api" or "dashboard").
+  port: api
+  # -- Scrape interval.
+  interval: 30s
+  # -- Scrape timeout.
+  scrapeTimeout: 10s
+  # -- Extra labels (e.g. release: kube-prometheus-stack) so the operator
+  # selects this monitor.
+  labels: {}
+
+# -- Resource requests/limits. Hermes recommends 2 CPU / 2-4Gi for real use.
+resources:
+  limits:
+    cpu: "2"
+    memory: 4Gi
+  requests:
+    cpu: "1"
+    memory: 2Gi
+
+# ----------------------------------------------------------------------------
+# PodDisruptionBudget
+# ----------------------------------------------------------------------------
+podDisruptionBudget:
+  # -- Create a PDB. With a single replica this mainly documents intent; set
+  # minAvailable: 0 to allow voluntary eviction during node drains.
+  enabled: false
+  minAvailable: 1
+  # maxUnavailable: 1
+
+# -- Node selector.
+nodeSelector: {}
+# -- Tolerations.
+tolerations: []
+# -- Affinity rules.
+affinity: {}
+# -- Topology spread constraints.
+topologySpreadConstraints: []
+
+# -- Override the container command. Defaults to the image entrypoint.
+command: []
+# -- Override the container args. Defaults to ["gateway", "run"].
+args: []
+
+# -- Extra init containers.
+extraInitContainers: []
+# -- Extra volumes.
+extraVolumes: []
+# -- Extra volume mounts on the main container.
+extraVolumeMounts: []
+# -- Extra sidecar containers.
+extraContainers: []
