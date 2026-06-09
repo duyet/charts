@@ -320,6 +320,17 @@ config:
       # require_mention: true         # only respond to @mentions
       # free_response_channels: ""     # comma-list channels where bot replies freely
       # auto_thread: true              # thread replies in busy channels
+
+    # -- Voice / TTS / STT (text-to-speech, speech-to-text) configuration.
+    # Provider-specific env vars go in secrets.data.
+    voice: {}
+      # enabled: false                 # enable voice input/output
+    tts: {}
+      # enabled: false                 # enable text-to-speech output
+      # engine: ""                     # TTS provider (depends on voice provider)
+    stt: {}
+      # enabled: false                 # enable speech-to-text input
+      # engine: ""                     # STT provider (depends on voice provider)
   # -- Raw config.yaml content. ESCAPE HATCH: if set (non-empty), this string is
   # used verbatim and `config.values` is ignored. terminal.cwd is NOT
   # auto-injected here — set it yourself. Prefer `config.values` above.

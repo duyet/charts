@@ -1,0 +1,25 @@
+# Preset: memory-tuned — Hermes with adjusted context/compression for a
+# resource-constrained node. Reduces file read max chars, enables compression,
+# and limits concurrent sessions. Adjust based on your node's RAM headroom.
+#
+#   helm upgrade --install hermes . -n hermes-agent --create-namespace \
+#     -f examples/memory-tuned.yaml
+secrets:
+  data:
+    API_SERVER_KEY: "change-me-min-8-chars"
+    OPENROUTER_API_KEY: "sk-or-..."
+
+config:
+  values:
+    model:
+      default: openrouter/anthropic/claude-sonnet-4
+      provider: openrouter
+      api_key: ${OPENROUTER_API_KEY}
+    # Reduce file read cap (default 100k) to limit context bloat.
+    file_read_max_chars: 50000
+    # Enable compression for long context windows.
+    compression:
+      enabled: true
+      threshold: 80000
+    # Limit concurrent sessions (default varies by backend).
+    max_concurrent_sessions: 3

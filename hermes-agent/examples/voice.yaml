@@ -1,0 +1,24 @@
+# Preset: voice-enabled — Hermes with TTS/STT for voice chat.
+# Requires a voice provider with configured credentials (provider-specific env
+# vars in secrets.data). This preset enables the feature; specific provider
+# config depends on the voice service in use.
+#
+#   helm upgrade --install hermes . -n hermes-agent --create-namespace \
+#     -f examples/voice.yaml
+secrets:
+  data:
+    API_SERVER_KEY: "change-me-min-8-chars"
+    OPENROUTER_API_KEY: "sk-or-..."
+
+config:
+  values:
+    model:
+      default: openrouter/anthropic/claude-sonnet-4
+      provider: openrouter
+      api_key: ${OPENROUTER_API_KEY}
+    voice:
+      enabled: true
+    tts:
+      enabled: true
+    stt:
+      enabled: true
