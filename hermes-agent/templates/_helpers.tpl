@@ -131,7 +131,13 @@ never written into this ConfigMap.
 {{- end -}}
 {{- $out := dict -}}
 {{- range $k, $v := $src -}}
-{{- if not (empty $v) -}}
+{{- /* Prune only blank containers/strings; keep meaningful false/0 scalars. */ -}}
+{{- $blank := or
+      (kindIs "invalid" $v)
+      (and (kindIs "map" $v) (eq (len (keys $v)) 0))
+      (and (kindIs "slice" $v) (eq (len $v) 0))
+      (and (kindIs "string" $v) (eq $v "")) -}}
+{{- if not $blank -}}
 {{- $_ := set $out $k $v -}}
 {{- end -}}
 {{- end -}}
