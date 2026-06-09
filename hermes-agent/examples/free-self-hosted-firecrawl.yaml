@@ -1,0 +1,32 @@
+# Preset: free / self-hosted with Firecrawl — no paid API keys.
+# Uses the in-cluster self-hosted Firecrawl instance for web search + extract
+# (firecrawl-firecrawl-api.firecrawl.svc:3002). The instance has auth disabled,
+# so only a dummy FIRECRAWL_API_KEY is required. SSRF protection is relaxed
+# so the agent can reach the private ClusterIP.
+#
+#   helm upgrade --install hermes . -n hermes-agent --create-namespace \
+#     -f examples/free-self-hosted-firecrawl.yaml
+secrets:
+  data:
+    API_SERVER_KEY: "change-me-min-8-chars"
+    OPENROUTER_API_KEY: "sk-or-..."
+    # Self-hosted Firecrawl (no auth) — the key is required by Hermes's
+    # firecrawl client init but the instance doesn't validate it.
+    FIRECRAWL_API_KEY: "unused-self-hosted-no-auth"
+
+extraEnv:
+  - name: FIRECRAWL_API_URL
+    value: "http://firecrawl-firecrawl-api.firecrawl.svc:3002"
+
+config:
+  values:
+    model:
+      default: openrouter/free
+      provider: openrouter
+      api_key: ${OPENROUTER_API_KEY}
+    # Web search + extract via the in-cluster Firecrawl.
+    web:
+      backend: firecrawl
+    security:
+      # Required: Firecrawl backend is a private ClusterIP service.
+      allow_private_urls: true
