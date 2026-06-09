@@ -17,6 +17,7 @@ This repository contains the following Helm charts:
 - **[clickhouse-monitoring](./clickhouse-monitoring)** - ClickHouse monitoring tools
 - **[commento](./commento)** - Comment system for websites
 - **[gaxy](./gaxy)** - Google Analytics proxy
+- **[hermes-agent](./hermes-agent)** - Hermes Agent (NousResearch) autonomous AI agent with dashboard, OpenAI-compatible API, and dual persistent volumes
 - **[pgbouncer](./pgbouncer)** - PostgreSQL connection pooler
 - **[scheduling-restart](./scheduling-restart)** - Scheduled deployment restarts
 - **[spark-shuffle-service](./spark-shuffle-service)** - Spark shuffle service daemon
