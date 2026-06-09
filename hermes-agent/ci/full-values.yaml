@@ -62,3 +62,26 @@ config:
       backend: local
     security:
       allow_private_urls: true
+    web:
+      backend: firecrawl
+    browser:
+      inactivity_timeout: 120
+      dialog_policy: must_respond
+    code_execution:
+      mode: project
+      timeout: 300
+      max_tool_calls: 50
+    discord:
+      require_mention: true
+      auto_thread: true
+    voice:
+      enabled: true
+    tts:
+      enabled: true
+    stt:
+      enabled: true
+    file_read_max_chars: 50000
+    compression:
+      enabled: true
+      threshold: 80000
+    max_concurrent_sessions: 3
