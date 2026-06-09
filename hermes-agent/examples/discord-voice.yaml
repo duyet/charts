@@ -1,0 +1,27 @@
+# Preset: Discord + voice — chat platform with TTS/STT enabled.
+# Combines discord.yaml + voice.yaml for a full-featured voice chat bot.
+# Requires DISCORD_BOT_TOKEN in secrets.data.
+#
+#   helm upgrade --install hermes . -n hermes-agent --create-namespace \
+#     -f examples/discord-voice.yaml
+secrets:
+  data:
+    API_SERVER_KEY: "change-me-min-8-chars"
+    OPENROUTER_API_KEY: "sk-or-..."
+    DISCORD_BOT_TOKEN: "MTAw..."  # Your Discord bot token
+
+config:
+  values:
+    model:
+      default: openrouter/anthropic/claude-sonnet-4
+      provider: openrouter
+      api_key: ${OPENROUTER_API_KEY}
+    discord:
+      require_mention: true
+      auto_thread: true
+    voice:
+      enabled: true
+    tts:
+      enabled: true
+    stt:
+      enabled: true

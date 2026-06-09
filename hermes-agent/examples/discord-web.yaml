@@ -1,0 +1,31 @@
+# Preset: Discord + web search — informed bot with Firecrawl.
+# Combines discord.yaml + web tools for a bot that can search the web and
+# answer with live data. Requires DISCORD_BOT_TOKEN + FIRECRAWL_API_KEY in
+# secrets.data. Self-hosted Firecrawl needs no real key; use a dummy value.
+#
+#   helm upgrade --install hermes . -n hermes-agent --create-namespace \
+#     -f examples/discord-web.yaml
+secrets:
+  data:
+    API_SERVER_KEY: "change-me-min-8-chars"
+    OPENROUTER_API_KEY: "sk-or-..."
+    DISCORD_BOT_TOKEN: "MTAw..."  # Your Discord bot token
+    FIRECRAWL_API_KEY: "unused-self-hosted"  # Dummy for self-hosted, or real key
+
+extraEnv:
+  - name: FIRECRAWL_API_URL
+    value: "http://firecrawl-firecrawl-api.firecrawl.svc:3002"
+
+config:
+  values:
+    model:
+      default: openrouter/anthropic/claude-sonnet-4
+      provider: openrouter
+      api_key: ${OPENROUTER_API_KEY}
+    discord:
+      require_mention: true
+      auto_thread: true
+    web:
+      backend: firecrawl
+    security:
+      allow_private_urls: true  # Required for private ClusterIP Firecrawl
