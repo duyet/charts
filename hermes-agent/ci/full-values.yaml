@@ -36,6 +36,26 @@ persistence:
     size: 1Gi
 config:
   values:
+    model:
+      default: anyrouter/agent
+      provider: custom
+      api_key: ${ANYROUTER_API_KEY}
+      base_url: ${ANYROUTER_API_BASE}
+    custom_providers:
+      - name: anyrouter
+        base_url: https://anyrouter.dev/api/v1
+        api_key: ${ANYROUTER_API_KEY}
+        model: google/gemma-4-26b-a4b-it
+        api_mode: chat_completions
+    fallback_providers:
+      - provider: openrouter
+        model: openrouter/free
+        base_url: https://openrouter.ai/api/v1
+        api_mode: chat_completions
+    display:
+      personality: "You are a helpful CI assistant."
+      busy_input_mode: steer
+      busy_ack_enabled: true
     approvals:
       mode: manual
     terminal:

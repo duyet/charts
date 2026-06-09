@@ -194,26 +194,115 @@ config:
   # -- Overwrite config.yaml on every pod start. false = seed once, then leave
   # the file alone so dashboard/runtime edits survive restarts.
   overwrite: false
-  # -- Structured config merged into config.yaml. `terminal.cwd` is injected
-  # automatically to the workspace mountPath when persistence.workspace.enabled.
-  # Anything you put here is rendered verbatim (toYaml). See the Hermes docs:
-  # https://hermes-agent.nousresearch.com/docs/user-guide/configuration
+  # -- Structured config rendered into config.yaml. This mirrors the Hermes
+  # `config.yaml` schema one-to-one, so the whole file is built from these
+  # values — no raw string needed. Empty top-level sections (model, providers,
+  # custom_providers, fallback_providers, display) are pruned automatically, so
+  # set only what you use. `terminal.cwd` is injected automatically to the
+  # workspace mountPath when persistence.workspace.enabled.
+  #
+  # Secrets: reference them as `${ENV_VAR}` placeholders here and put the real
+  # value in `secrets.data` (or an existingSecret). Hermes expands the env var
+  # at runtime — secrets never live in this rendered ConfigMap.
+  #
+  # Full schema: https://hermes-agent.nousresearch.com/docs/user-guide/configuration
   values:
-    approvals:
-      # smart | manual | off  — controls command-execution approval gating.
-      mode: smart
+    # -- Primary model the agent uses.
+    #   default:  model string "<provider>/<name>", e.g. "anyrouter/agent".
+    #   provider: built-in provider id (openai, anthropic, openrouter, ...) or
+    #             "custom" to resolve against `custom_providers` below.
+    #   api_key / base_url: usually env placeholders, e.g. ${ANYROUTER_API_KEY}.
+    # Left empty by default so a bare install relies on provider env vars.
+    model: {}
+      # default: anyrouter/agent
+      # provider: custom
+      # api_key: ${ANYROUTER_API_KEY}
+      # base_url: ${ANYROUTER_API_BASE}
+
+    # -- Register extra OpenAI-compatible providers, referenced by `name` from
+    # `model.provider: custom` or model strings like "<name>/<model>".
+    custom_providers: []
+      # - name: anyrouter
+      #   base_url: https://anyrouter.dev/api/v1
+      #   api_key: ${ANYROUTER_API_KEY}
+      #   model: google/gemma-4-26b-a4b-it
+      #   api_mode: chat_completions   # chat_completions | responses
+
+    # -- Per-provider overrides for built-in providers (api_key, base_url, ...).
+    providers: {}
+      # openrouter:
+      #   api_key: ${OPENROUTER_API_KEY}
+
+    # -- Fallback providers, tried in order when the primary model fails.
+    fallback_providers: []
+      # - provider: openrouter
+      #   model: openrouter/free
+      #   base_url: https://openrouter.ai/api/v1
+      #   api_mode: chat_completions
+
+    # -- Persona and chat UX shown to users.
+    display: {}
+      # personality: "You are a helpful AI assistant."
+      # busy_input_mode: steer     # steer | queue | reject — how input arriving
+      #                            # while the agent is busy is handled.
+      # busy_ack_enabled: true     # acknowledge messages received while busy.
+
+    # -- Web search & extraction tools. Backends: firecrawl | searxng | parallel
+    # | tavily | exa. If `backend` is unset, Hermes auto-detects from whichever
+    # API keys are present. You can split search vs extract across providers —
+    # e.g. SearXNG (free, self-hosted, no key) for search + Firecrawl for
+    # extract. Put credentials in secrets.data: FIRECRAWL_API_KEY /
+    # FIRECRAWL_API_URL, SEARXNG_URL, TAVILY_API_KEY, EXA_API_KEY,
+    # PARALLEL_API_KEY.
+    web: {}
+      # backend: firecrawl          # force one backend for both capabilities
+      # search_backend: searxng     # or split: search via SearXNG (free)
+      # extract_backend: firecrawl  #           extract via Firecrawl
+
+    # -- Browser automation. Cloud providers (Browserbase / Browser Use /
+    # Firecrawl) or a local Chromium-family browser attached over CDP via
+    # `cdp_url`. Local Chromium needs shm.enabled (see shm.* above). Put keys in
+    # secrets.data: BROWSERBASE_API_KEY (and FIRECRAWL_API_KEY for Firecrawl).
+    browser: {}
+      # inactivity_timeout: 120
+      # command_timeout: 30
+      # record_sessions: false
+      # cdp_url: ""                 # e.g. ws://chrome:9222 for an in-cluster Chrome
+      # dialog_policy: must_respond # must_respond | dismiss | accept
+      # dialog_timeout_s: 300
+
+    # -- Code-execution limits (independent of the terminal backend below).
+    code_execution: {}
+      # mode: project               # project | strict
+      # timeout: 300
+      # max_tool_calls: 50
+
+    # -- Code-execution isolation backend. `cwd` is injected automatically.
     terminal:
-      # local | docker | ssh | modal | daytona — code-execution isolation
-      # backend. "local" runs in-pod (simplest in K8s). The container already
-      # drops privileges; use ssh/modal/daytona for stronger isolation.
+      # local | docker | ssh | modal | daytona | singularity — code-execution
+      # isolation backend. "local" runs in-pod (simplest in K8s). The container
+      # already drops privileges; use ssh/modal/daytona for stronger isolation.
       backend: local
+      # timeout: 180
+      # persistent_shell: true
+
+    # -- Command-execution approval gating.
+    approvals:
+      # smart | manual | off
+      mode: smart
+
+    # -- Security controls.
     security:
       # Hermes blocks private/loopback IPs (SSRF protection) by default. Set
       # true only if the agent must reach in-cluster services on private IPs.
       allow_private_urls: false
-  # -- Raw config.yaml content. If set (non-empty), this string is used verbatim
-  # and `config.values` is ignored. terminal.cwd is NOT auto-injected here — set
-  # it yourself.
+      # redact_secrets: true          # scrub secrets from tool output/logs
+      # website_blocklist:            # deny-list domains the agent may fetch
+      #   enabled: false
+      #   domains: []
+  # -- Raw config.yaml content. ESCAPE HATCH: if set (non-empty), this string is
+  # used verbatim and `config.values` is ignored. terminal.cwd is NOT
+  # auto-injected here — set it yourself. Prefer `config.values` above.
   content: ""
 
 # ----------------------------------------------------------------------------
@@ -224,12 +313,17 @@ secrets:
   # chart-managed one below. When set, the `secrets.data` map is ignored.
   existingSecret: ""
   # -- Key/value pairs rendered into a chart-managed Secret and injected as env
-  # vars via envFrom. Only non-empty values are rendered. Put any of:
-  #   ANTHROPIC_API_KEY, OPENAI_API_KEY, OPENROUTER_API_KEY, GOOGLE_API_KEY,
-  #   GROQ_API_KEY, DEEPSEEK_API_KEY, XAI_API_KEY, MINIMAX_API_KEY,
-  #   API_SERVER_KEY (>=8 chars, required when apiServer.enabled),
-  #   HERMES_DASHBOARD_BASIC_AUTH_PASSWORD, HERMES_DASHBOARD_BASIC_AUTH_SECRET,
-  #   HERMES_DASHBOARD_OAUTH_CLIENT_SECRET, TELEGRAM_BOT_TOKEN, ...
+  # vars via envFrom. Only non-empty values are rendered. These env vars are
+  # what `${VAR}` placeholders in config.values resolve to at runtime. Put any of:
+  #   LLM providers: ANTHROPIC_API_KEY, OPENAI_API_KEY, OPENROUTER_API_KEY,
+  #     GOOGLE_API_KEY, GROQ_API_KEY, DEEPSEEK_API_KEY, XAI_API_KEY, MINIMAX_API_KEY
+  #   Web search/extract: FIRECRAWL_API_KEY, FIRECRAWL_API_URL, SEARXNG_URL,
+  #     TAVILY_API_KEY, EXA_API_KEY, PARALLEL_API_KEY
+  #   Browser automation: BROWSERBASE_API_KEY
+  #   Gateway/dashboard: API_SERVER_KEY (>=8 chars, required when apiServer.enabled),
+  #     HERMES_DASHBOARD_BASIC_AUTH_PASSWORD, HERMES_DASHBOARD_BASIC_AUTH_SECRET,
+  #     HERMES_DASHBOARD_OAUTH_CLIENT_SECRET
+  #   Chat: TELEGRAM_BOT_TOKEN, DISCORD_BOT_TOKEN, ...
   data: {}
     # ANTHROPIC_API_KEY: "sk-ant-..."
     # API_SERVER_KEY: "change-me-min-8-chars"

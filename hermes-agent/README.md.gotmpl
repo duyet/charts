@@ -66,8 +66,48 @@ disk while its identity/memory lives on the first. Set
 
 `config.enabled: true` renders `config.values` into a ConfigMap and an init
 container seeds it into the data volume on first boot. `config.overwrite: false`
-(default) means runtime/dashboard edits survive restarts. Provide raw YAML via
-`config.content` to take full control. See the
+(default) means runtime/dashboard edits survive restarts.
+
+`config.values` mirrors the Hermes `config.yaml` schema one-to-one — the chart
+builds the whole file from it. Supported top-level sections: `model`,
+`custom_providers`, `providers`, `fallback_providers`, `display`, `terminal`,
+`approvals`, `security`. Empty sections are pruned automatically, and
+`terminal.cwd` is injected to the workspace mountPath for you.
+
+**Secrets** are referenced as `${ENV_VAR}` placeholders inside `config.values`;
+put the real value in `secrets.data` (or `secrets.existingSecret`). Hermes
+expands the env var at runtime — secrets never land in the ConfigMap.
+
+```yaml
+config:
+  values:
+    model:
+      default: anyrouter/agent
+      provider: custom
+      api_key: ${ANYROUTER_API_KEY}        # value lives in secrets.data
+      base_url: ${ANYROUTER_API_BASE}
+    custom_providers:
+      - name: anyrouter
+        base_url: https://anyrouter.dev/api/v1
+        api_key: ${ANYROUTER_API_KEY}
+        model: google/gemma-4-26b-a4b-it
+    fallback_providers:
+      - provider: openrouter
+        model: openrouter/free
+        base_url: https://openrouter.ai/api/v1
+        api_mode: chat_completions
+    display:
+      personality: "You are a helpful assistant."
+      busy_input_mode: steer
+      busy_ack_enabled: true
+secrets:
+  data:
+    ANYROUTER_API_KEY: "sk-..."
+```
+
+For full manual control, set `config.content` to a raw YAML string (used
+verbatim; `config.values` is ignored and `terminal.cwd` is not auto-injected).
+See the
 [Hermes configuration docs](https://hermes-agent.nousresearch.com/docs/user-guide/configuration).
 
 ## Security

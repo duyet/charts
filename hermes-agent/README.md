@@ -66,8 +66,49 @@ disk while its identity/memory lives on the first. Set
 
 `config.enabled: true` renders `config.values` into a ConfigMap and an init
 container seeds it into the data volume on first boot. `config.overwrite: false`
-(default) means runtime/dashboard edits survive restarts. Provide raw YAML via
-`config.content` to take full control. See the
+(default) means runtime/dashboard edits survive restarts.
+
+`config.values` mirrors the Hermes `config.yaml` schema one-to-one — the chart
+builds the whole file from it, so you rarely need a raw string. Supported
+top-level sections: `model`, `custom_providers`, `providers`,
+`fallback_providers`, `display`, `terminal`, `approvals`, `security`. Empty
+sections are pruned automatically, so set only what you use, and `terminal.cwd`
+is injected to the workspace mountPath for you.
+
+**Secrets** are referenced as `${ENV_VAR}` placeholders inside `config.values`;
+put the real value in `secrets.data` (or `secrets.existingSecret`). Hermes
+expands the env var at runtime — secrets never land in the ConfigMap.
+
+```yaml
+config:
+  values:
+    model:
+      default: anyrouter/agent
+      provider: custom
+      api_key: ${ANYROUTER_API_KEY}        # value lives in secrets.data
+      base_url: ${ANYROUTER_API_BASE}
+    custom_providers:
+      - name: anyrouter
+        base_url: https://anyrouter.dev/api/v1
+        api_key: ${ANYROUTER_API_KEY}
+        model: google/gemma-4-26b-a4b-it
+    fallback_providers:
+      - provider: openrouter
+        model: openrouter/free
+        base_url: https://openrouter.ai/api/v1
+        api_mode: chat_completions
+    display:
+      personality: "You are a helpful assistant."
+      busy_input_mode: steer
+      busy_ack_enabled: true
+secrets:
+  data:
+    ANYROUTER_API_KEY: "sk-..."
+```
+
+For full manual control, set `config.content` to a raw YAML string (it is used
+verbatim and `config.values` is ignored; `terminal.cwd` is not auto-injected).
+See the
 [Hermes configuration docs](https://hermes-agent.nousresearch.com/docs/user-guide/configuration).
 
 ## Security
@@ -116,11 +157,19 @@ Kubernetes: `>=1.23.0-0`
 | args | list | `[]` | Override the container args. Defaults to ["gateway", "run"]. |
 | command | list | `[]` | Override the container command. Defaults to the image entrypoint. |
 | commonLabels | object | `{}` | Extra labels applied to every rendered resource. |
-| config | object | `{"content":"","enabled":true,"overwrite":false,"values":{"approvals":{"mode":"smart"},"security":{"allow_private_urls":false},"terminal":{"backend":"local"}}}` | -------------------------------------------------------------------------- |
-| config.content | string | `""` | Raw config.yaml content. If set (non-empty), this string is used verbatim and `config.values` is ignored. terminal.cwd is NOT auto-injected here — set it yourself. |
+| config | object | `{"content":"","enabled":true,"overwrite":false,"values":{"approvals":{"mode":"smart"},"custom_providers":[],"display":{},"fallback_providers":[],"model":{},"providers":{},"security":{"allow_private_urls":false},"terminal":{"backend":"local"}}}` | -------------------------------------------------------------------------- |
+| config.content | string | `""` | Raw config.yaml content. ESCAPE HATCH: if set (non-empty), this string is used verbatim and `config.values` is ignored. terminal.cwd is NOT auto-injected here — set it yourself. Prefer `config.values` above. |
 | config.enabled | bool | `true` | Manage config.yaml via this chart. When false, the chart writes nothing and you manage /opt/data/config.yaml yourself (e.g. via the dashboard). |
 | config.overwrite | bool | `false` | Overwrite config.yaml on every pod start. false = seed once, then leave the file alone so dashboard/runtime edits survive restarts. |
-| config.values | object | `{"approvals":{"mode":"smart"},"security":{"allow_private_urls":false},"terminal":{"backend":"local"}}` | Structured config merged into config.yaml. `terminal.cwd` is injected automatically to the workspace mountPath when persistence.workspace.enabled. Anything you put here is rendered verbatim (toYaml). See the Hermes docs: https://hermes-agent.nousresearch.com/docs/user-guide/configuration |
+| config.values | object | `{"approvals":{"mode":"smart"},"custom_providers":[],"display":{},"fallback_providers":[],"model":{},"providers":{},"security":{"allow_private_urls":false},"terminal":{"backend":"local"}}` | Structured config rendered into config.yaml, mirroring the Hermes config.yaml schema one-to-one. Empty top-level sections (model, providers, custom_providers, fallback_providers, display) are pruned automatically. `terminal.cwd` is injected automatically to the workspace mountPath when persistence.workspace.enabled. Reference secrets as `${ENV_VAR}` and put the value in secrets.data. See the Hermes docs: https://hermes-agent.nousresearch.com/docs/user-guide/configuration |
+| config.values.approvals.mode | string | `"smart"` | Command-execution approval gating: smart, manual, or off. |
+| config.values.custom_providers | list | `[]` | Register extra OpenAI-compatible providers, referenced by `name` from `model.provider: custom` or model strings like "<name>/<model>". |
+| config.values.display | object | `{}` | Persona and chat UX (personality, busy_input_mode, busy_ack_enabled). |
+| config.values.fallback_providers | list | `[]` | Fallback providers, tried in order when the primary model fails. |
+| config.values.model | object | `{}` | Primary model: default (model string), provider (built-in id or "custom"), api_key, base_url. Empty by default so a bare install relies on provider env vars. |
+| config.values.providers | object | `{}` | Per-provider overrides for built-in providers (api_key, base_url, ...). |
+| config.values.security.allow_private_urls | bool | `false` | Allow the agent to reach private/loopback IPs (SSRF protection is on by default). |
+| config.values.terminal.backend | string | `"local"` | Code-execution isolation backend: local, docker, ssh, modal, or daytona. `cwd` is injected automatically. |
 | dashboard | object | `{"auth":{"basicAuthUsername":"","oauthClientId":"","oidcClientId":"","oidcIssuer":""},"enabled":true,"host":"0.0.0.0","insecure":false,"port":9119}` | -------------------------------------------------------------------------- |
 | dashboard.auth.basicAuthUsername | string | `""` | HTTP Basic auth username. Username is non-secret and lives here; the password/secret live in the Secret (see secrets.HERMES_DASHBOARD_*). |
 | dashboard.auth.oauthClientId | string | `""` | Nous Portal OAuth client id (non-secret). |

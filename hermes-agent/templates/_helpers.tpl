@@ -112,6 +112,33 @@ core data home.
 {{- end }}
 
 {{/*
+Render the agent config.yaml body from .Values.config.values.
+- Injects terminal.cwd -> the workspace mountPath when the workspace volume is
+  enabled, so the agent operates inside its persistent working directory.
+- Prunes empty top-level sections (model, providers, custom_providers,
+  fallback_providers, display, ...) so unset optional blocks never reach the
+  rendered config.yaml.
+Secrets are referenced as ${ENV_VAR} placeholders in the values and expanded by
+Hermes at runtime from the chart-managed Secret (see .Values.secrets) — they are
+never written into this ConfigMap.
+*/}}
+{{- define "hermes-agent.config" -}}
+{{- $src := deepCopy .Values.config.values -}}
+{{- if .Values.persistence.workspace.enabled -}}
+{{- $terminal := default (dict) (get $src "terminal") -}}
+{{- $_ := set $terminal "cwd" .Values.persistence.workspace.mountPath -}}
+{{- $_ := set $src "terminal" $terminal -}}
+{{- end -}}
+{{- $out := dict -}}
+{{- range $k, $v := $src -}}
+{{- if not (empty $v) -}}
+{{- $_ := set $out $k $v -}}
+{{- end -}}
+{{- end -}}
+{{- toYaml $out -}}
+{{- end }}
+
+{{/*
 Ingress API version detection.
 */}}
 {{- define "hermes-agent.ingressApiVersion" -}}

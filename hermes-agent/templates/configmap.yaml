@@ -10,12 +10,6 @@ data:
   {{- if .Values.config.content }}
     {{- .Values.config.content | nindent 4 }}
   {{- else }}
-    {{- $cfg := deepCopy .Values.config.values }}
-    {{- if .Values.persistence.workspace.enabled }}
-      {{- $terminal := index $cfg "terminal" | default dict }}
-      {{- $_ := set $terminal "cwd" .Values.persistence.workspace.mountPath }}
-      {{- $_ := set $cfg "terminal" $terminal }}
-    {{- end }}
-    {{- toYaml $cfg | nindent 4 }}
+    {{- include "hermes-agent.config" . | nindent 4 }}
   {{- end }}
 {{- end }}
