@@ -1,0 +1,46 @@
+# Preset: Multi-provider setup — Anthropic primary, OpenAI fallback, custom vLLM.
+# Demonstrates using multiple LLM providers with automatic fallback on errors.
+# Great for redundancy and cost optimization (use cheaper models for non-critical tasks).
+#
+#   helm upgrade --install hermes . -n hermes-agent --create-namespace \
+#     -f examples/multi-provider.yaml
+secrets:
+  data:
+    API_SERVER_KEY: "change-me-min-8-chars"
+    ANTHROPIC_API_KEY: "sk-ant-..."
+    OPENAI_API_KEY: "sk-..."
+    VLLM_API_KEY: "token-123"  # For self-hosted vLLM
+
+config:
+  values:
+    # Primary: Anthropic Claude
+    model:
+      default: anthropic/claude-sonnet-4
+      provider: anthropic
+      api_key: ${ANTHROPIC_API_KEY}
+
+    # Custom vLLM provider (self-hosted)
+    custom_providers:
+      - name: vllm
+        base_url: http://vllm.example.com:8000/v1
+        api_key: ${VLLM_API_KEY}
+        model: meta-llama/Llama-3-70b-Instruct
+
+    # Fallback chain: try OpenAI, then local vLLM
+    fallback_providers:
+      - provider: openai
+        model: gpt-4o
+        api_key: ${OPENAI_API_KEY}
+      - provider: vllm
+        model: vllm/meta-llama/Llama-3-70b-Instruct
+
+    # Use cheaper model for compression tasks
+    auxiliary:
+      compression:
+        provider: openai
+        model: gpt-4o-mini
+        api_key: ${OPENAI_API_KEY}
+
+    compression:
+      enabled: true
+      threshold: 80000
