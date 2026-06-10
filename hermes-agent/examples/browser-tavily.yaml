@@ -1,0 +1,47 @@
+# Preset: Browser automation + Tavily search — full web interaction.
+# Combines local Chromium CDP for browser tasks with Tavily as web search
+# backend (Firecrawl or self-hosted alternatives also work).
+#
+# Requirements:
+# - Chromium browser service with CDP enabled (e.g., chromium:9222)
+# - TAVILY_API_KEY from https://tavily.com
+# - shm.enabled: true for Chromium (already chart default)
+#
+#   helm upgrade --install hermes . -n hermes-agent --create-namespace \
+#     -f examples/browser-tavily.yaml
+secrets:
+  data:
+    API_SERVER_KEY: "change-me-min-8-chars"
+    ANTHROPIC_API_KEY: "sk-ant-..."
+    TAVILY_API_KEY: "tvly-..."  # Get from https://tavily.com
+
+config:
+  values:
+    model:
+      default: anthropic/claude-sonnet-4
+      provider: anthropic
+      api_key: ${ANTHROPIC_API_KEY}
+
+    # Web search with Tavily (can add extract_backend for separate extract provider)
+    web:
+      backend: tavily
+      # Optional: fallback to Firecrawl
+      # extract_backend: firecrawl
+
+    # Browser automation via local Chromium CDP
+    browser:
+      enabled: true
+      cdp_url: http://chromium:9222  # Your Chromium browser service
+      inactivity_timeout: 180        # Close after 3min idle
+      dialog_policy: must_respond    # Block on alerts/prompts
+
+    terminal:
+      backend: local
+    approvals:
+      mode: smart
+
+# Note: Ensure your Chromium service is accessible and has CDP enabled.
+# For a quick Chromium deployment, consider:
+#   kubectl run chromium --image=chromedp/headless-shell:latest \
+#     --port=9222 --command --chromium --headless --disable-gpu \
+#     --no-sandbox --remote-debugging-address=0.0.0.0 --remote-debugging-port=9222

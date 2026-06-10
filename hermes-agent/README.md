@@ -147,6 +147,7 @@ The chart includes example configurations for common use cases in the `examples/
 | `mcp.yaml` | MCP servers (filesystem, database, GitHub, web search) |
 | `skills.yaml` | External skills + toolset selection |
 | `compression.yaml` | Context compression with cheaper auxiliary model |
+| `browser-tavily.yaml` | Browser automation + Tavily web search |
 
 Use them with:
 
