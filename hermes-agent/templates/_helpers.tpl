@@ -212,6 +212,7 @@ Returns a YAML list of init containers based on which feature toggles are enable
       set -u
       KVER={{ .Values.clusterTools.kubectlVersion | quote }}
       HVER={{ .Values.clusterTools.helmVersion | quote }}
+      GVER={{ .Values.clusterTools.ghVersion | quote }}
       mkdir -p {{ .Values.persistence.data.mountPath }}/.local/bin
       cd {{ .Values.persistence.data.mountPath }}/.local/bin
       if [ ! -x kubectl ]; then
@@ -223,11 +224,29 @@ Returns a YAML list of init containers based on which feature toggles are enable
         wget -qO- "https://get.helm.sh/helm-${HVER}-linux-amd64.tar.gz" | tar xz -C /tmp linux-amd64/helm \
           && mv /tmp/linux-amd64/helm helm && chmod +x helm || echo "helm download failed"
       fi
+      if [ ! -x gh ]; then
+        echo "Downloading gh ${GVER}..."
+        wget -qO- "https://github.com/cli/cli/releases/download/${GVER}/gh_${GVER#v}_linux_amd64.tar.gz" | tar xz -C /tmp --strip-components=1 "gh_${GVER#v}_linux_amd64/bin/gh" \
+          && mv /tmp/gh_${GVER#v}_linux_amd64/bin/gh gh 2>/dev/null || true
+        # Fallback: extract directly
+        if [ ! -x gh ]; then
+          wget -qO- "https://github.com/cli/cli/releases/download/${GVER}/gh_${GVER#v}_linux_amd64.tar.gz" | tar xzf - --include="*/bin/gh" -C /tmp \
+            && find /tmp -name gh -type f -executable -exec mv {} gh \; && chmod +x gh 2>/dev/null || echo "gh download failed"
+        fi
+      fi
       ./kubectl version --client 2>/dev/null || true
       ./helm version --short 2>/dev/null || true
-      # Symlink into /usr/local/bin so the agent's terminal finds them on PATH
-      ln -sf {{ .Values.persistence.data.mountPath }}/.local/bin/kubectl /usr/local/bin/kubectl
-      ln -sf {{ .Values.persistence.data.mountPath }}/.local/bin/helm /usr/local/bin/helm
+      ./gh --version 2>/dev/null || true
+      # Coding agents
+      if ! command -v claude >/dev/null 2>&1; then
+        echo "Installing Claude Code..."
+        npm install -g @anthropic-ai/claude-code 2>/dev/null && ln -sf $(which claude) {{ .Values.persistence.data.mountPath }}/.local/bin/claude || echo "claude install skipped"
+      fi
+      if [ ! -x opencode ]; then
+        echo "Installing opencode..."
+        wget -qO opencode "https://github.com/nicepkg/opencode/releases/latest/download/opencode-linux-amd64" && chmod +x opencode || echo "opencode install skipped"
+      fi
+      ./opencode --version 2>/dev/null || true
       {{- if .Values.clusterTools.githubAppScripts }}
 
       # --- GitHub App auth helpers ---

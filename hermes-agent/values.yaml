@@ -390,6 +390,7 @@ clusterTools:
   enabled: false
   kubectlVersion: "v1.35.5"
   helmVersion: "v3.16.4"
+  ghVersion: "v2.74.0"
   # -- Also write GitHub App auth helpers (mint-gh-token.py, gh-cred.sh,
   # gh-mcp-wrapper.sh) into the data PVC. Requires GITHUB_APP_ID,
   # GITHUB_APP_INSTALLATION_ID, GITHUB_APP_PRIVATE_KEY in secrets.
