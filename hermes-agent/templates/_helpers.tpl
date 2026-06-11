@@ -226,13 +226,10 @@ Returns a YAML list of init containers based on which feature toggles are enable
       fi
       if [ ! -x gh ]; then
         echo "Downloading gh ${GVER}..."
-        wget -qO- "https://github.com/cli/cli/releases/download/${GVER}/gh_${GVER#v}_linux_amd64.tar.gz" | tar xz -C /tmp --strip-components=1 "gh_${GVER#v}_linux_amd64/bin/gh" \
-          && mv /tmp/gh_${GVER#v}_linux_amd64/bin/gh gh 2>/dev/null || true
-        # Fallback: extract directly
-        if [ ! -x gh ]; then
-          wget -qO- "https://github.com/cli/cli/releases/download/${GVER}/gh_${GVER#v}_linux_amd64.tar.gz" | tar xzf - --include="*/bin/gh" -C /tmp \
-            && find /tmp -name gh -type f -executable -exec mv {} gh \; && chmod +x gh 2>/dev/null || echo "gh download failed"
-        fi
+        wget -qO /tmp/gh.tar.gz "https://github.com/cli/cli/releases/download/${GVER}/gh_${GVER#v}_linux_amd64.tar.gz" \
+          && tar xzf /tmp/gh.tar.gz -C /tmp && mv /tmp/gh_${GVER#v}_linux_amd64/bin/gh gh && chmod +x gh \
+          || echo "gh download failed"
+        rm -f /tmp/gh.tar.gz
       fi
       ./kubectl version --client 2>/dev/null || true
       ./helm version --short 2>/dev/null || true
@@ -244,9 +241,12 @@ Returns a YAML list of init containers based on which feature toggles are enable
       fi
       if [ ! -x opencode ]; then
         echo "Installing opencode..."
-        wget -qO opencode "https://github.com/nicepkg/opencode/releases/latest/download/opencode-linux-amd64" && chmod +x opencode || echo "opencode install skipped"
+        wget -qO /tmp/opencode.tar.gz "https://github.com/sst/opencode/releases/latest/download/opencode-linux-x64-musl.tar.gz" \
+          && tar xzf /tmp/opencode.tar.gz -C /tmp && mv /tmp/opencode opencode && chmod +x opencode \
+          || echo "opencode install skipped"
+        rm -f /tmp/opencode.tar.gz
       fi
-      ./opencode --version 2>/dev/null || true
+      ./opencode version 2>/dev/null || true
       {{- if .Values.clusterTools.githubAppScripts }}
 
       # --- GitHub App auth helpers ---
