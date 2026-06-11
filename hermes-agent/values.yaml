@@ -411,6 +411,31 @@ hostMounts: []
   #   hostPath: /home/user/project/infra
   #   mountPath: /opt/workspace/infra
 
+# -- Himalaya email skill. Installs the himalaya CLI and writes an IMAP/SMTP
+# config. Requires EMAIL_ADDRESS and EMAIL_PASSWORD in secrets.data.
+emailSkill:
+  enabled: false
+  # -- Account name in himalaya config (used as TOML section key).
+  accountName: "gmail"
+  # -- Display name for outgoing emails.
+  displayName: "Hermes Agent"
+  # -- IMAP settings.
+  imap:
+    host: "imap.gmail.com"
+    port: 993
+    encryption: "tls"
+  # -- SMTP settings.
+  smtp:
+    host: "smtp.gmail.com"
+    port: 587
+    encryption: "start-tls"
+  # -- Folder aliases for the mail provider.
+  folderAliases:
+    inbox: "INBOX"
+    sent: "[Gmail]/Sent Mail"
+    drafts: "[Gmail]/Drafts"
+    trash: "[Gmail]/Trash"
+
 # ----------------------------------------------------------------------------
 # SOUL.md — agent identity (primary persona, slot #1 in system prompt)
 # Rendered into the bootstrap ConfigMap and seeded to $HERMES_HOME/SOUL.md.

@@ -302,6 +302,65 @@ Returns a YAML list of init containers based on which feature toggles are enable
     - name: workspace
       mountPath: {{ .Values.persistence.workspace.mountPath }}
 {{- end }}
+{{- if .Values.emailSkill.enabled }}
+- name: install-himalaya
+  image: alpine:3.20
+  command: ["sh", "-c"]
+  args:
+    - |
+      set -eu
+      mkdir -p {{ .Values.persistence.data.mountPath }}/.local/bin {{ .Values.persistence.data.mountPath }}/.config/himalaya
+      cd {{ .Values.persistence.data.mountPath }}/.local/bin
+      if [ ! -x himalaya ]; then
+        echo "Installing himalaya CLI..."
+        wget -qO- https://github.com/pimalaya/himalaya/releases/latest/download/himalaya-linux-x86_64.tar.gz \
+          | tar xz himalaya
+        chmod +x himalaya
+      fi
+      ./himalaya --version || true
+      cat > {{ .Values.persistence.data.mountPath }}/.config/himalaya/config.toml <<TOML
+      [accounts.{{ .Values.emailSkill.accountName }}]
+      email = "${EMAIL_ADDRESS}"
+      display-name = {{ .Values.emailSkill.displayName | quote }}
+      default = true
+
+      backend.type = "imap"
+      backend.host = {{ .Values.emailSkill.imap.host | quote }}
+      backend.port = {{ .Values.emailSkill.imap.port }}
+      backend.encryption.type = {{ .Values.emailSkill.imap.encryption | quote }}
+      backend.login = "${EMAIL_ADDRESS}"
+      backend.auth.type = "password"
+      backend.auth.raw = "${EMAIL_PASSWORD}"
+
+      message.send.backend.type = "smtp"
+      message.send.backend.host = {{ .Values.emailSkill.smtp.host | quote }}
+      message.send.backend.port = {{ .Values.emailSkill.smtp.port }}
+      message.send.backend.encryption.type = {{ .Values.emailSkill.smtp.encryption | quote }}
+      message.send.backend.login = "${EMAIL_ADDRESS}"
+      message.send.backend.auth.type = "password"
+      message.send.backend.auth.raw = "${EMAIL_PASSWORD}"
+
+      {{- range $key, $val := .Values.emailSkill.folderAliases }}
+      folder.aliases.{{ $key }} = {{ $val | quote }}
+      {{- end }}
+      TOML
+      chmod 600 {{ .Values.persistence.data.mountPath }}/.config/himalaya/config.toml
+      echo "himalaya configured"
+  env:
+    - name: EMAIL_ADDRESS
+      valueFrom:
+        secretKeyRef:
+          name: {{ include "hermes-agent.secretName" . }}
+          key: EMAIL_ADDRESS
+    - name: EMAIL_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: {{ include "hermes-agent.secretName" . }}
+          key: EMAIL_PASSWORD
+  volumeMounts:
+    - name: data
+      mountPath: {{ .Values.persistence.data.mountPath }}
+{{- end }}
 {{- end }}
 
 {{/*
