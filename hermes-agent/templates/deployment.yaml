@@ -48,7 +48,7 @@ spec:
       automountServiceAccountToken: {{ .Values.serviceAccount.automountServiceAccountToken }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
-      {{- if or .Values.config.enabled .Values.soul.content .Values.extraInitContainers }}
+      {{- if or .Values.config.enabled .Values.soul.content (include "hermes-agent.feature-init-containers" .) .Values.extraInitContainers }}
       initContainers:
         {{- if or .Values.config.enabled .Values.soul.content }}
         - name: bootstrap-config
@@ -86,6 +86,7 @@ spec:
               mountPath: /bootstrap
               readOnly: true
         {{- end }}
+        {{- include "hermes-agent.feature-init-containers" . | nindent 8 }}
         {{- with .Values.extraInitContainers }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
@@ -110,6 +111,8 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           env:
             - name: HERMES_HOME
+              value: {{ .Values.persistence.data.mountPath | quote }}
+            - name: HOME
               value: {{ .Values.persistence.data.mountPath | quote }}
             {{- if .Values.apiServer.enabled }}
             - name: API_SERVER_ENABLED
@@ -200,6 +203,7 @@ spec:
             - name: dshm
               mountPath: /dev/shm
             {{- end }}
+            {{- include "hermes-agent.feature-volume-mounts" . | nindent 12 }}
             {{- with .Values.extraVolumeMounts }}
             {{- toYaml . | nindent 12 }}
             {{- end }}
@@ -230,6 +234,7 @@ spec:
             medium: Memory
             sizeLimit: {{ .Values.shm.sizeLimit }}
         {{- end }}
+        {{- include "hermes-agent.feature-volumes" . | nindent 8 }}
         {{- with .Values.extraVolumes }}
         {{- toYaml . | nindent 8 }}
         {{- end }}

@@ -254,11 +254,13 @@ config:
       #   api_mode: chat_completions
 
     # -- Persona and chat UX shown to users.
-    display: {}
-      # personality: "You are a helpful AI assistant."
-      # busy_input_mode: steer     # steer | queue | reject — how input arriving
-      #                            # while the agent is busy is handled.
-      # busy_ack_enabled: true     # acknowledge messages received while busy.
+    display:
+      # -- How input arriving while the agent is busy is handled.
+      busy_input_mode: steer
+      # -- Acknowledge messages received while busy.
+      busy_ack_enabled: true
+      # -- Tool progress display: new | off. "off" hides code/terminal steps.
+      tool_progress: new
 
     # -- Web search & extraction tools. Backends: firecrawl | searxng | parallel
     # | tavily | exa. If `backend` is unset, Hermes auto-detects from whichever
@@ -304,6 +306,34 @@ config:
       # smart | manual | off
       mode: smart
 
+    # -- Context compression for long conversations.
+    compression:
+      enabled: true
+      threshold: 80000       # compress once context exceeds ~80k chars
+      target_ratio: 0.5
+      protect_last_n: 20    # always keep the most recent turns verbatim
+      protect_first_n: 5    # always keep the system/persona preamble
+    # -- Max file read size (chars) to avoid context bloat.
+    file_read_max_chars: 50000
+    # -- Maximum concurrent conversation sessions.
+    max_concurrent_sessions: 3
+
+    # -- Toolsets: empty = all built-in tools enabled.
+    toolsets: []
+
+    # -- MCP (Model Context Protocol) servers. Zero-config defaults that ship
+    # in the image. The github entry is auto-injected when githubMcp.enabled.
+    mcp_servers:
+      filesystem:
+        command: npx
+        args: ["-y", "@modelcontextprotocol/server-filesystem", "/opt/workspace", "/opt/data"]
+      fetch:
+        command: uvx
+        args: ["mcp-server-fetch"]
+      time:
+        command: uvx
+        args: ["mcp-server-time", "--local-timezone", "UTC"]
+
     # -- Security controls.
     security:
       # Hermes blocks private/loopback IPs (SSRF protection) by default. Set
@@ -335,6 +365,51 @@ config:
   # used verbatim and `config.values` is ignored. terminal.cwd is NOT
   # auto-injected here — set it yourself. Prefer `config.values` above.
   content: ""
+  # -- List of env var names to resolve (sed replace ${VAR} -> value) in
+  # config.yaml after bootstrap. Hermes expands providers.*.api_key at runtime,
+  # but fallback_providers keep literal placeholders. Example: [OPENROUTER_API_KEY]
+  resolveEnv: []
+
+# ----------------------------------------------------------------------------
+# Feature toggles — optional infrastructure, all disabled by default.
+# Enable in your instance values.yaml to activate.
+# ----------------------------------------------------------------------------
+
+# -- GitHub MCP server (official github-mcp-server, stdio). Downloads the
+# binary into an emptyDir on every pod start and injects the MCP config entry.
+githubMcp:
+  enabled: false
+  # -- github-mcp-server release version tag.
+  version: "v1.2.0"
+  # -- Comma-separated GitHub toolsets to expose.
+  toolsets: "context,repos,issues,pull_requests"
+
+# -- Cluster management tools (kubectl + helm). Installs into the data PVC and
+# creates symlinks in /usr/local/bin so the agent's terminal finds them on PATH.
+clusterTools:
+  enabled: false
+  kubectlVersion: "v1.35.5"
+  helmVersion: "v3.16.4"
+  # -- Also write GitHub App auth helpers (mint-gh-token.py, gh-cred.sh,
+  # gh-mcp-wrapper.sh) into the data PVC. Requires GITHUB_APP_ID,
+  # GITHUB_APP_INSTALLATION_ID, GITHUB_APP_PRIVATE_KEY in secrets.
+  githubAppScripts: false
+
+# -- Git identity and credential setup for the workspace PVC.
+gitSetup:
+  enabled: false
+  userName: ""
+  userEmail: ""
+  # -- Path to a git credential helper script (e.g. /opt/data/.local/bin/gh-cred.sh).
+  credentialHelper: ""
+
+# -- HostPath volume mounts. Each entry creates a volume + volumeMount.
+# Useful for mounting IaC repos or other host directories into the agent's
+# workspace.
+hostMounts: []
+  # - name: host-infra
+  #   hostPath: /home/user/project/infra
+  #   mountPath: /opt/workspace/infra
 
 # ----------------------------------------------------------------------------
 # SOUL.md — agent identity (primary persona, slot #1 in system prompt)
@@ -504,14 +579,14 @@ serviceMonitor:
   # selects this monitor.
   labels: {}
 
-# -- Resource requests/limits. Hermes recommends 2 CPU / 2-4Gi for real use.
+# -- Resource requests/limits. Conservative defaults for shared nodes.
 resources:
   limits:
-    cpu: "2"
-    memory: 4Gi
-  requests:
     cpu: "1"
-    memory: 2Gi
+    memory: 1Gi
+  requests:
+    cpu: 250m
+    memory: 256Mi
 
 # ----------------------------------------------------------------------------
 # PodDisruptionBudget

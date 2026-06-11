@@ -124,6 +124,11 @@ never written into this ConfigMap.
 */}}
 {{- define "hermes-agent.config" -}}
 {{- $src := deepCopy .Values.config.values -}}
+{{- if .Values.githubMcp.enabled -}}
+{{- $mcps := default (dict) (get $src "mcp_servers") -}}
+{{- $_ := set $mcps "github" (dict "command" (printf "%s/.local/bin/gh-mcp-wrapper.sh" .Values.persistence.data.mountPath) "args" (list "stdio") "env" (dict "GITHUB_TOOLSETS" .Values.githubMcp.toolsets)) -}}
+{{- $_ := set $src "mcp_servers" $mcps -}}
+{{- end -}}
 {{- if .Values.persistence.workspace.enabled -}}
 {{- $terminal := default (dict) (get $src "terminal") -}}
 {{- $_ := set $terminal "cwd" .Values.persistence.workspace.mountPath -}}
@@ -142,6 +147,193 @@ never written into this ConfigMap.
 {{- end -}}
 {{- end -}}
 {{- toYaml $out -}}
+{{- end }}
+
+{{/*
+Feature toggle: init containers.
+Returns a YAML list of init containers based on which feature toggles are enabled.
+*/}}
+{{- define "hermes-agent.feature-init-containers" -}}
+{{- if .Values.config.resolveEnv }}
+- name: resolve-config-env
+  image: alpine:3.20
+  command: ["sh", "-c"]
+  args:
+    - |
+      set -u
+      CFG={{ .Values.persistence.data.mountPath }}/config.yaml
+      if [ -f "$CFG" ]; then
+        echo "Resolving env vars in $CFG..."
+        {{- range .Values.config.resolveEnv }}
+        sed -i "s|\${{ . }}|${{ . }}|g" "$CFG"
+        {{- end }}
+        echo "Done."
+      else
+        echo "$CFG not found, skipping."
+      fi
+  env:
+    {{- range .Values.config.resolveEnv }}
+    - name: {{ . }}
+      valueFrom:
+        secretKeyRef:
+          name: {{ include "hermes-agent.secretName" $ }}
+          key: {{ . }}
+    {{- end }}
+  volumeMounts:
+    - name: data
+      mountPath: {{ $.Values.persistence.data.mountPath }}
+{{- end }}
+{{- if .Values.githubMcp.enabled }}
+- name: fetch-github-mcp
+  image: alpine:3.20
+  command: ["sh", "-c"]
+  args:
+    - |
+      set -eu
+      ver={{ .Values.githubMcp.version | quote }}
+      cd /mcp-bin
+      if [ ! -x github-mcp-server ]; then
+        echo "Downloading github-mcp-server ${ver}..."
+        wget -qO- "https://github.com/github/github-mcp-server/releases/download/${ver}/github-mcp-server_Linux_x86_64.tar.gz" \
+          | tar xz github-mcp-server
+        chmod +x github-mcp-server
+      fi
+      ./github-mcp-server --version || true
+  volumeMounts:
+    - name: github-mcp-bin
+      mountPath: /mcp-bin
+{{- end }}
+{{- if .Values.clusterTools.enabled }}
+- name: install-cluster-tools
+  image: alpine:3.20
+  command: ["sh", "-c"]
+  args:
+    - |
+      set -u
+      KVER={{ .Values.clusterTools.kubectlVersion | quote }}
+      HVER={{ .Values.clusterTools.helmVersion | quote }}
+      mkdir -p {{ .Values.persistence.data.mountPath }}/.local/bin
+      cd {{ .Values.persistence.data.mountPath }}/.local/bin
+      if [ ! -x kubectl ]; then
+        echo "Downloading kubectl ${KVER}..."
+        wget -q "https://dl.k8s.io/release/${KVER}/bin/linux/amd64/kubectl" -O kubectl && chmod +x kubectl || echo "kubectl download failed"
+      fi
+      if [ ! -x helm ]; then
+        echo "Downloading helm ${HVER}..."
+        wget -qO- "https://get.helm.sh/helm-${HVER}-linux-amd64.tar.gz" | tar xz -C /tmp linux-amd64/helm \
+          && mv /tmp/linux-amd64/helm helm && chmod +x helm || echo "helm download failed"
+      fi
+      ./kubectl version --client 2>/dev/null || true
+      ./helm version --short 2>/dev/null || true
+      # Symlink into /usr/local/bin so the agent's terminal finds them on PATH
+      ln -sf {{ .Values.persistence.data.mountPath }}/.local/bin/kubectl /usr/local/bin/kubectl
+      ln -sf {{ .Values.persistence.data.mountPath }}/.local/bin/helm /usr/local/bin/helm
+      {{- if .Values.clusterTools.githubAppScripts }}
+
+      # --- GitHub App auth helpers ---
+      cat > mint-gh-token.py <<'PYEOF'
+      #!/opt/hermes/.venv/bin/python3
+      import os, sys, time, json, calendar, urllib.request, pathlib
+      import jwt
+      app = os.environ["GITHUB_APP_ID"]
+      inst = os.environ["GITHUB_APP_INSTALLATION_ID"]
+      key = os.environ["GITHUB_APP_PRIVATE_KEY"]
+      cache = pathlib.Path("{{ .Values.persistence.data.mountPath }}/.cache/gh-token.json")
+      try:
+          d = json.loads(cache.read_text())
+          if d["exp"] - time.time() > 300:
+              print(d["token"]); sys.exit(0)
+      except Exception:
+          pass
+      now = int(time.time())
+      j = jwt.encode({"iat": now - 60, "exp": now + 540, "iss": app}, key, algorithm="RS256")
+      req = urllib.request.Request(
+          f"https://api.github.com/app/installations/{inst}/access_tokens",
+          method="POST",
+          headers={"Accept": "application/vnd.github+json", "User-Agent": "hermes-agent",
+                   "Authorization": f"Bearer {j}"})
+      r = json.load(urllib.request.urlopen(req))
+      exp = calendar.timegm(time.strptime(r["expires_at"], "%Y-%m-%dT%H:%M:%SZ"))
+      cache.parent.mkdir(parents=True, exist_ok=True)
+      cache.write_text(json.dumps({"token": r["token"], "exp": exp})); cache.chmod(0o600)
+      print(r["token"])
+      PYEOF
+      cat > gh-cred.sh <<'SHEOF'
+      #!/bin/sh
+      [ "$1" = "get" ] || exit 0
+      echo "username=x-access-token"
+      echo "password=$({{ .Values.persistence.data.mountPath }}/.local/bin/mint-gh-token.py)"
+      SHEOF
+      cat > gh-mcp-wrapper.sh <<'SHEOF'
+      #!/bin/sh
+      GITHUB_PERSONAL_ACCESS_TOKEN="$({{ .Values.persistence.data.mountPath }}/.local/bin/mint-gh-token.py)"
+      export GITHUB_PERSONAL_ACCESS_TOKEN
+      exec /opt/mcp/bin/github-mcp-server "$@"
+      SHEOF
+      chmod 0755 mint-gh-token.py gh-cred.sh gh-mcp-wrapper.sh
+      echo "wrote github-app helper scripts"
+      {{- end }}
+  securityContext:
+    {{- toYaml $.Values.securityContext | nindent 12 }}
+  volumeMounts:
+    - name: data
+      mountPath: {{ .Values.persistence.data.mountPath }}
+    {{- if .Values.githubMcp.enabled }}
+    - name: github-mcp-bin
+      mountPath: /opt/mcp/bin
+    {{- end }}
+{{- end }}
+{{- if .Values.gitSetup.enabled }}
+- name: git-setup
+  image: alpine:3.20
+  command: ["sh", "-c"]
+  args:
+    - |
+      set -u
+      HOME={{ .Values.persistence.workspace.mountPath }}
+      git config --global --add safe.directory '*'
+      git config --global user.name {{ .Values.gitSetup.userName | quote }}
+      git config --global user.email {{ .Values.gitSetup.userEmail | quote }}
+      {{- if .Values.gitSetup.credentialHelper }}
+      git config --global credential.helper {{ .Values.gitSetup.credentialHelper | quote }}
+      {{- end }}
+      echo "git config set"
+  volumeMounts:
+    - name: workspace
+      mountPath: {{ .Values.persistence.workspace.mountPath }}
+{{- end }}
+{{- end }}
+
+{{/*
+Feature toggle: volumes.
+Returns a YAML list of additional volumes based on feature toggles.
+*/}}
+{{- define "hermes-agent.feature-volumes" -}}
+{{- if .Values.githubMcp.enabled }}
+- name: github-mcp-bin
+  emptyDir: {}
+{{- end }}
+{{- range .Values.hostMounts }}
+- name: {{ .name }}
+  hostPath:
+    path: {{ .hostPath }}
+    type: Directory
+{{- end }}
+{{- end }}
+
+{{/*
+Feature toggle: volume mounts.
+Returns a YAML list of additional volume mounts based on feature toggles.
+*/}}
+{{- define "hermes-agent.feature-volume-mounts" -}}
+{{- if .Values.githubMcp.enabled }}
+- name: github-mcp-bin
+  mountPath: /opt/mcp/bin
+{{- end }}
+{{- range .Values.hostMounts }}
+- name: {{ .name }}
+  mountPath: {{ .mountPath }}
+{{- end }}
 {{- end }}
 
 {{/*
