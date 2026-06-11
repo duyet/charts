@@ -25,7 +25,7 @@ spec:
   template:
     metadata:
       annotations:
-        {{- if .Values.config.enabled }}
+        {{- if or .Values.config.enabled .Values.soul.content }}
         checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
         {{- end }}
         {{- if and (not .Values.secrets.existingSecret) .Values.secrets.data }}
@@ -48,9 +48,9 @@ spec:
       automountServiceAccountToken: {{ .Values.serviceAccount.automountServiceAccountToken }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
-      {{- if or .Values.config.enabled .Values.extraInitContainers }}
+      {{- if or .Values.config.enabled .Values.soul.content .Values.extraInitContainers }}
       initContainers:
-        {{- if .Values.config.enabled }}
+        {{- if or .Values.config.enabled .Values.soul.content }}
         - name: bootstrap-config
           image: busybox:stable
           imagePullPolicy: IfNotPresent
@@ -59,13 +59,24 @@ spec:
             - -c
             - |
               set -e
-              TARGET="{{ .Values.persistence.data.mountPath }}/config.yaml"
-              if [ ! -f "$TARGET" ] || [ "{{ .Values.config.overwrite }}" = "true" ]; then
-                cp /bootstrap/config.yaml "$TARGET"
-                echo "hermes-agent: seeded $TARGET"
+              {{- if .Values.config.enabled }}
+              CFG="{{ .Values.persistence.data.mountPath }}/config.yaml"
+              if [ ! -f "$CFG" ] || [ "{{ .Values.config.overwrite }}" = "true" ]; then
+                cp /bootstrap/config.yaml "$CFG"
+                echo "hermes-agent: seeded $CFG"
               else
-                echo "hermes-agent: $TARGET already exists, leaving it untouched"
+                echo "hermes-agent: $CFG already exists, leaving it untouched"
               fi
+              {{- end }}
+              {{- if .Values.soul.content }}
+              SOUL="{{ .Values.persistence.data.mountPath }}/SOUL.md"
+              if [ ! -f "$SOUL" ] || [ "{{ .Values.soul.overwrite }}" = "true" ]; then
+                cp /bootstrap/SOUL.md "$SOUL"
+                echo "hermes-agent: seeded $SOUL"
+              else
+                echo "hermes-agent: $SOUL already exists, leaving it untouched"
+              fi
+              {{- end }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           volumeMounts:
@@ -89,7 +100,7 @@ spec:
           {{- end }}
           {{- if .Values.args }}
           args:
-            {{- toYaml .Values.args | nindent 12 }}
+            {{- toYaml . | nindent 12 }}
           {{- else }}
           args:
             - gateway
@@ -208,7 +219,7 @@ spec:
           persistentVolumeClaim:
             claimName: {{ include "hermes-agent.workspaceClaimName" . }}
         {{- end }}
-        {{- if .Values.config.enabled }}
+        {{- if or .Values.config.enabled .Values.soul.content }}
         - name: bootstrap
           configMap:
             name: {{ include "hermes-agent.fullname" . }}-config

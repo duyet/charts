@@ -337,6 +337,24 @@ config:
   content: ""
 
 # ----------------------------------------------------------------------------
+# SOUL.md — agent identity (primary persona, slot #1 in system prompt)
+# Rendered into the bootstrap ConfigMap and seeded to $HERMES_HOME/SOUL.md.
+# This is the canonical way to set Hermes' personality — it takes priority over
+# config.values.display.personality and persists as a real file the agent can
+# inspect. See https://hermes-agent.nousresearch.com/docs/configuration/soul
+# ----------------------------------------------------------------------------
+soul:
+  # -- Seed SOUL.md into the data volume. When false, the chart writes nothing
+  # and Hermes uses its built-in default identity (or an existing SOUL.md on the
+  # PVC from a prior deploy).
+  overwrite: false
+  # -- SOUL.md content. Durable persona: voice, tone, communication style.
+  # Should be stable across contexts, broad enough for many conversations, and
+  # specific enough to shape the voice. Project-specific instructions belong in
+  # AGENTS.md, not here.
+  content: ""
+
+# ----------------------------------------------------------------------------
 # Secrets — LLM provider keys, API server key, dashboard credentials, bot tokens
 # ----------------------------------------------------------------------------
 secrets:

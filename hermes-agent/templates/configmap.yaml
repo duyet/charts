@@ -1,4 +1,4 @@
-{{- if .Values.config.enabled -}}
+{{- if or .Values.config.enabled .Values.soul.content -}}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -6,10 +6,16 @@ metadata:
   labels:
     {{- include "hermes-agent.labels" . | nindent 4 }}
 data:
+  {{- if .Values.config.enabled }}
   config.yaml: |
   {{- if .Values.config.content }}
     {{- .Values.config.content | nindent 4 }}
   {{- else }}
     {{- include "hermes-agent.config" . | nindent 4 }}
+  {{- end }}
+  {{- end }}
+  {{- if .Values.soul.content }}
+  SOUL.md: |
+    {{- .Values.soul.content | nindent 4 }}
   {{- end }}
 {{- end }}
