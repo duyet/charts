@@ -3,7 +3,7 @@ entries:
   amundsen:
   - apiVersion: v2
     appVersion: "1.0"
-    created: "2026-06-11T11:31:33.754495551Z"
+    created: "2026-06-11T11:59:04.721995705Z"
     dependencies:
     - condition: elasticsearch.enabled
       name: elasticsearch
@@ -11,7 +11,7 @@ entries:
       version: 19.5.6
     description: Amundsen is a metadata driven application for improving the productivity
       of data analysts, data scientists and engineers when interacting with data.
-    digest: e6b427bfe334ed721376dce2cd740833d876671ca158d233655bf918e97b93c3
+    digest: 9437d46aed795350162d06ce3e7c4b097ef5822e49363bc84ef198c2db54907b
     home: https://github.com/lyft/amundsen
     icon: https://github.com/lyft/amundsen/blob/master/docs/img/logos/amundsen_logo_on_light.svg
     keywords:
@@ -30,7 +30,7 @@ entries:
     version: 1.1.0
   - apiVersion: v1
     appVersion: "1.0"
-    created: "2026-06-11T11:31:33.746372554Z"
+    created: "2026-06-11T11:59:04.714484229Z"
     dependencies:
     - condition: elasticsearch.enabled
       name: elasticsearch
@@ -58,10 +58,10 @@ entries:
   applause-btn:
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2026-06-11T11:31:33.755173783Z"
+    created: "2026-06-11T11:59:04.722961999Z"
     description: A Helm chart of [Applause Button](https://github.com/duyet/applause-btn)
       for Kubernetes
-    digest: 92b3ff896b41b0825c36a6fb97bab7a892d3ad979e985aa97e2eeac336a854df
+    digest: aa9933f64b0440ee06b6b38163a602bd8bd61e2d55771b92fdc30a7c3028e5f8
     home: https://github.com/duyet/charts/tree/master/applause-btn
     maintainers:
     - email: me@duyet.net
@@ -74,7 +74,7 @@ entries:
     version: 0.1.1
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2026-06-11T11:31:33.754857867Z"
+    created: "2026-06-11T11:59:04.722587295Z"
     description: A Helm chart of [Applause Button](https://github.com/duyet/applause-btn)
       for Kubernetes
     digest: 3e19431e464322514b1fd9cd55a248692015edca0d9d6838e666e398460f1fa0
@@ -91,7 +91,7 @@ entries:
   clickhouse-keeper:
   - apiVersion: v2
     appVersion: 1.16.0
-    created: "2026-06-11T11:31:33.756503345Z"
+    created: "2026-06-11T11:59:04.724307984Z"
     description: A ClickHouse Keeper chart for Kubernetes
     digest: 065071ea7e41326f5a1a94dc31d9ddb5e8c9cf22dc996cde57703bb0fd8e551a
     name: clickhouse-keeper
@@ -101,9 +101,9 @@ entries:
     version: 0.1.3
   - apiVersion: v2
     appVersion: 1.16.0
-    created: "2026-06-11T11:31:33.756074158Z"
+    created: "2026-06-11T11:59:04.723808172Z"
     description: A ClickHouse Keeper chart for Kubernetes
-    digest: f671661799dc37318ce6daf374b5707aa8c8af0e4087ee7716d7891568815257
+    digest: 73e804368c3917b1d3baee7db6b37d790d9e20c07669ab47ecb73103f4a7e1dd
     name: clickhouse-keeper
     type: application
     urls:
@@ -111,7 +111,7 @@ entries:
     version: 0.1.2
   - apiVersion: v2
     appVersion: 1.16.0
-    created: "2026-06-11T11:31:33.75561688Z"
+    created: "2026-06-11T11:59:04.723384715Z"
     description: A ClickHouse Keeper chart for Kubernetes
     digest: 270374ad43f78d6baf3a576c580d73f7766c1f91b29f0cd4a6f0bc79b738610d
     name: clickhouse-keeper
@@ -122,9 +122,9 @@ entries:
   clickhouse-monitoring:
   - apiVersion: v2
     appVersion: 1.16.0
-    created: "2026-06-11T11:31:33.757658925Z"
+    created: "2026-06-11T11:59:04.725506798Z"
     description: A Helm chart for ClickHouse Monitoring (https://github.com/duyet/clickhouse-monitoring)
-    digest: 2b3d0e1b925a8018ec0404648961c3351a972baa7aec0e43d5d0463ac7dc2020
+    digest: 8efb314026876b8c753f48e19acb2e2474600de293db8b0402c0abcec2a8a94f
     home: https://github.com/duyet/charts/tree/master/clickhouse-monitoring
     maintainers:
     - email: me@duyet.net
@@ -137,7 +137,7 @@ entries:
     version: 0.1.2
   - apiVersion: v2
     appVersion: 1.16.0
-    created: "2026-06-11T11:31:33.757220825Z"
+    created: "2026-06-11T11:59:04.725092224Z"
     description: A Helm chart for ClickHouse Monitoring (https://github.com/duyet/clickhouse-monitoring)
     digest: 5b78655e5da4fb9c49469d1aa85927fb1449f0f197fd908aea308d2c228d4f34
     home: https://github.com/duyet/charts/tree/master/clickhouse-monitoring
@@ -152,7 +152,7 @@ entries:
     version: 0.1.1
   - apiVersion: v2
     appVersion: 1.16.0
-    created: "2026-06-11T11:31:33.75687205Z"
+    created: "2026-06-11T11:59:04.724656489Z"
     description: A Helm chart for ClickHouse Monitoring (https://github.com/duyet/clickhouse-monitoring)
     digest: 83a9b12ea3780c0ae681f254d0bb450b4e764152c500c08d66c1aa410174dd03
     home: https://github.com/duyet/charts/tree/master/clickhouse-monitoring
@@ -168,14 +168,14 @@ entries:
   commento:
   - apiVersion: v2
     appVersion: 1.8.0
-    created: "2026-06-11T11:31:33.770158013Z"
+    created: "2026-06-11T11:59:04.737993986Z"
     dependencies:
     - condition: postgresql.enabled
       name: postgresql
       repository: https://charts.bitnami.com/bitnami
       version: 15.4.1
     description: A Helm chart to deploy Commento.io
-    digest: 391639d6eab9b477c51d80bc6d7f0b55768fa789406d20350f9f9241c85cee25
+    digest: 0590d8f3727978946774a79cb7d925215613fc6c88e2d55b80f31ab1d133883a
     home: https://github.com/duyet/charts/tree/master/commento
     maintainers:
     - email: me@duyet.net
@@ -187,7 +187,7 @@ entries:
     version: 0.2.0
   - apiVersion: v1
     appVersion: "1.0"
-    created: "2026-06-11T11:31:33.764866689Z"
+    created: "2026-06-11T11:59:04.73290228Z"
     dependencies:
     - condition: postgresql.enabled
       name: postgresql
@@ -206,7 +206,7 @@ entries:
     version: 0.1.0
   - apiVersion: v1
     appVersion: "1.0"
-    created: "2026-06-11T11:31:33.759987822Z"
+    created: "2026-06-11T11:59:04.727925738Z"
     dependencies:
     - name: postgresql
       repository: https://charts.bitnami.com/bitnami
@@ -227,7 +227,7 @@ entries:
       category: Infrastructure
     apiVersion: v1
     appVersion: 0.7.1
-    created: "2026-06-11T11:31:33.770519758Z"
+    created: "2026-06-11T11:59:04.738411975Z"
     description: A Library Helm Chart for grouping common logic between bitnami charts.
       This chart is not deployable by itself.
     digest: 84cdb0a32d7c295a83f3fac032952f15fd410c0d2082df74bdf12d6b377dd9a1
@@ -252,9 +252,9 @@ entries:
   gaxy:
   - apiVersion: v2
     appVersion: 0.1.2-beta.2
-    created: "2026-06-11T11:31:33.770840952Z"
+    created: "2026-06-11T11:59:04.738706909Z"
     description: A Helm chart for Google Analytics Proxy ([gaxy](https://github.com/duyet/gaxy))
-    digest: 47fceade9911263e2c01e1997ea90f76cb26850a79c1abbae0d4ff3996919c67
+    digest: 6017698505e0a4631d8bc264bc5a53c2fa224751d1af8e98d15be3985d3a1dc5
     home: https://github.com/duyet/charts/tree/master/gaxy
     maintainers:
     - email: me@duyet.net
@@ -268,10 +268,10 @@ entries:
   glossary:
   - apiVersion: v2
     appVersion: 0.1.0
-    created: "2026-06-11T11:31:33.771184629Z"
+    created: "2026-06-11T11:59:04.739063355Z"
     description: A [Glossary API](https://github.com/duyet/glossary) Helm chart for
       Kubernetes
-    digest: 451d339f4f5d5aa1449a599d9405c2d57475497967748dcefcf0928462f26079
+    digest: d3bd2c4b1676d204a1a3ca8aea75454a8d7bfb8579cd0d92778fa6d81abfd95a
     home: https://github.com/duyet/charts/tree/master/glossary
     maintainers:
     - email: me@duyet.net
@@ -285,11 +285,11 @@ entries:
   hermes-agent:
   - apiVersion: v2
     appVersion: v2026.6.5
-    created: "2026-06-11T11:31:33.772620231Z"
+    created: "2026-06-11T11:59:04.740633497Z"
     description: Hermes Agent by NousResearch — a self-hosted autonomous AI agent
       with an OpenAI-compatible gateway, web dashboard, persistent memory, and sandboxed
       tool execution.
-    digest: da9faa7e005f541b1adcb384490137d5c20e0c2d84ac209a4e698b87feadcd11
+    digest: cb9986ab9a5d8c80226f511e0cdc6001a0ce070b1e43e5aaf0b5de2ef714953d
     home: https://hermes-agent.nousresearch.com
     icon: https://hermes-agent.nousresearch.com/img/logo.svg
     keywords:
@@ -315,10 +315,10 @@ entries:
   pgbouncer:
   - apiVersion: v2
     appVersion: 1.21.0
-    created: "2026-06-11T11:31:33.773324422Z"
+    created: "2026-06-11T11:59:04.741336185Z"
     description: PgBouncer chart, forked from https://github.com/cradlepoint/kubernetes-helm-chart-pgbouncer
       with some custom values
-    digest: bf3a0e21f148ca95586fc1a201b218564d1ed64cfd1a4aedab55ffcf110b9b05
+    digest: a7e63952e6cade3a2ed1aa3a15014094183c3f5e9178e853156f3590302a7b51
     home: https://github.com/duyet/charts/tree/master/pgbouncer
     maintainers:
     - email: me@duyet.net
@@ -330,7 +330,7 @@ entries:
     version: 1.1.1
   - apiVersion: v1
     appVersion: "1.0"
-    created: "2026-06-11T11:31:33.772988105Z"
+    created: "2026-06-11T11:59:04.74098722Z"
     description: PgBouncer chart, folked from https://github.com/cradlepoint/kubernetes-helm-chart-pgbouncer
       with some custom values
     digest: 64e6282d65b1fb6d0861a1c3f8c679cd455a09957644b2799495fee547defa7f
@@ -348,7 +348,7 @@ entries:
       category: Database
     apiVersion: v1
     appVersion: 11.9.0
-    created: "2026-06-11T11:31:33.775664726Z"
+    created: "2026-06-11T11:59:04.743942126Z"
     dependencies:
     - name: common
       repository: https://charts.bitnami.com/bitnami
@@ -379,9 +379,9 @@ entries:
   scheduling-restart:
   - apiVersion: v2
     appVersion: 1.16.0
-    created: "2026-06-11T11:31:33.776537485Z"
+    created: "2026-06-11T11:59:04.744289077Z"
     description: A Helm chart for scheduling restart deployment
-    digest: 5f4534254c39adabaf3250c89b8a4ad036fe03629f96670763603d060f771935
+    digest: e8770d7c5772fe5f229a3baabde0715ec9c3004a2fe4e7a2b7203f5f92fb6c74
     name: scheduling-restart
     type: application
     urls:
@@ -390,9 +390,9 @@ entries:
   spark-shuffle:
   - apiVersion: v2
     appVersion: 3.3.0
-    created: "2026-06-11T11:31:33.777014954Z"
+    created: "2026-06-11T11:59:04.744684693Z"
     description: A Helm chart to deploy Spark shuffle service daemon set for Kubernetes
-    digest: af6d2266368aaab748aef9352f26c4aad6fc3e8a6074aad65cf0c248d47c1cbf
+    digest: 3ce6b9dd0eda8ac6f4f34db35854be974d82e32e5d99e9f28d21f70f988c3ac0
     home: https://github.com/duyet/charts/tree/master/spark-shuffle-service
     maintainers:
     - email: me@duyet.net
@@ -404,7 +404,7 @@ entries:
     version: 0.2.0
   - apiVersion: v1
     appVersion: "1.0"
-    created: "2026-06-11T11:31:33.776808844Z"
+    created: "2026-06-11T11:59:04.744494186Z"
     description: A Helm chart to deploy Spark shuffle service deamon set for Kubernetes
     digest: a1484ca3fd5dfafba8bf1a2eaf9a2cd9f04faf62cb51bb7a36bb09da47e87872
     home: https://github.com/duyet/charts/tree/master/spark-shuffle-service
@@ -419,9 +419,9 @@ entries:
   uptime-kuma:
   - apiVersion: v2
     appVersion: 1.18.5
-    created: "2026-06-11T11:31:33.779639496Z"
+    created: "2026-06-11T11:59:04.747333638Z"
     description: A Helm chart for Uptime Kuma
-    digest: f84d5b9d14c597fbe3323c40f213564fb8181bcc37c18e61479afa6b6cc303e7
+    digest: 3d39045de6ede397bf1d8f6f6638e4745c57efbe3ef605a77e60b2962da52c43
     home: https://github.com/louislam/uptime-kuma
     icon: https://github.com/louislam/uptime-kuma/raw/master/public/icon.svg
     maintainers:
@@ -435,7 +435,7 @@ entries:
     version: 0.1.7
   - apiVersion: v2
     appVersion: 1.8.0
-    created: "2026-06-11T11:31:33.779294387Z"
+    created: "2026-06-11T11:59:04.747021789Z"
     description: A Helm chart for Uptime Kuma
     digest: dbeae588feb0b80c4866eea52052e1dcd1d9762c31934778432e32c810c5b475
     home: https://github.com/louislam/uptime-kuma
@@ -451,7 +451,7 @@ entries:
     version: 0.1.6
   - apiVersion: v2
     appVersion: 1.8.0
-    created: "2026-06-11T11:31:33.778976849Z"
+    created: "2026-06-11T11:59:04.746697852Z"
     description: A Helm chart for Uptime Kuma
     digest: ddab03ddd0f9de2bf4db3117ac340ed9b7650cbd64c2826ee261148e85859e93
     home: https://github.com/louislam/uptime-kuma
@@ -467,7 +467,7 @@ entries:
     version: 0.1.5
   - apiVersion: v2
     appVersion: 1.7.3
-    created: "2026-06-11T11:31:33.778649275Z"
+    created: "2026-06-11T11:59:04.746372302Z"
     description: A Helm chart for Uptime Kuma
     digest: bfe2c92e6456bd74c6a80d5e182124c966e0e90bf6868d60ca91719151260a20
     home: https://github.com/louislam/uptime-kuma
@@ -483,7 +483,7 @@ entries:
     version: 0.1.4
   - apiVersion: v2
     appVersion: 1.7.3
-    created: "2026-06-11T11:31:33.778322483Z"
+    created: "2026-06-11T11:59:04.746063537Z"
     description: A Helm chart for Uptime Kuma
     digest: 6953cbaa3b29696d56586753c3d1786e50fbd7dc9463ba83a87e07a1b80a3c60
     home: https://github.com/louislam/uptime-kuma
@@ -499,7 +499,7 @@ entries:
     version: 0.1.3
   - apiVersion: v2
     appVersion: 1.7.3
-    created: "2026-06-11T11:31:33.778017003Z"
+    created: "2026-06-11T11:59:04.745688683Z"
     description: A Helm chart for Uptime Kuma
     digest: af57b96fffe8e31c91d11f301bf19b210f83e4fcd1dac4a3a65436649245d5b0
     home: https://github.com/louislam/uptime-kuma
@@ -515,7 +515,7 @@ entries:
     version: 0.1.2
   - apiVersion: v2
     appVersion: 1.3.2
-    created: "2026-06-11T11:31:33.777713436Z"
+    created: "2026-06-11T11:59:04.745384656Z"
     description: A Helm chart for Uptime Kuma
     digest: 2fe675baf30b807abbbcf355bf08a7372907c835a049222f3283ec69b07a0302
     home: https://github.com/louislam/uptime-kuma
@@ -531,7 +531,7 @@ entries:
     version: 0.1.1
   - apiVersion: v2
     appVersion: 1.3.2
-    created: "2026-06-11T11:31:33.777383509Z"
+    created: "2026-06-11T11:59:04.745016452Z"
     description: A Helm chart for Uptime Kuma
     digest: 1dcf192f1c83439c4655719777359274878e5d554a73a0ae1227917f3f6f8bf7
     home: https://github.com/louislam/uptime-kuma
@@ -547,9 +547,9 @@ entries:
   zeppelin:
   - apiVersion: v2
     appVersion: 0.10.0
-    created: "2026-06-11T11:31:33.781121809Z"
+    created: "2026-06-11T11:59:04.748800675Z"
     description: A Zeppelin helm chart for Kubernetes
-    digest: c8d386991255a9798dca9c5c9bc13689848de460c29d8b0432eaac3c58937008
+    digest: 1b149add364fdb2a7bbfb9beac965836d4052fb01048be9ea9545fa1f4fdd922
     home: https://github.com/duyet/charts/tree/master/zeppelin
     maintainers:
     - email: me@duyet.net
@@ -562,7 +562,7 @@ entries:
     version: 0.1.3
   - apiVersion: v2
     appVersion: 0.10.0
-    created: "2026-06-11T11:31:33.780746073Z"
+    created: "2026-06-11T11:59:04.748426543Z"
     description: A Zeppelin helm chart for Kubernetes
     digest: fb22700e042731677d3ecbea1f52f8cb07059f67e41a8fe30ad3c2d3a9a5a1be
     home: https://github.com/duyet/charts/tree/master/zeppelin
@@ -577,7 +577,7 @@ entries:
     version: 0.1.2
   - apiVersion: v2
     appVersion: 0.9.0-SNAPSHOT
-    created: "2026-06-11T11:31:33.780370658Z"
+    created: "2026-06-11T11:59:04.748045299Z"
     description: A Zeppelin helm chart for Kubernetes
     digest: 1a779c02873035094bbf7a708b51d39ac290a78553ed9040b1f242362e8a60b1
     home: https://github.com/duyet/charts/tree/master/zeppelin
@@ -592,7 +592,7 @@ entries:
     version: 0.1.1
   - apiVersion: v2
     appVersion: 0.9.0-SNAPSHOT
-    created: "2026-06-11T11:31:33.7800072Z"
+    created: "2026-06-11T11:59:04.747676304Z"
     description: A Zeppelin helm chart for Kubernetes
     digest: 3c37330378f3745ace4fcf5a67cd88eae5778bb6c0371234b2498b6eacc2f560
     home: https://github.com/duyet/charts/tree/master/zeppelin
@@ -605,4 +605,4 @@ entries:
     urls:
     - https://duyet.github.io/charts/zeppelin-0.1.0.tgz
     version: 0.1.0
-generated: "2026-06-11T11:31:33.738639879Z"
+generated: "2026-06-11T11:59:04.706861565Z"
