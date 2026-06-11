@@ -290,6 +290,7 @@ Returns a YAML list of init containers based on which feature toggles are enable
   args:
     - |
       set -u
+      apk add --no-cache git >/dev/null 2>&1
       HOME={{ .Values.persistence.workspace.mountPath }}
       git config --global --add safe.directory '*'
       git config --global user.name {{ .Values.gitSetup.userName | quote }}
