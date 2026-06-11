@@ -291,6 +291,11 @@ Returns a YAML list of init containers based on which feature toggles are enable
       SHEOF
       chmod 0755 mint-gh-token.py gh-cred.sh gh-mcp-wrapper.sh
       echo "wrote github-app helper scripts"
+      # Authenticate gh CLI with the GitHub App token
+      TOKEN="$({{ .Values.persistence.data.mountPath }}/.local/bin/mint-gh-token.py 2>/dev/null)"
+      if [ -n "$TOKEN" ]; then
+        echo "$TOKEN" | gh auth login --with-token 2>/dev/null && echo "gh authenticated" || echo "gh auth skipped"
+      fi
       {{- end }}
   securityContext:
     {{- toYaml $.Values.securityContext | nindent 12 }}
