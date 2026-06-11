@@ -313,8 +313,8 @@ Returns a YAML list of init containers based on which feature toggles are enable
       cd {{ .Values.persistence.data.mountPath }}/.local/bin
       if [ ! -x himalaya ]; then
         echo "Installing himalaya CLI..."
-        wget -qO- https://github.com/pimalaya/himalaya/releases/latest/download/himalaya-linux-x86_64.tar.gz \
-          | tar xz himalaya
+        wget -qO- https://github.com/pimalaya/himalaya/releases/latest/download/himalaya.x86_64-linux.tgz \
+          | tar xzf - himalaya
         chmod +x himalaya
       fi
       ./himalaya --version || true
