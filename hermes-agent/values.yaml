@@ -384,6 +384,15 @@ githubMcp:
   # -- Comma-separated GitHub toolsets to expose.
   toolsets: "context,repos,issues,pull_requests"
 
+# -- n8n MCP server (hermes-n8n-mcp, stdio). Clones the Python repo and sets up
+# a venv in an emptyDir on every pod start. Injects the MCP config entry with
+# N8N_BASE_URL from values and N8N_API_KEY resolved from secrets at runtime.
+# Requires N8N_API_KEY in secrets.data.
+n8nMcp:
+  enabled: false
+  # -- n8n instance base URL (internal k8s service or external).
+  baseUrl: "http://n8n.n8n.svc:5678"
+
 # -- Cluster management tools (kubectl + helm). Installs into the data PVC and
 # creates symlinks in /usr/local/bin so the agent's terminal finds them on PATH.
 clusterTools:

@@ -129,6 +129,11 @@ never written into this ConfigMap.
 {{- $_ := set $mcps "github" (dict "command" (printf "%s/.local/bin/gh-mcp-wrapper.sh" .Values.persistence.data.mountPath) "args" (list "stdio") "env" (dict "GITHUB_TOOLSETS" .Values.githubMcp.toolsets)) -}}
 {{- $_ := set $src "mcp_servers" $mcps -}}
 {{- end -}}
+{{- if .Values.n8nMcp.enabled -}}
+{{- $mcps := default (dict) (get $src "mcp_servers") -}}
+{{- $_ := set $mcps "n8n" (dict "command" "/opt/mcp/n8n/repo/.venv/bin/python" "args" (list "/opt/mcp/n8n/repo/server.py") "env" (dict "N8N_BASE_URL" .Values.n8nMcp.baseUrl "N8N_API_KEY" "${N8N_API_KEY}")) -}}
+{{- $_ := set $src "mcp_servers" $mcps -}}
+{{- end -}}
 {{- if .Values.persistence.workspace.enabled -}}
 {{- $terminal := default (dict) (get $src "terminal") -}}
 {{- $_ := set $terminal "cwd" .Values.persistence.workspace.mountPath -}}
@@ -202,6 +207,26 @@ Returns a YAML list of init containers based on which feature toggles are enable
   volumeMounts:
     - name: github-mcp-bin
       mountPath: /mcp-bin
+{{- end }}
+{{- if .Values.n8nMcp.enabled }}
+- name: fetch-n8n-mcp
+  image: python:3.12-slim
+  command: ["bash", "-c"]
+  args:
+    - |
+      set -eu
+      apt-get update -qq && apt-get install -y -qq git >/dev/null 2>&1
+      cd /mcp-n8n
+      if [ ! -d repo/.venv ]; then
+        echo "Setting up hermes-n8n-mcp..."
+        git clone --depth 1 https://github.com/CyberSamuraiX/hermes-n8n-mcp.git repo
+        python -m venv repo/.venv
+        repo/.venv/bin/pip install -q -r repo/requirements.txt
+      fi
+      echo "n8n MCP server ready"
+  volumeMounts:
+    - name: n8n-mcp-bin
+      mountPath: /mcp-n8n
 {{- end }}
 {{- if .Values.clusterTools.enabled }}
 - name: install-cluster-tools
@@ -397,6 +422,10 @@ Returns a YAML list of additional volumes based on feature toggles.
 - name: github-mcp-bin
   emptyDir: {}
 {{- end }}
+{{- if .Values.n8nMcp.enabled }}
+- name: n8n-mcp-bin
+  emptyDir: {}
+{{- end }}
 {{- range .Values.hostMounts }}
 - name: {{ .name }}
   hostPath:
@@ -413,6 +442,10 @@ Returns a YAML list of additional volume mounts based on feature toggles.
 {{- if .Values.githubMcp.enabled }}
 - name: github-mcp-bin
   mountPath: /opt/mcp/bin
+{{- end }}
+{{- if .Values.n8nMcp.enabled }}
+- name: n8n-mcp-bin
+  mountPath: /opt/mcp/n8n
 {{- end }}
 {{- range .Values.hostMounts }}
 - name: {{ .name }}
