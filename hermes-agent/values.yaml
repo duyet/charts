@@ -393,6 +393,25 @@ n8nMcp:
   # -- n8n instance base URL (internal k8s service or external).
   baseUrl: "http://n8n.n8n.svc:5678"
 
+# -- Browser sidecar (Chromium headless for CDP-based browser automation).
+# When enabled, adds a chromium container to the pod sharing /dev/shm.
+# Auto-injects browser.cdp_url: "http://localhost:9222" into agent config.
+# Requires shm.enabled (default: true) for the shared memory volume.
+browserSidecar:
+  enabled: false
+  # -- Chromium headless image.
+  image: chromedp/headless-shell:latest
+  # -- Image pull policy.
+  imagePullPolicy: Always
+  # -- Resource requests/limits for the chromium sidecar.
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
 # -- Cluster management tools (kubectl + helm). Installs into the data PVC and
 # creates symlinks in /usr/local/bin so the agent's terminal finds them on PATH.
 clusterTools:

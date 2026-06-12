@@ -134,6 +134,13 @@ never written into this ConfigMap.
 {{- $_ := set $mcps "n8n" (dict "command" "/opt/mcp/n8n/repo/.venv/bin/python" "args" (list "/opt/mcp/n8n/repo/server.py") "env" (dict "N8N_BASE_URL" .Values.n8nMcp.baseUrl "N8N_API_KEY" "${N8N_API_KEY}")) -}}
 {{- $_ := set $src "mcp_servers" $mcps -}}
 {{- end -}}
+{{- if .Values.browserSidecar.enabled -}}
+{{- $browser := default (dict) (get $src "browser") -}}
+{{- if not (get $browser "cdp_url") -}}
+{{- $_ := set $browser "cdp_url" "http://localhost:9222" -}}
+{{- $_ := set $src "browser" $browser -}}
+{{- end -}}
+{{- end -}}
 {{- if .Values.persistence.workspace.enabled -}}
 {{- $terminal := default (dict) (get $src "terminal") -}}
 {{- $_ := set $terminal "cwd" .Values.persistence.workspace.mountPath -}}
@@ -410,6 +417,37 @@ Returns a YAML list of init containers based on which feature toggles are enable
   volumeMounts:
     - name: data
       mountPath: {{ .Values.persistence.data.mountPath }}
+{{- end }}
+{{- end }}
+
+{{/*
+Browser sidecar container (Chromium for CDP-based browser automation).
+When browserSidecar.enabled, injects a chromium container that shares the
+pod's /dev/shm and exposes CDP on localhost:9222. Also auto-injects
+browser.cdp_url into the agent config.
+
+NOTE: the chromedp/headless-shell image entrypoint already sets
+--remote-debugging-port=9223 internally and runs socat to forward
+9222→9223. Do NOT pass --remote-debugging-port in args or both chromium
+and socat will fight over port 9222 (bind() EADDRINUSE).
+*/}}
+{{- define "hermes-agent.browser-sidecar" -}}
+{{- if .Values.browserSidecar.enabled }}
+- name: chromium
+  image: {{ .Values.browserSidecar.image | quote }}
+  imagePullPolicy: {{ .Values.browserSidecar.imagePullPolicy }}
+  args:
+    - --no-sandbox
+    - --disable-gpu
+    - --disable-dev-shm-usage
+  ports:
+    - containerPort: 9222
+      protocol: TCP
+  resources:
+    {{- toYaml .Values.browserSidecar.resources | nindent 4 }}
+  volumeMounts:
+    - name: dshm
+      mountPath: /dev/shm
 {{- end }}
 {{- end }}
 
