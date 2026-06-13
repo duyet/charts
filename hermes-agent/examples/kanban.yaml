@@ -1,0 +1,27 @@
+# Preset: Kanban task management — enable the built-in kanban dispatcher so the
+# agent can create, track, and decompose tasks. No MCP server or extra infra.
+#
+#   helm upgrade --install hermes . -n hermes-agent --create-namespace \
+#     -f examples/kanban.yaml -f examples/minimal.yaml
+#
+# The kanban SQLite DB is stored on the data PVC automatically ($HERMES_HOME).
+# Dashboard: the /kanban tab appears in the web dashboard.
+# Telegram/Discord: /kanban list, /kanban create, etc. work from chat.
+# Workers get kanban_* tools auto-injected when spawned by the dispatcher.
+config:
+  values:
+    kanban:
+      # Run the dispatcher inside the gateway process (default, recommended).
+      dispatch_in_gateway: true
+      # How often (seconds) the dispatcher polls for ready tasks.
+      dispatch_interval_seconds: 60
+      # Automatically decompose triage tasks into subtasks on each tick.
+      auto_decompose: true
+      # Max decompositions per dispatcher tick.
+      auto_decompose_per_tick: 3
+      # Consecutive failures before auto-blocking a task.
+      failure_limit: 2
+      # Auto-promote child tasks when their parent completes.
+      auto_promote_children: true
+      # Seconds before a running task without heartbeat is considered stale.
+      dispatch_stale_timeout_seconds: 14400

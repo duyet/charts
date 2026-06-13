@@ -102,6 +102,11 @@ config:
     always_load:
       - test_skill
     toolsets: []
+    kanban:
+      dispatch_in_gateway: true
+      dispatch_interval_seconds: 60
+      auto_decompose: true
+      failure_limit: 2
     auxiliary:
       compression:
         provider: openrouter

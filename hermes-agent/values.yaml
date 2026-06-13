@@ -321,6 +321,17 @@ config:
     # -- Toolsets: empty = all built-in tools enabled.
     toolsets: []
 
+    # -- Kanban task management (built-in, not MCP). The dispatcher polls for
+    # ready tasks and spawns workers. SQLite DB at $HERMES_HOME/kanban.db (data
+    # PVC). Dashboard shows a /kanban tab. Telegram: /kanban list, /kanban create.
+    # Zero-cost when unused — just adds tools, no side effects until invoked.
+    # See: https://hermes-agent.nousresearch.com/docs/user-guide/features/kanban
+    kanban:
+      dispatch_in_gateway: true
+      dispatch_interval_seconds: 60
+      auto_decompose: true
+      failure_limit: 2
+
     # -- MCP (Model Context Protocol) servers. Zero-config defaults that ship
     # in the image. The github entry is auto-injected when githubMcp.enabled.
     mcp_servers:
