@@ -341,13 +341,17 @@ Returns a YAML list of init containers based on which feature toggles are enable
 {{- end }}
 {{- if .Values.devTools.enabled }}
 - name: install-dev-tools
-  image: alpine:3.20
-  command: ["sh", "-c"]
+  image: python:3.12-slim
+  command: ["bash", "-c"]
   args:
     - |
       set -eu
-      # nodejs+npm: pnpm and nodeTools need an npm runtime; alpine ships neither.
-      apk add --no-cache unzip nodejs npm >/dev/null 2>&1
+      # glibc Debian base: uv tool install needs a working Python interpreter.
+      # alpine/musl can neither run uv's managed Pythons (glibc-only) nor install
+      # most wheels (no musl builds), so every pythonTools call silently failed.
+      # wget/unzip for uv+bun archives; nodejs+npm for pnpm and nodeTools.
+      apt-get update -qq >/dev/null 2>&1
+      apt-get install -y -qq wget unzip nodejs npm >/dev/null 2>&1
       DATA={{ .Values.persistence.data.mountPath }}
       BIN="$DATA/.local/bin"
       mkdir -p "$BIN"
