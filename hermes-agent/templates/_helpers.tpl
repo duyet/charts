@@ -339,6 +339,67 @@ Returns a YAML list of init containers based on which feature toggles are enable
       mountPath: /opt/mcp/bin
     {{- end }}
 {{- end }}
+{{- if .Values.devTools.enabled }}
+- name: install-dev-tools
+  image: alpine:3.20
+  command: ["sh", "-c"]
+  args:
+    - |
+      set -eu
+      # nodejs+npm: pnpm and nodeTools need an npm runtime; alpine ships neither.
+      apk add --no-cache unzip nodejs npm >/dev/null 2>&1
+      DATA={{ .Values.persistence.data.mountPath }}
+      BIN="$DATA/.local/bin"
+      mkdir -p "$BIN"
+      # All tool bins must land on the hermes container PATH, which includes
+      # $DATA/.local/bin. Route every installer there:
+      export HOME="$DATA"                 # uv/npm default ~/.local/bin → $BIN
+      export XDG_BIN_HOME="$BIN"          # uv tool bins → $BIN explicitly
+      export NPM_CONFIG_PREFIX="$DATA/.local"  # npm global bins live in $PREFIX/bin = $BIN
+      export PATH="$BIN:$PATH"
+
+      if [ ! -x "$BIN/uv" ]; then
+        echo "Installing uv..."
+        wget -qO- "https://github.com/astral-sh/uv/releases/latest/download/uv-x86_64-unknown-linux-gnu.tar.gz" \
+          | tar xz -C /tmp
+        mv /tmp/uv-*/uv "$BIN/uv"
+        mv /tmp/uv-*/uvx "$BIN/uvx" 2>/dev/null || true
+        chmod +x "$BIN/uv" "$BIN/uvx" 2>/dev/null || true
+      fi
+
+      if [ ! -x "$BIN/bun" ]; then
+        echo "Installing bun..."
+        wget -qO /tmp/bun.zip "https://github.com/oven-sh/bun/releases/latest/download/bun-linux-x64.zip"
+        unzip -o /tmp/bun.zip -d /tmp >/dev/null 2>&1
+        mv /tmp/bun-linux-x64/bun "$BIN/bun" && chmod +x "$BIN/bun"
+        rm -rf /tmp/bun.zip /tmp/bun-linux-x64
+      fi
+
+      # pnpm: installed via npm (its standalone binary asset was removed in v11).
+      # NPM_CONFIG_PREFIX points global bins at $BIN so `pnpm` is on PATH.
+      if [ ! -x "$BIN/pnpm" ]; then
+        echo "Installing pnpm..."
+        npm install -g pnpm >/dev/null 2>&1 || echo "pnpm skipped"
+      fi
+
+      # Python CLI tools (uv-managed isolated envs, bins symlinked into $BIN).
+      {{- range .Values.devTools.pythonTools }}
+      "$BIN/uv" tool install {{ . }} >/dev/null 2>&1 || echo "uv tool {{ . }} skipped"
+      {{- end }}
+
+      # Node CLI tools (npm global, bins land in $BIN via NPM_CONFIG_PREFIX).
+      {{- range .Values.devTools.nodeTools }}
+      npm install -g {{ . }} >/dev/null 2>&1 || echo "npm {{ . }} skipped"
+      {{- end }}
+
+      echo "dev tools ready:"
+      ls -1 "$BIN"
+  securityContext:
+    {{- toYaml $.Values.securityContext | nindent 12 }}
+  volumeMounts:
+    - name: data
+      mountPath: {{ .Values.persistence.data.mountPath }}
+{{- end }}
 {{- if .Values.gitSetup.enabled }}
 - name: git-setup
   image: alpine:3.20
