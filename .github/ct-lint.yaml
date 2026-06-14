@@ -3,6 +3,7 @@ chart-dirs:
 check-version-increment: false
 debug: true
 remote: origin
+target-branch: master
 validate-chart-schema: true
 validate-maintainers: true
 validate-yaml: true
