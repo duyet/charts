@@ -45,7 +45,7 @@ jobs:
       - name: Run chart-testing (list-changed)
         id: list-changed
         run: |
-          changed=$(ct list-changed --config .github/ct-lint.yaml | tr '\n' ' ')
+          changed=$(ct list-changed --config .github/ct-lint.yaml | grep -v '^>>>' | tr '\n' ' ')
           echo "list_changed=$changed" >> $GITHUB_ENV
           if [[ -n "$changed" ]]; then
             echo "changed=true" >> $GITHUB_OUTPUT
