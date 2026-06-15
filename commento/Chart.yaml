@@ -10,6 +10,6 @@ maintainers:
     url: https://github.com/duyet/
 dependencies:
   - name: postgresql
-    version: 15.4.1
+    version: 18.7.3
     repository: https://charts.bitnami.com/bitnami
     condition: postgresql.enabled

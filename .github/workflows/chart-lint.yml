@@ -40,12 +40,12 @@ jobs:
           python-version: '3.14'
 
       - name: Set up chart-testing
-        uses: helm/chart-testing-action@v2.6.1
+        uses: helm/chart-testing-action@v2.8.0
 
       - name: Run chart-testing (list-changed)
         id: list-changed
         run: |
-          changed=$(ct list-changed | tr '\n' ' ')
+          changed=$(ct list-changed --config .github/ct-lint.yaml | grep -v '^>>>' | tr '\n' ' ')
           echo "list_changed=$changed" >> $GITHUB_ENV
           if [[ -n "$changed" ]]; then
             echo "changed=true" >> $GITHUB_OUTPUT
@@ -57,13 +57,13 @@ jobs:
         run: |
           helm repo add stable https://charts.helm.sh/stable
           helm repo add bitnami https://charts.bitnami.com/bitnami
-          for chart in ${{ steps.list-changed.outputs.list }}; do
+          for chart in $list_changed; do
             echo "Updating dependencies for $chart..."
             helm dependency update "$chart"
           done
 
       - name: Comment
-        uses: peter-evans/create-or-update-comment@v4
+        uses: peter-evans/create-or-update-comment@v5
         id: comment
         if: ${{ github.event.pull_request.number }}
         with:
@@ -98,7 +98,7 @@ jobs:
           exit $exit_code
 
       - name: Comment (after ct lint successfully)
-        uses: peter-evans/create-or-update-comment@v4
+        uses: peter-evans/create-or-update-comment@v5
         if: ${{ success() && github.event.pull_request.number }}
         with:
           token: ${{ secrets.BOT_TOKEN }}
@@ -115,7 +115,7 @@ jobs:
             </details>
 
       - name: Comment (after ct lint failure)
-        uses: peter-evans/create-or-update-comment@v4
+        uses: peter-evans/create-or-update-comment@v5
         if: ${{ failure() && github.event.pull_request.number }}
         with:
           token: ${{ secrets.BOT_TOKEN }}
@@ -133,7 +133,7 @@ jobs:
             </details>
 
       - name: Comment (before create KinD cluster)
-        uses: peter-evans/create-or-update-comment@v4
+        uses: peter-evans/create-or-update-comment@v5
         if: ${{ github.event.pull_request.number }}
         with:
           token: ${{ secrets.BOT_TOKEN }}
@@ -151,7 +151,7 @@ jobs:
         # if: steps.list-changed.outputs.changed == 'true'
 
       - name: Comment (after create KinD successfully)
-        uses: peter-evans/create-or-update-comment@v4
+        uses: peter-evans/create-or-update-comment@v5
         if: ${{ success() && github.event.pull_request.number }}
         with:
           token: ${{ secrets.BOT_TOKEN }}
@@ -194,7 +194,7 @@ jobs:
           charts: .
 
       - name: Comment (after test success)
-        uses: peter-evans/create-or-update-comment@v4
+        uses: peter-evans/create-or-update-comment@v5
         if: ${{ success() && github.event.pull_request.number }}
         with:
           token: ${{ secrets.BOT_TOKEN }}
@@ -212,7 +212,7 @@ jobs:
             </details>
 
       - name: Comment (after test failure)
-        uses: peter-evans/create-or-update-comment@v4
+        uses: peter-evans/create-or-update-comment@v5
         if: ${{ failure() && github.event.pull_request.number }}
         with:
           token: ${{ secrets.BOT_TOKEN }}

@@ -27,7 +27,7 @@ cronjob:
   enabled: true
 
   endpoints:
-    - # -- Cron schedule expression
+    -  # -- Cron schedule expression
       schedule: "*/30 * * * *"
       # -- Endpoint for the cron job to call, must be unique as using for generate cronjob name as well.
       endpoint: /api/clean
@@ -38,7 +38,7 @@ cronjob:
 
   image:
     repository: alpine/curl
-    tag: 8.10.0
+    tag: 8.19.0
     pullPolicy: IfNotPresent
 
   resources:

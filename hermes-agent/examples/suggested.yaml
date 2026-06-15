@@ -40,3 +40,8 @@ config:
       dialog_policy: must_respond
     approvals:
       mode: smart
+    # Kanban task management (works out of the box — shown here for reference).
+    # The /kanban dashboard tab and /kanban Telegram commands are available.
+    kanban:
+      dispatch_in_gateway: true
+      auto_decompose: true

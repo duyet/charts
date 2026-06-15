@@ -321,6 +321,17 @@ config:
     # -- Toolsets: empty = all built-in tools enabled.
     toolsets: []
 
+    # -- Kanban task management (built-in, not MCP). The dispatcher polls for
+    # ready tasks and spawns workers. SQLite DB at $HERMES_HOME/kanban.db (data
+    # PVC). Dashboard shows a /kanban tab. Telegram: /kanban list, /kanban create.
+    # Zero-cost when unused — just adds tools, no side effects until invoked.
+    # See: https://hermes-agent.nousresearch.com/docs/user-guide/features/kanban
+    kanban:
+      dispatch_in_gateway: true
+      dispatch_interval_seconds: 60
+      auto_decompose: true
+      failure_limit: 2
+
     # -- MCP (Model Context Protocol) servers. Zero-config defaults that ship
     # in the image. The github entry is auto-injected when githubMcp.enabled.
     mcp_servers:
@@ -439,6 +450,25 @@ hostMounts: []
   # - name: host-infra
   #   hostPath: /home/user/project/infra
   #   mountPath: /opt/workspace/infra
+
+# -- Development toolchain (coding + publishing). Installs standalone uv, bun,
+# and pnpm binaries into the data PVC's .local/bin (already on terminal PATH), so
+# the agent can scaffold, build, and publish Python/JS projects. Preinstall
+# extra Python CLI tools via `uv tool install` and Node packages globally via npm.
+# Binaries persist on the data PVC; only missing ones are (re)downloaded on boot.
+devTools:
+  enabled: false
+  # -- uv version tag (astral-sh/uv). Empty = latest release.
+  uvVersion: ""
+  # -- bun version tag (oven-sh/bun). Empty = latest release.
+  bunVersion: ""
+  # -- pnpm version tag (pnpm/pnpm). Empty = latest release.
+  pnpmVersion: ""
+  # -- Python CLI tools installed via `uv tool install` (isolated envs, bins in
+  # .local/bin). e.g. [ruff, build, twine, httpie].
+  pythonTools: []
+  # -- Node packages installed globally via npm. e.g. [tsx, typescript, prettier].
+  nodeTools: []
 
 # -- Himalaya email skill. Installs the himalaya CLI and writes an IMAP/SMTP
 # config. Requires EMAIL_ADDRESS and EMAIL_PASSWORD in secrets.data.
