@@ -1,6 +1,10 @@
 apiVersion: v2
 name: clickhouse-keeper
 description: A ClickHouse Keeper chart for Kubernetes
+maintainers:
+  - name: duyet
+    email: me@duyet.net
+    url: https://github.com/duyet
 
 # A chart can be either an 'application' or a 'library' chart.
 #
