@@ -242,6 +242,10 @@ Returns a YAML list of init containers based on which feature toggles are enable
   args:
     - |
       set -u
+      # Network fetches are time-bounded + retried so a slow/stalled mirror
+      # or GitHub rate limit can NOT hang pod init forever. Failures are
+      # logged + skipped, not fatal (best-effort cluster tooling).
+      WGET="wget -q --timeout=30 --tries=3"
       KVER={{ .Values.clusterTools.kubectlVersion | quote }}
       HVER={{ .Values.clusterTools.helmVersion | quote }}
       GVER={{ .Values.clusterTools.ghVersion | quote }}
@@ -249,16 +253,16 @@ Returns a YAML list of init containers based on which feature toggles are enable
       cd {{ .Values.persistence.data.mountPath }}/.local/bin
       if [ ! -x kubectl ]; then
         echo "Downloading kubectl ${KVER}..."
-        wget -q "https://dl.k8s.io/release/${KVER}/bin/linux/amd64/kubectl" -O kubectl && chmod +x kubectl || echo "kubectl download failed"
+        $WGET "https://dl.k8s.io/release/${KVER}/bin/linux/amd64/kubectl" -O kubectl && chmod +x kubectl || echo "kubectl download failed"
       fi
       if [ ! -x helm ]; then
         echo "Downloading helm ${HVER}..."
-        wget -qO- "https://get.helm.sh/helm-${HVER}-linux-amd64.tar.gz" | tar xz -C /tmp linux-amd64/helm \
+        $WGET -O- "https://get.helm.sh/helm-${HVER}-linux-amd64.tar.gz" | tar xz -C /tmp linux-amd64/helm \
           && mv /tmp/linux-amd64/helm helm && chmod +x helm || echo "helm download failed"
       fi
       if [ ! -x gh ]; then
         echo "Downloading gh ${GVER}..."
-        wget -qO /tmp/gh.tar.gz "https://github.com/cli/cli/releases/download/${GVER}/gh_${GVER#v}_linux_amd64.tar.gz" \
+        $WGET -O /tmp/gh.tar.gz "https://github.com/cli/cli/releases/download/${GVER}/gh_${GVER#v}_linux_amd64.tar.gz" \
           && tar xzf /tmp/gh.tar.gz -C /tmp && mv /tmp/gh_${GVER#v}_linux_amd64/bin/gh gh && chmod +x gh \
           || echo "gh download failed"
         rm -f /tmp/gh.tar.gz
@@ -269,11 +273,11 @@ Returns a YAML list of init containers based on which feature toggles are enable
       # Coding agents
       if ! command -v claude >/dev/null 2>&1; then
         echo "Installing Claude Code..."
-        npm install -g @anthropic-ai/claude-code 2>/dev/null && ln -sf $(which claude) {{ .Values.persistence.data.mountPath }}/.local/bin/claude || echo "claude install skipped"
+        npm install -g @anthropic-ai/claude-code --fetch-timeout=60000 --fetch-retries=3 2>/dev/null && ln -sf $(which claude) {{ .Values.persistence.data.mountPath }}/.local/bin/claude || echo "claude install skipped"
       fi
       if [ ! -x opencode ]; then
         echo "Installing opencode..."
-        wget -qO /tmp/opencode.tar.gz "https://github.com/sst/opencode/releases/latest/download/opencode-linux-x64-musl.tar.gz" \
+        $WGET -O /tmp/opencode.tar.gz "https://github.com/sst/opencode/releases/latest/download/opencode-linux-x64-musl.tar.gz" \
           && tar xzf /tmp/opencode.tar.gz -C /tmp && mv /tmp/opencode opencode && chmod +x opencode \
           || echo "opencode install skipped"
         rm -f /tmp/opencode.tar.gz
@@ -345,59 +349,64 @@ Returns a YAML list of init containers based on which feature toggles are enable
   command: ["bash", "-c"]
   args:
     - |
-      set -eu
-      # glibc Debian base: uv tool install needs a working Python interpreter.
-      # alpine/musl can neither run uv's managed Pythons (glibc-only) nor install
-      # most wheels (no musl builds), so every pythonTools call silently failed.
-      # wget/unzip for uv+bun archives; nodejs+npm for pnpm and nodeTools.
-      apt-get update -qq >/dev/null 2>&1
-      apt-get install -y -qq wget unzip nodejs npm >/dev/null 2>&1
+      # NOTE: deliberately NOT `set -e`. These are best-effort dev tools
+      # fetched over the network; a single stalled apt mirror / GitHub rate
+      # limit / npm hang must NOT block pod startup forever (init containers
+      # gate the whole pod). Every fetch is time-bounded + retried, and
+      # failures are logged + skipped instead of killing the container.
+      echo "[dev-tools] starting"
       DATA={{ .Values.persistence.data.mountPath }}
       BIN="$DATA/.local/bin"
       mkdir -p "$BIN"
-      # All tool bins must land on the hermes container PATH, which includes
-      # $DATA/.local/bin. Route every installer there:
       export HOME="$DATA"                 # uv/npm default ~/.local/bin → $BIN
       export XDG_BIN_HOME="$BIN"          # uv tool bins → $BIN explicitly
       export NPM_CONFIG_PREFIX="$DATA/.local"  # npm global bins live in $PREFIX/bin = $BIN
       export PATH="$BIN:$PATH"
+      WGET="wget -q --timeout=30 --tries=3"
+
+      # OS packages: non-fatal. If the mirror is slow/unreachable we still
+      # try the rest (bins may already be present from a prior run on the PVC).
+      echo "[dev-tools] apt-get (non-fatal)..."
+      apt-get update -qq >/dev/null 2>&1 || echo "[dev-tools] apt-get update skipped"
+      apt-get install -y -qq wget unzip nodejs npm >/dev/null 2>&1 || echo "[dev-tools] apt-get install skipped"
 
       if [ ! -x "$BIN/uv" ]; then
-        echo "Installing uv..."
-        wget -qO- "https://github.com/astral-sh/uv/releases/latest/download/uv-x86_64-unknown-linux-gnu.tar.gz" \
-          | tar xz -C /tmp
-        mv /tmp/uv-*/uv "$BIN/uv"
-        mv /tmp/uv-*/uvx "$BIN/uvx" 2>/dev/null || true
-        chmod +x "$BIN/uv" "$BIN/uvx" 2>/dev/null || true
+        echo "[dev-tools] installing uv..."
+        $WGET -O- "https://github.com/astral-sh/uv/releases/latest/download/uv-x86_64-unknown-linux-gnu.tar.gz" \
+          | tar xz -C /tmp && mv /tmp/uv-*/uv "$BIN/uv" 2>/dev/null \
+          && mv /tmp/uv-*/uvx "$BIN/uvx" 2>/dev/null \
+          && chmod +x "$BIN/uv" "$BIN/uvx" 2>/dev/null \
+          || echo "[dev-tools] uv install skipped"
       fi
 
       if [ ! -x "$BIN/bun" ]; then
-        echo "Installing bun..."
-        wget -qO /tmp/bun.zip "https://github.com/oven-sh/bun/releases/latest/download/bun-linux-x64.zip"
-        unzip -o /tmp/bun.zip -d /tmp >/dev/null 2>&1
-        mv /tmp/bun-linux-x64/bun "$BIN/bun" && chmod +x "$BIN/bun"
-        rm -rf /tmp/bun.zip /tmp/bun-linux-x64
+        echo "[dev-tools] installing bun..."
+        $WGET -O /tmp/bun.zip "https://github.com/oven-sh/bun/releases/latest/download/bun-linux-x64.zip" \
+          && unzip -o /tmp/bun.zip -d /tmp >/dev/null 2>&1 \
+          && mv /tmp/bun-linux-x64/bun "$BIN/bun" && chmod +x "$BIN/bun" \
+          && rm -rf /tmp/bun.zip /tmp/bun-linux-x64 \
+          || echo "[dev-tools] bun install skipped"
       fi
 
-      # pnpm: installed via npm (its standalone binary asset was removed in v11).
-      # NPM_CONFIG_PREFIX points global bins at $BIN so `pnpm` is on PATH.
       if [ ! -x "$BIN/pnpm" ]; then
-        echo "Installing pnpm..."
-        npm install -g pnpm >/dev/null 2>&1 || echo "pnpm skipped"
+        echo "[dev-tools] installing pnpm..."
+        npm install -g pnpm --fetch-timeout=60000 --fetch-retries=3 >/dev/null 2>&1 || echo "[dev-tools] pnpm skipped"
       fi
 
       # Python CLI tools (uv-managed isolated envs, bins symlinked into $BIN).
       {{- range .Values.devTools.pythonTools }}
-      "$BIN/uv" tool install {{ . }} >/dev/null 2>&1 || echo "uv tool {{ . }} skipped"
+      echo "[dev-tools] uv tool install {{ . }}..."
+      "$BIN/uv" tool install {{ . }} --python 3.12 >/dev/null 2>&1 || echo "[dev-tools] uv tool {{ . }} skipped"
       {{- end }}
 
       # Node CLI tools (npm global, bins land in $BIN via NPM_CONFIG_PREFIX).
       {{- range .Values.devTools.nodeTools }}
-      npm install -g {{ . }} >/dev/null 2>&1 || echo "npm {{ . }} skipped"
+      echo "[dev-tools] npm install {{ . }}..."
+      npm install -g {{ . }} --fetch-timeout=60000 --fetch-retries=3 >/dev/null 2>&1 || echo "[dev-tools] npm {{ . }} skipped"
       {{- end }}
 
-      echo "dev tools ready:"
-      ls -1 "$BIN"
+      echo "[dev-tools] done. bins:"
+      ls -1 "$BIN" 2>/dev/null || true
   securityContext:
     {{- toYaml $.Values.securityContext | nindent 12 }}
   volumeMounts:

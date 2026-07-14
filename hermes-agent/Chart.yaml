@@ -20,7 +20,7 @@ maintainers:
     url: https://github.com/duyet
 # Hermes is a stateful single-writer workload: one replica owns the data volume.
 kubeVersion: ">=1.23.0-0"
-version: 0.1.4
+version: 0.1.5
 # appVersion tracks the upstream Docker image tag. Bump this (or override
 # image.tag) to upgrade — the chart is designed so a tag change is the only
 # action needed for a seamless rolling upgrade.
