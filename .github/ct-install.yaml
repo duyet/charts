@@ -1,5 +1,18 @@
+# Install tests: glossary omitted until a Postgres fixture exists in CI.
+# Lint (ct-lint.yaml) still covers glossary.
 chart-dirs:
-  - .
+  - amundsen
+  - applause-btn
+  - clickhouse-keeper
+  - clickhouse-monitoring
+  - commento
+  - gaxy
+  - hermes-agent
+  - pgbouncer
+  - scheduling-restart
+  - spark-shuffle-service
+  - uptime-kuma
+  - zeppelin
 debug: true
 remote: origin
 target-branch: master
