@@ -1,5 +1,9 @@
 chart-dirs:
   - .
+# Glossary requires an external PostgreSQL service absent from the CI cluster.
+# Keep lint coverage; restore install coverage when a database fixture exists.
+excluded-charts:
+  - glossary
 debug: true
 remote: origin
 target-branch: master
