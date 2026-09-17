@@ -2,7 +2,8 @@ replicaCount: 1
 
 image:
   repository: duyetdev/applause-btn
-  pullPolicy: IfNotPresent
+  # image.pullPolicy -- Always refresh the floating latest tag when a pod starts.
+  pullPolicy: Always
   tag: latest
 
 imagePullSecrets: []

@@ -1,6 +1,6 @@
 # scheduling-restart
 
-![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.16.0](https://img.shields.io/badge/AppVersion-1.16.0-informational?style=flat-square)
+![Version: 0.1.1](https://img.shields.io/badge/Version-0.1.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.16.0](https://img.shields.io/badge/AppVersion-1.16.0-informational?style=flat-square)
 
 A Helm chart for scheduling restart deployment
 
@@ -16,7 +16,7 @@ A Helm chart for scheduling restart deployment
 | fullnameOverride | string | `""` |  |
 | image.pullPolicy | string | `"IfNotPresent"` |  |
 | image.repository | string | `"bitnami/kubectl"` |  |
-| image.tag | string | `"latest"` |  |
+| image.tag | string | `"latest@sha256:b29d8c1665b70817259ceecaea16ab27aab6368b48daf485d19436c809067492"` | Digest-pinned kubectl image; update the digest explicitly to upgrade. |
 | imagePullSecrets | list | `[]` |  |
 | nameOverride | string | `""` |  |
 | nodeSelector | object | `{}` |  |

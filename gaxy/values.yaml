@@ -6,7 +6,8 @@ replicaCount: 1
 
 image:
   repository: ghcr.io/duyet/gaxy
-  pullPolicy: IfNotPresent
+  # image.pullPolicy -- Always refresh the floating latest tag when a pod starts.
+  pullPolicy: Always
   tag: 'latest'
 
 imagePullSecrets: []

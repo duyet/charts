@@ -6,7 +6,8 @@ replicaCount: 3
 
 image:
   repository: clickhouse/clickhouse-keeper
-  pullPolicy: IfNotPresent
+  # image.pullPolicy -- Always refresh the floating head-alpine tag when a pod starts.
+  pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
   tag: "head-alpine"
 
