@@ -1,6 +1,6 @@
 # applause-btn
 
-![Version: 0.1.1](https://img.shields.io/badge/Version-0.1.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.0.0](https://img.shields.io/badge/AppVersion-1.0.0-informational?style=flat-square)
+![Version: 0.1.3](https://img.shields.io/badge/Version-0.1.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.0.0](https://img.shields.io/badge/AppVersion-1.0.0-informational?style=flat-square)
 
 A Helm chart of [Applause Button](https://github.com/duyet/applause-btn) for Kubernetes
 
@@ -27,7 +27,7 @@ A Helm chart of [Applause Button](https://github.com/duyet/applause-btn) for Kub
 | database.persistence.size | string | `"3Gi"` | Badger DB size |
 | database.persistence.storageClass | string | `""` | Storage class for PV (e.g. gp2, standard, ...) |
 | fullnameOverride | string | `""` |  |
-| image.pullPolicy | string | `"IfNotPresent"` |  |
+| image.pullPolicy | string | `"Always"` | Always refresh the floating latest tag when a pod starts. |
 | image.repository | string | `"duyetdev/applause-btn"` |  |
 | image.tag | string | `"latest"` |  |
 | imagePullSecrets | list | `[]` |  |

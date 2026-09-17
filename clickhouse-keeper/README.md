@@ -1,6 +1,6 @@
 # clickhouse-keeper
 
-![Version: 0.1.2](https://img.shields.io/badge/Version-0.1.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.16.0](https://img.shields.io/badge/AppVersion-1.16.0-informational?style=flat-square)
+![Version: 0.1.3](https://img.shields.io/badge/Version-0.1.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.16.0](https://img.shields.io/badge/AppVersion-1.16.0-informational?style=flat-square)
 
 A ClickHouse Keeper chart for Kubernetes
 
@@ -11,7 +11,7 @@ A ClickHouse Keeper chart for Kubernetes
 | affinity | object | `{}` |  |
 | command | string | `"HOST=`hostname -s` &&\nDOMAIN=`hostname -d` &&\nif [[ $HOST =~ (.*)-([0-9]+)$ ]]; then\n    NAME=${BASH_REMATCH[1]}\n    ORD=${BASH_REMATCH[2]}\nelse\n    echo \"Failed to parse name and ordinal of Pod\"\n    exit 1\nfi &&\nexport MY_ID=$((ORD+1)) &&\nmkdir -p /tmp/clickhouse-keeper/config.d/ &&\n{\n  echo \"<yandex><keeper_server>\"\n  echo \"<server_id>${MY_ID}</server_id>\"\n  echo \"<raft_configuration>\"\n  for (( i=1; i<=$SERVERS; i++ )); do\n      echo \"<server><id>${i}</id><hostname>$NAME-$((i-1)).${DOMAIN}</hostname><port>${RAFT_PORT}</port></server>\"\n  done\n  echo \"</raft_configuration>\"\n  echo \"</keeper_server></yandex>\"\n} > /tmp/clickhouse-keeper/config.d/generated-keeper-settings.xml &&\ncat /tmp/clickhouse-keeper/config.d/generated-keeper-settings.xml &&\nif [[ \"1\" == \"$MY_ID\" ]]; then\n  clickhouse-keeper --config-file=/etc/clickhouse-keeper/keeper_config.xml --force-recovery\nelse\n  clickhouse-keeper --config-file=/etc/clickhouse-keeper/keeper_config.xml\nfi\n"` |  |
 | fullnameOverride | string | `""` |  |
-| image.pullPolicy | string | `"IfNotPresent"` |  |
+| image.pullPolicy | string | `"Always"` | Always refresh the floating head-alpine tag when a pod starts. |
 | image.repository | string | `"clickhouse/clickhouse-keeper"` |  |
 | image.tag | string | `"head-alpine"` |  |
 | imagePullSecrets | list | `[]` |  |

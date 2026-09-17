@@ -2,7 +2,7 @@ apiVersion: v2
 name: gaxy
 description: A Helm chart for Google Analytics Proxy ([gaxy](https://github.com/duyet/gaxy))
 type: application
-version: 0.1.0
+version: 0.1.1
 appVersion: 0.1.2-beta.2
 home: https://github.com/duyet/charts/tree/master/gaxy
 maintainers:
