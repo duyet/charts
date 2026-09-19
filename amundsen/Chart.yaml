@@ -17,6 +17,6 @@ maintainers:
     email: me@duyet.net
 dependencies:
   - name: elasticsearch
-    version: 19.21.2
+    version: 22.1.6
     repository: https://charts.bitnami.com/bitnami
     condition: elasticsearch.enabled
