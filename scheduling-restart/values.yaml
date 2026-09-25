@@ -6,7 +6,7 @@ image:
   repository: bitnami/kubectl
   pullPolicy: IfNotPresent
   # image.tag -- Digest-pinned kubectl image; update the digest explicitly to upgrade.
-  tag: "latest@sha256:b29d8c1665b70817259ceecaea16ab27aab6368b48daf485d19436c809067492"
+  tag: "latest@sha256:ab90e1058e5a658cc94b4e7eb6d48e5758cfd6d77b5dd1869513aec3a3054673"
 
 imagePullSecrets: []
 nameOverride: ""
